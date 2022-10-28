@@ -27,7 +27,7 @@ class AppText extends StatelessWidget {
       text,
       overflow: overflow,
       textAlign: textAlign,
-      style: GoogleFonts.dmSans(
+      style: GoogleFonts.plusJakartaSans(
         color: color,
         fontSize: size,
         fontWeight: fontWeight,

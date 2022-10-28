@@ -24,11 +24,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Floatr',
       theme: ThemeData(
-        scaffoldBackgroundColor: AppTheme.backgroundColor,
-        useMaterial3: true,
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+          scaffoldBackgroundColor: AppTheme.backgroundColor,
+          useMaterial3: true,
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          appBarTheme: const AppBarTheme(
+            iconTheme: IconThemeData(color: Colors.white),
+          )),
       navigatorKey: di<NavigationService>().navigationKey,
       onGenerateRoute: Router.generateRoute,
       // home: const SplashScreen(),
