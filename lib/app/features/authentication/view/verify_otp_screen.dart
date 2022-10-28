@@ -76,7 +76,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
 
             GeneralButton(
               onPressed: () =>
-                  navigationService.navigateTo(RouteName.verifyOTP),
+                  navigationService.navigateTo(RouteName.verifyBVN),
               buttonTextColor: Colors.white,
               height: context.heightPx * 0.08,
               child: const Text(
