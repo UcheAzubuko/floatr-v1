@@ -1,10 +1,17 @@
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 
 // import '../screens/onboarding_screen.dart';
-import '../screens/onboarding_screens/splash_screen.dart';
-import 'utils/theme_config.dart';
+import 'package:floatr/core/route/navigation_service.dart';
+import 'package:flutter/material.dart' hide Router;
+
+import 'app/features/onboarding/splash_screen.dart';
+import 'core/misc/dependency_injectors.dart';
+import 'core/route/router.dart';
+import 'core/utils/theme_config.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  setupLocator();
   runApp(const MyApp());
 }
 
@@ -22,7 +29,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const SplashScreen(),
+      navigatorKey: di<NavigationService>().navigationKey,
+      onGenerateRoute: Router.generateRoute,
+      // home: const SplashScreen(),
     );
   }
 }
