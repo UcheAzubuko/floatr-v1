@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:floatr/screens/onboarding_screen.dart';
+import 'package:floatr/app/features/onboarding/onboarding_screen_main.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
