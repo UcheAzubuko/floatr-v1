@@ -14,25 +14,6 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  // startSplashScreenTimer() async {
-  //   var _duration = new Duration(seconds: 5);
-  //   return new Timer(_duration, navigateToPage);
-  // }
-
-  // void navigateToPage() {
-  //   Navigator.pushReplacement(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => const OnboardingScreen(),
-  //     ),
-  //   );
-  // }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   startSplashScreenTimer();
-  // }
   @override
   void initState() {
     super.initState();
@@ -57,7 +38,9 @@ class _SplashScreenState extends State<SplashScreen>
   late final Animation<Offset> _leftToRightAnim = Tween<Offset>(
     begin: const Offset(-1.5, 0.0),
     end: Offset.zero,
-  ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+  ).animate(
+    CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+  );
 
   late final Animation<Offset> _rightToLeftAnim =
       Tween<Offset>(begin: const Offset(1.5, 0.0), end: Offset.zero).animate(
@@ -74,10 +57,9 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     // SystemChrome.setEnabledSystemUIMode([]);
 
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
-      decoration: BoxDecoration(),
       child: Center(
         child: SvgPicture.asset(
           'assets/images/onboarding1.svg',
