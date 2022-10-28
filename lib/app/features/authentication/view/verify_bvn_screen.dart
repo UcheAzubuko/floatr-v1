@@ -78,7 +78,7 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
 
             GeneralButton(
               onPressed: () =>
-                  navigationService.navigateTo(RouteName.verifyOTP),
+                  navigationService.navigateTo(RouteName.takeSelfie),
               buttonTextColor: Colors.white,
               height: context.heightPx * 0.08,
               child: const Text(
