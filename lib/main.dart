@@ -26,11 +26,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
           scaffoldBackgroundColor: AppTheme.backgroundColor,
           useMaterial3: true,
-          primarySwatch: Colors.blue,
+          // primarySwatch: Colors.white,
           visualDensity: VisualDensity.adaptivePlatformDensity,
           appBarTheme: const AppBarTheme(
-            iconTheme: IconThemeData(color: Colors.white),
-          )),
+            iconTheme: IconThemeData(color: Colors.blue),
+          ),),
       navigatorKey: di<NavigationService>().navigationKey,
       onGenerateRoute: Router.generateRoute,
       // home: const SplashScreen(),

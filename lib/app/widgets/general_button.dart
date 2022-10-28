@@ -34,10 +34,10 @@ class GeneralButton extends StatelessWidget {
     final ButtonStyle style = ElevatedButton.styleFrom(
         foregroundColor: foregroundColor,
         backgroundColor: backgroundColor,
-        textStyle: const TextStyle(fontSize: 20, color: Colors.white),
+        textStyle: TextStyle(fontSize: 20, color: buttonTextColor),
         shape: RoundedRectangleBorder(
             side: BorderSide(color: borderColor),
-            borderRadius: BorderRadius.circular(12)));
+            borderRadius: BorderRadius.circular(15)));
 
     return SizedBox(
         height: height,
