@@ -47,7 +47,7 @@ Floatr account''',
             ),
 
             // pin field
-            
+
             // OTPTextField(
             //   length: 4,
             //   width: context.widthPx,
@@ -68,7 +68,7 @@ Floatr account''',
 
             GeneralButton(
               onPressed: () =>
-                  navigationService.navigateTo(RouteName.verifyBVN),
+                  navigationService.navigateTo(RouteName.biometrics),
               buttonTextColor: Colors.white,
               child: const Text(
                 'Confirm Code',

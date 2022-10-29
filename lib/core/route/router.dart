@@ -1,3 +1,4 @@
+import 'package:floatr/app/features/authentication/view/biometrics_screen.dart';
 import 'package:floatr/app/features/authentication/view/confirm_details_screen.dart';
 import 'package:floatr/app/features/authentication/view/create_pin_screen.dart';
 import 'package:floatr/app/features/authentication/view/login_screen.dart';
@@ -28,6 +29,8 @@ class Router {
         return MaterialPageRoute(builder: (_) => const ConfirmDetailsScreen());
       case RouteName.createPin:
         return MaterialPageRoute(builder: (_) => const CreatePinScreen());
+      case RouteName.biometrics:
+        return MaterialPageRoute(builder: (_) => const BiometricsScreen());
       default:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }
