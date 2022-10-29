@@ -273,7 +273,7 @@ Lagos, Nigeria''',
 
             GeneralButton(
               onPressed: () =>
-                  navigationService.navigateTo(RouteName.takeSelfie),
+                  navigationService.navigateTo(RouteName.login),
               buttonTextColor: Colors.white,
               child: const Text(
                 'Confirm',

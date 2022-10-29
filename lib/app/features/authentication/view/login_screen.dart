@@ -7,6 +7,7 @@ import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 
 import '../../../widgets/custom_appbar.dart';
+import '../../../widgets/text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,9 +25,11 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // getstarted
+            const VerticalSpace(size: 30),
+
+            // lets sign in
             AppText(
-              text: 'Getting Started',
+              text: 'Let\'s Sign You In',
               color: AppColors.primaryColor,
               fontWeight: FontWeight.w900,
               size: context.widthPx * 0.089,
@@ -34,32 +37,33 @@ class _LoginScreenState extends State<LoginScreen> {
 
             // sub text
             AppText(
-              text: 'Create an account to continue!',
+              text: 'Welcome back! We\'ve missed you.',
               color: AppColors.grey,
               fontWeight: FontWeight.w600,
               size: context.widthPx * 0.035,
             ),
 
-            const VerticalSpace(size: 30),
-
-            // email text and textfield
-            AppText(
-              text: 'Email Address',
-              color: Colors.black,
-              fontWeight: FontWeight.w600,
-              size: context.widthPx * 0.035,
-            ),
+            const VerticalSpace(size: 50),
 
             // phone number text and textfield
             AppText(
-              text: 'Phone number (Linked with BVN)',
+              text: 'Phone number',
               color: Colors.black,
               fontWeight: FontWeight.w600,
               size: context.widthPx * 0.035,
             ),
 
-            // password text and textfield
+            const VerticalSpace(size: 10),
 
+            AppTextField(
+                hintText: '+234 813 123 4567',
+                controller: TextEditingController(),
+                textInputType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.unspecified),
+
+            const VerticalSpace(size: 10),
+
+            // password text and textfield
             AppText(
               text: 'Password',
               color: Colors.black,
@@ -67,51 +71,31 @@ class _LoginScreenState extends State<LoginScreen> {
               size: context.widthPx * 0.035,
             ),
 
-            // confirm password text and textfield
-            AppText(
-              text: 'Confirm Password',
-              color: Colors.black,
-              fontWeight: FontWeight.w600,
-              size: context.widthPx * 0.035,
+            const VerticalSpace(size: 10),
+
+            AppTextField(
+                hintText: 'Password',
+                controller: TextEditingController(),
+                textInputType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.unspecified),
+
+            const VerticalSpace(size: 100),
+
+            GeneralButton(
+              onPressed: () {},
+              child: const Text('Login'),
             ),
 
-            // dob text and textfield
-            AppText(
-              text: 'Date of Birth',
-              color: Colors.black,
-              fontWeight: FontWeight.w600,
-              size: context.widthPx * 0.035,
-            ),
+            const VerticalSpace(size: 20),
 
-            AppText(
-              text: 'Have a referral code?',
-              color: AppColors.grey,
-              fontWeight: FontWeight.w600,
-              size: context.widthPx * 0.035,
+            Center(
+              child: AppText(
+                text: 'Don\'t have an account? Sign Up',
+                color: Colors.black,
+                fontWeight: FontWeight.w600,
+                size: context.widthPx * 0.032,
+              ),
             ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 0,
-                  width: 20,
-                  child: Checkbox(
-                    value: false,
-                    onChanged: (_) {},
-                  ),
-                ),
-                const HorizontalSpace(size: 20),
-                AppText(
-                  text: 'I accept and agree all to all terms and conditions',
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                  size: context.widthPx * 0.031,
-                ),
-              ],
-            ),
-
-            GeneralButton(onPressed: (){}, child: const Text('Next'),)
           ],
         ),
       ).paddingSymmetric(horizontal: context.widthPx * 0.037),
