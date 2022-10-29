@@ -4,6 +4,7 @@ import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/widgets/general_button.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/route/navigation_service.dart';
@@ -76,7 +77,7 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
               ),
 
               const VerticalSpace(
-                size: 20,
+                size: 30,
               ),
 
               // conditions
@@ -96,10 +97,16 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
               // capture button
 
               GeneralButton(
-                onPressed: () => navigationService.navigateTo(RouteName.confirmDetails),
+                onPressed: () =>
+                    navigationService.navigateTo(RouteName.confirmDetails),
                 width: context.widthPx * 0.17,
                 height: context.heightPx * 0.079,
-                child: const Icon(Icons.abc),
+                child: SvgPicture.asset(
+                  'assets/icons/outline/Camera.svg',
+                  height: 40,
+                  fit: BoxFit.fill,
+                  color: AppColors.backgroundColor,
+                ),
               ),
             ],
           ),

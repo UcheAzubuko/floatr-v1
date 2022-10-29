@@ -39,7 +39,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
             ),
 
             AppText(
-              text: '''Please enter code that was sent to:     
+              text: '''Please enter the code that was sent to:     
 +2348147990002''',
               color: AppColors.grey,
               fontWeight: FontWeight.w600,
@@ -47,7 +47,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
             ),
 
             const VerticalSpace(
-              size: 40,
+              size: 60,
             ),
 
             OTPTextField(
@@ -64,7 +64,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
             ),
 
             const VerticalSpace(
-              size: 40,
+              size: 60,
             ),
 
             AppText(
