@@ -54,13 +54,16 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
               length: 4,
               width: context.widthPx,
               fieldStyle: FieldStyle.box,
-              fieldWidth: context.widthPx * 0.2,
+              fieldWidth: context.widthPx * 0.18,
+              style: TextStyle(fontSize: context.widthPx * 0.12),
+              outlineBorderRadius: 15,
               otpFieldStyle: OtpFieldStyle(
-                  backgroundColor: AppColors.grey.withOpacity(0.15),
-                  borderColor: Colors.transparent),
+                backgroundColor: AppColors.grey.withOpacity(0.1),
+                enabledBorderColor: Colors.transparent,
+              ),
             ),
 
-             const VerticalSpace(
+            const VerticalSpace(
               size: 40,
             ),
 
@@ -71,9 +74,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
               size: context.widthPx * 0.031,
             ),
 
-             const VerticalSpace(
-              size: 400,
-            ),
+            const Spacer(),
 
             GeneralButton(
               onPressed: () =>
