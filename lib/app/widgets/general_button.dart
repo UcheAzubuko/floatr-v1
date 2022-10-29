@@ -1,3 +1,4 @@
+import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 
@@ -6,7 +7,7 @@ import '../../core/utils/app_colors.dart';
 class GeneralButton extends StatelessWidget {
   final Function onPressed;
   final double width;
-  final double height;
+  final double? height;
   final Color borderColor;
   final Color backgroundColor;
   final Color? foregroundColor;
@@ -19,7 +20,7 @@ class GeneralButton extends StatelessWidget {
   const GeneralButton(
       {required this.onPressed,
       this.width = double.infinity,
-      this.height = 50,
+      this.height,
       this.foregroundColor,
       this.backgroundColor = AppColors.primaryColor,
       required this.child,
@@ -40,7 +41,7 @@ class GeneralButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(15)));
 
     return SizedBox(
-        height: height,
+        height: height ?? context.heightPx * 0.07,
         width: width,
         child: ElevatedButton(
             style: style,

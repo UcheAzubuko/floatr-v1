@@ -1,26 +1,25 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
-import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
-import 'package:otp_text_field/otp_text_field.dart';
-import 'package:otp_text_field/style.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/route/navigation_service.dart';
 import '../../../../core/route/route_names.dart';
 import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/spacing.dart';
 import '../../../widgets/app_text.dart';
 import '../../../widgets/custom_appbar.dart';
 import '../../../widgets/general_button.dart';
+import '../../../widgets/text_field.dart';
 
-class VerifyPhoneScreen extends StatefulWidget {
-  const VerifyPhoneScreen({super.key});
+class ConfirmDetailsScreen extends StatefulWidget {
+  const ConfirmDetailsScreen({super.key});
 
   @override
-  State<VerifyPhoneScreen> createState() => _VerifyPhoneScreenState();
+  State<ConfirmDetailsScreen> createState() => _ConfirmDetailsScreenState();
 }
 
-class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
+class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
   final NavigationService navigationService = di<NavigationService>();
   @override
   Widget build(BuildContext context) {
@@ -30,58 +29,34 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // verify screen
+            // BVN
             AppText(
-              text: 'Verify Screen',
+              text: 'Confirm Details',
               color: AppColors.primaryColor,
               fontWeight: FontWeight.w900,
               size: context.widthPx * 0.089,
             ),
 
             AppText(
-              text: '''Please enter code that was sent to:     
-+2348147990002''',
+              text: 'Please confirm your details for 2225323322',
               color: AppColors.grey,
               fontWeight: FontWeight.w600,
               size: context.widthPx * 0.035,
             ),
 
             const VerticalSpace(
-              size: 40,
-            ),
-
-            OTPTextField(
-              length: 4,
-              width: context.widthPx,
-              fieldStyle: FieldStyle.box,
-              fieldWidth: context.widthPx * 0.18,
-              style: TextStyle(fontSize: context.widthPx * 0.12),
-              outlineBorderRadius: 15,
-              otpFieldStyle: OtpFieldStyle(
-                backgroundColor: AppColors.grey.withOpacity(0.1),
-                enabledBorderColor: Colors.transparent,
-              ),
-            ),
-
-            const VerticalSpace(
-              size: 40,
-            ),
-
-            AppText(
-              text: 'Didn\'t get the code? Resend Code',
-              color: Colors.black,
-              fontWeight: FontWeight.w600,
-              size: context.widthPx * 0.031,
+              size: 20,
             ),
 
             const Spacer(),
 
             GeneralButton(
               onPressed: () =>
-                  navigationService.navigateTo(RouteName.verifyBVN),
+                  navigationService.navigateTo(RouteName.takeSelfie),
               buttonTextColor: Colors.white,
+              
               child: const Text(
-                'Verify Phone',
+                'Take Selfie',
                 style: TextStyle(color: Colors.white),
               ),
             )

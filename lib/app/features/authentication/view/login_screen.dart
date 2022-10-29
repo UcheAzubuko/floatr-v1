@@ -111,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
 
-            GeneralButton(onPressed: (){}, child: const Text('Next'), height: context.heightPx * 0.08,)
+            GeneralButton(onPressed: (){}, child: const Text('Next'),)
           ],
         ),
       ).paddingSymmetric(horizontal: context.widthPx * 0.037),

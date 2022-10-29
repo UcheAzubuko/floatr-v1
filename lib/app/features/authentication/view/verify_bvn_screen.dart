@@ -73,15 +73,12 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
               size: context.widthPx * 0.031,
             ),
 
-            const VerticalSpace(
-              size: 400,
-            ),
+            const Spacer(),
 
             GeneralButton(
               onPressed: () =>
                   navigationService.navigateTo(RouteName.takeSelfie),
               buttonTextColor: Colors.white,
-              height: context.heightPx * 0.08,
               child: const Text(
                 'Take Selfie',
                 style: TextStyle(color: Colors.white),

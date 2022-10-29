@@ -2,8 +2,11 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/widgets/general_button.dart';
+import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/misc/dependency_injectors.dart';
+import '../../../../core/route/navigation_service.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/spacing.dart';
 import '../../../widgets/app_text.dart';
@@ -17,6 +20,7 @@ class TakeSelefieScreen extends StatefulWidget {
 }
 
 class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
+  final NavigationService navigationService = di<NavigationService>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,7 +96,7 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
               // capture button
 
               GeneralButton(
-                onPressed: () {},
+                onPressed: () => navigationService.navigateTo(RouteName.confirmDetails),
                 width: context.widthPx * 0.17,
                 height: context.heightPx * 0.079,
                 child: const Icon(Icons.abc),

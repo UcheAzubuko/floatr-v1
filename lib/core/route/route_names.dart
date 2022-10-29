@@ -5,4 +5,5 @@ class RouteName {
   static const String verifyOTP = 'verifyOTP';
   static const String verifyBVN = 'verifyBVN';
   static const String takeSelfie = 'takeSelfie';
+  static const String confirmDetails = 'confirmDetails';
 }

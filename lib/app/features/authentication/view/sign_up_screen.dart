@@ -4,7 +4,6 @@ import 'package:floatr/app/widgets/text_field.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/utils/app_colors.dart';
@@ -175,7 +174,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 onPressed: () =>
                     navigationService.navigateTo(RouteName.verifyOTP),
                 buttonTextColor: Colors.white,
-                height: context.heightPx * 0.08,
                 child: const Text('Next'),
               )
             ],
