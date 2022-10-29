@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/spacing.dart';
 import '../../../widgets/app_text.dart';
+import '../../../widgets/custom_appbar.dart';
 
 class TakeSelefieScreen extends StatefulWidget {
   const TakeSelefieScreen({super.key});
@@ -19,7 +20,7 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: CustomAppBar(),
       body: SafeArea(
         child: Center(
           child: Column(

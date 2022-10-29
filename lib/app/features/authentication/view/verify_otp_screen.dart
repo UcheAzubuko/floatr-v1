@@ -10,6 +10,7 @@ import '../../../../core/route/navigation_service.dart';
 import '../../../../core/route/route_names.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../widgets/app_text.dart';
+import '../../../widgets/custom_appbar.dart';
 import '../../../widgets/general_button.dart';
 
 class VerifyPhoneScreen extends StatefulWidget {
@@ -24,7 +25,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: CustomAppBar(),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

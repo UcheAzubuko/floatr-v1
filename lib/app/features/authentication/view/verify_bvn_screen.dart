@@ -8,6 +8,7 @@ import '../../../../core/route/route_names.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/spacing.dart';
 import '../../../widgets/app_text.dart';
+import '../../../widgets/custom_appbar.dart';
 import '../../../widgets/general_button.dart';
 import '../../../widgets/text_field.dart';
 
@@ -23,7 +24,7 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: CustomAppBar(),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

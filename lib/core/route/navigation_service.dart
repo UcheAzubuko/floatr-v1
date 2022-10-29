@@ -22,4 +22,9 @@ class NavigationService {
     return _navigationKey.currentState!
         .pushNamedAndRemoveUntil(newRoute, (Route<dynamic> route) => false);
   }
+
+  Future<dynamic> maybePop() {
+    return _navigationKey.currentState!
+        .maybePop();
+  }
 }

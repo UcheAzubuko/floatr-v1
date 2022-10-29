@@ -2,9 +2,9 @@
 
 // import '../screens/onboarding_screen.dart';
 import 'package:floatr/core/route/navigation_service.dart';
+import 'package:floatr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart' hide Router;
 
-import 'app/features/onboarding/splash_screen.dart';
 import 'core/misc/dependency_injectors.dart';
 import 'core/route/router.dart';
 import 'core/utils/theme_config.dart';
@@ -25,11 +25,14 @@ class MyApp extends StatelessWidget {
       title: 'Floatr',
       theme: ThemeData(
           scaffoldBackgroundColor: AppTheme.backgroundColor,
-          useMaterial3: true,
+          useMaterial3: false,
           // primarySwatch: Colors.white,
           visualDensity: VisualDensity.adaptivePlatformDensity,
           appBarTheme: const AppBarTheme(
-            iconTheme: IconThemeData(color: Colors.blue),
+            color: Colors.white,
+            scrolledUnderElevation: 0,
+            elevation: 0,
+            iconTheme: IconThemeData(color: AppColors.primaryColor),
           ),),
       navigatorKey: di<NavigationService>().navigationKey,
       onGenerateRoute: Router.generateRoute,
