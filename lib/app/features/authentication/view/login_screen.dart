@@ -2,10 +2,13 @@ import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/general_button.dart';
+import 'package:floatr/core/route/navigation_service.dart';
+import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/misc/dependency_injectors.dart';
 import '../../../widgets/custom_appbar.dart';
 import '../../../widgets/text_field.dart';
 
@@ -17,6 +20,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  NavigationService navigationService = di<NavigationService>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
             const VerticalSpace(size: 100),
 
             GeneralButton(
-              onPressed: () {},
+              onPressed: () => navigationService.navigateTo(RouteName.createPin),
               child: const Text('Login'),
             ),
 

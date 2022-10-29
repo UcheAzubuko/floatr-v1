@@ -6,4 +6,5 @@ class RouteName {
   static const String verifyBVN = 'verifyBVN';
   static const String takeSelfie = 'takeSelfie';
   static const String confirmDetails = 'confirmDetails';
+  static const String createPin = 'createPin';
 }

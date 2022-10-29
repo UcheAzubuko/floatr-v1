@@ -1,4 +1,5 @@
 import 'package:floatr/app/features/authentication/view/confirm_details_screen.dart';
+import 'package:floatr/app/features/authentication/view/create_pin_screen.dart';
 import 'package:floatr/app/features/authentication/view/login_screen.dart';
 import 'package:floatr/app/features/authentication/view/sign_up_screen.dart';
 import 'package:floatr/app/features/authentication/view/take_selfie_screen.dart';
@@ -25,6 +26,8 @@ class Router {
         return MaterialPageRoute(builder: (_) => const TakeSelefieScreen());
       case RouteName.confirmDetails:
         return MaterialPageRoute(builder: (_) => const ConfirmDetailsScreen());
+      case RouteName.createPin:
+        return MaterialPageRoute(builder: (_) => const CreatePinScreen());
       default:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }
