@@ -1,12 +1,11 @@
 import 'package:floatr/core/misc/dependency_injectors.dart';
-import 'package:floatr/core/route/route_names.dart';
-import 'package:floatr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../core/route/navigation_service.dart';
-import '../../../core/utils/theme_config.dart';
+import '../../../core/utils/app_colors.dart';
 import 'onboarding_screen_one.dart';
 import 'onboarding_screen_three.dart';
 import 'onboarding_screen_two.dart';
@@ -19,9 +18,8 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  // Controller to keep track of current page
+  // controller to keep track of current page
   final PageController _pageController = PageController();
-  // final bool _onLastOnboardingScreen = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +30,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Scaffold(
       body: Stack(
         children: [
+          // onboarding screens
           PageView(
             controller: _pageController,
             children: const <Widget>[
@@ -40,6 +39,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               OnboardingScreenThree(),
             ],
           ),
+          // dot indicators & icon button
           Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(
@@ -64,7 +64,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    if (_pageController.page! == 2.0) {
+                    if (_pageController.page! == 2) {
                       navigationService.navigateTo(RouteName.login);
                     }
                     _pageController.nextPage(

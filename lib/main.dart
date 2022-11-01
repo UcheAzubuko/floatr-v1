@@ -4,7 +4,6 @@
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:flutter/material.dart' hide Router;
 
-import 'app/features/onboarding/splash_screen.dart';
 import 'core/misc/dependency_injectors.dart';
 import 'core/route/router.dart';
 import 'core/utils/theme_config.dart';

@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
 
             // sub text
-             AppText(
+            AppText(
               text: 'Create an account to continue!',
               color: AppColors.grey,
               fontWeight: FontWeight.w600,

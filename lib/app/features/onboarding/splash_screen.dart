@@ -62,8 +62,8 @@ class _SplashScreenState extends State<SplashScreen>
       height: MediaQuery.of(context).size.height,
       child: Center(
         child: SvgPicture.asset(
-          'assets/images/onboarding1.svg',
-          fit: BoxFit.fitHeight,
+          'assets/images/entry-logo.svg',
+          fit: BoxFit.cover,
         ),
       ),
     );
