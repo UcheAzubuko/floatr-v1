@@ -8,6 +8,7 @@ import 'package:floatr/core/utils/app_colors.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../widgets/custom_appbar.dart';
@@ -106,11 +107,24 @@ class _LoginScreenState extends State<LoginScreen> {
               GestureDetector(
                 onTap: () => navigationService.navigateTo(RouteName.signup),
                 child: Center(
-                  child: AppText(
-                    text: 'Don\'t have an account? Sign Up',
-                    color: AppColors.black,
-                    fontWeight: FontWeight.w600,
-                    size: context.widthPx * 0.032,
+                  child: RichText(
+                    text: TextSpan(
+                      style: GoogleFonts.plusJakartaSans(
+                        color: AppColors.black,
+                        fontSize: context.widthPx * 0.035,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      children: <TextSpan>[
+                        const TextSpan(text: 'Don\'t have an account? '),
+                        TextSpan(
+                          text: 'Sign Up',
+                          style: GoogleFonts.plusJakartaSans(
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

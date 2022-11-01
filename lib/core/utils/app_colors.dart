@@ -9,4 +9,5 @@ class AppColors {
   static const Color greyAsparagus = Color(0xFF3E5543);
   static const Color gunMetal = Color(0xFF96989E);
   static const Color black = Color(0xFF2B1308);
+  static const Color textFieldBackground = Color(0xFFD5D6D8);
 }

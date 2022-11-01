@@ -3,6 +3,7 @@ import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:otp_text_field/otp_text_field.dart';
 import 'package:otp_text_field/style.dart';
 
@@ -70,13 +71,19 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
               width: context.widthPx,
               fieldStyle: FieldStyle.box,
               fieldWidth: context.widthPx * 0.18,
-              style: TextStyle(fontSize: context.widthPx * 0.12),
+              contentPadding: EdgeInsets.all(context.diagonalPx * 0.02),
+              style: GoogleFonts.plusJakartaSans(
+                color: AppColors.black,
+                fontSize: context.widthPx * 0.075,
+                fontWeight: FontWeight.w600,
+                textStyle: Theme.of(context).textTheme.bodyText1,
+              ),
               outlineBorderRadius: 15,
               inputFormatter: [
                 FilteringTextInputFormatter.digitsOnly,
               ],
               otpFieldStyle: OtpFieldStyle(
-                backgroundColor: AppColors.grey.withOpacity(0.1),
+                backgroundColor: AppColors.textFieldBackground.withOpacity(0.4),
                 enabledBorderColor: Colors.transparent,
               ),
             ),

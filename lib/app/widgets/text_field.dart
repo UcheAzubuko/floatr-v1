@@ -56,7 +56,7 @@ class AppTextField extends StatelessWidget {
 
         // const TextStyle(
         //     color: AppColors.grey, fontSize: 14, fontWeight: FontWeight.w400),
-        fillColor: AppColors.grey.withOpacity(0.15),
+        fillColor: AppColors.textFieldBackground.withOpacity(0.4),
         suffixIcon: suffixIcon,
         filled: true,
         focusedBorder: const OutlineInputBorder(

@@ -26,272 +26,271 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            // BVN
-            AppText(
-              text: 'Confirm Details',
-              color: AppColors.primaryColor,
-              fontWeight: FontWeight.w900,
-              size: context.widthPx * 0.089,
-            ),
+      resizeToAvoidBottomInset: false,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          // BVN
+          AppText(
+            text: 'Confirm Details',
+            color: AppColors.primaryColor,
+            fontWeight: FontWeight.w900,
+            size: context.widthPx * 0.089,
+          ),
 
-            AppText(
-              text: 'Please confirm your details for 2225323322',
-              color: AppColors.grey,
-              fontWeight: FontWeight.w600,
-              size: context.widthPx * 0.035,
-            ),
+          AppText(
+            text: 'Please confirm your details for 2225323322',
+            color: AppColors.grey,
+            fontWeight: FontWeight.w600,
+            size: context.widthPx * 0.035,
+          ),
 
-            const VerticalSpace(
-              size: 20,
-            ),
+          const VerticalSpace(
+            size: 20,
+          ),
 
-            // first name, last name
-            Row(
-              children: [
-                SizedBox(
-                  width: context.widthPx * 0.45,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Gender
-                      AppText(
-                        text: 'First Name',
-                        color: AppColors.black,
-                        fontWeight: FontWeight.w600,
-                        size: context.widthPx * 0.035,
-                      ),
+          // first name, last name
+          Row(
+            children: [
+              SizedBox(
+                width: context.widthPx * 0.45,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Gender
+                    AppText(
+                      text: 'First Name',
+                      color: AppColors.black,
+                      fontWeight: FontWeight.w600,
+                      size: context.widthPx * 0.035,
+                    ),
 
-                      const VerticalSpace(size: 10),
+                    const VerticalSpace(size: 10),
 
-                      AppTextField(
-                        hintText: 'First Name',
-                        controller: TextEditingController(),
-                        textInputType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.unspecified,
-                      ),
-                    ],
-                  ),
-                ),
-
-                const HorizontalSpace(size: 10),
-
-                // Marital Status
-                SizedBox(
-                  width: context.widthPx * 0.45,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AppText(
-                        text: 'Last Name',
-                        color: AppColors.black,
-                        fontWeight: FontWeight.w600,
-                        size: context.widthPx * 0.035,
-                      ),
-                      const VerticalSpace(size: 10),
-                      AppTextField(
-                        hintText: 'Last Name',
-                        controller: TextEditingController(),
-                        textInputType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.unspecified,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-
-            const VerticalSpace(
-              size: 20,
-            ),
-
-            // phone number text and textfield
-            AppText(
-              text: 'Phone number',
-              color: AppColors.black,
-              fontWeight: FontWeight.w600,
-              size: context.widthPx * 0.035,
-            ),
-
-            const VerticalSpace(size: 10),
-
-            AppTextField(
-              prefixIcon: Padding(
-                padding: EdgeInsets.all(context.diagonalPx * 0.01),
-                child: SizedBox(
-                  child: SvgPicture.asset(
-                    'assets/icons/fill/nigeria-flag.svg',
-                  ),
+                    AppTextField(
+                      hintText: 'First Name',
+                      controller: TextEditingController(),
+                      textInputType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.unspecified,
+                    ),
+                  ],
                 ),
               ),
-              hintText: '+2348131234567',
-              controller: TextEditingController(),
-              textInputType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.unspecified,
-            ),
 
-            const VerticalSpace(
-              size: 20,
-            ),
+              const HorizontalSpace(size: 10),
 
-            // Gender and Marital Status
-            Row(
-              children: [
-                SizedBox(
-                  width: context.widthPx * 0.45,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Gender
-                      AppText(
-                        text: 'Gender',
-                        color: AppColors.black,
-                        fontWeight: FontWeight.w600,
-                        size: context.widthPx * 0.035,
-                      ),
-
-                      const VerticalSpace(size: 10),
-
-                      AppTextField(
-                        hintText: 'Male',
-                        controller: TextEditingController(),
-                        textInputType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.unspecified,
-                      ),
-                    ],
-                  ),
+              // Marital Status
+              SizedBox(
+                width: context.widthPx * 0.45,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppText(
+                      text: 'Last Name',
+                      color: AppColors.black,
+                      fontWeight: FontWeight.w600,
+                      size: context.widthPx * 0.035,
+                    ),
+                    const VerticalSpace(size: 10),
+                    AppTextField(
+                      hintText: 'Last Name',
+                      controller: TextEditingController(),
+                      textInputType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.unspecified,
+                    ),
+                  ],
                 ),
+              ),
+            ],
+          ),
 
-                const HorizontalSpace(size: 10),
+          const VerticalSpace(
+            size: 20,
+          ),
 
-                // Marital Status
-                SizedBox(
-                  width: context.widthPx * 0.45,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AppText(
-                        text: 'Marital Status',
-                        color: AppColors.black,
-                        fontWeight: FontWeight.w600,
-                        size: context.widthPx * 0.035,
-                      ),
-                      const VerticalSpace(size: 10),
-                      AppTextField(
-                        hintText: 'Single',
-                        controller: TextEditingController(),
-                        textInputType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.unspecified,
-                      ),
-                    ],
-                  ),
+          // phone number text and textfield
+          AppText(
+            text: 'Phone number',
+            color: AppColors.black,
+            fontWeight: FontWeight.w600,
+            size: context.widthPx * 0.035,
+          ),
+
+          const VerticalSpace(size: 10),
+
+          AppTextField(
+            prefixIcon: Padding(
+              padding: EdgeInsets.all(context.diagonalPx * 0.01),
+              child: SizedBox(
+                child: SvgPicture.asset(
+                  'assets/icons/fill/nigeria-flag.svg',
                 ),
-              ],
-            ),
-
-            const VerticalSpace(
-              size: 20,
-            ),
-
-            // DOB and State Of Origin
-            Row(
-              children: [
-                // DOB
-                SizedBox(
-                  width: context.widthPx * 0.45,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Gender
-                      AppText(
-                        text: 'Date of Birth',
-                        color: AppColors.black,
-                        fontWeight: FontWeight.w600,
-                        size: context.widthPx * 0.035,
-                      ),
-
-                      const VerticalSpace(size: 10),
-
-                      AppTextField(
-                        hintText: '11-09-20',
-                        controller: TextEditingController(),
-                        textInputType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.unspecified,
-                      ),
-                    ],
-                  ),
-                ),
-
-                const HorizontalSpace(size: 10),
-
-                // State of Origin
-                SizedBox(
-                  width: context.widthPx * 0.45,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AppText(
-                        text: 'State of Origin',
-                        color: AppColors.black,
-                        fontWeight: FontWeight.w600,
-                        size: context.widthPx * 0.035,
-                      ),
-                      const VerticalSpace(size: 10),
-                      AppTextField(
-                        hintText: 'Anambra',
-                        controller: TextEditingController(),
-                        textInputType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.unspecified,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-
-            const VerticalSpace(
-              size: 20,
-            ),
-
-            // Address
-            AppText(
-              text: 'Address',
-              color: AppColors.black,
-              fontWeight: FontWeight.w600,
-              size: context.widthPx * 0.035,
-            ),
-
-            const VerticalSpace(size: 10),
-
-            AppTextField(
-              hintText: '11 Lorem Ipsun dolo Lagos, Nigeria',
-              maxLines: 4,
-              controller: TextEditingController(),
-              textInputType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.unspecified,
-            ),
-
-            const Spacer(),
-
-            GeneralButton(
-              onPressed: () => navigationService.navigateTo(RouteName.login),
-              buttonTextColor: Colors.white,
-              child: const Text(
-                'Confirm',
-                style: TextStyle(color: Colors.white),
               ),
             ),
+            hintText: '+2348131234567',
+            controller: TextEditingController(),
+            textInputType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.unspecified,
+          ),
 
-            const SizedBox(
-              height: 25,
+          const VerticalSpace(
+            size: 20,
+          ),
+
+          // Gender and Marital Status
+          Row(
+            children: [
+              SizedBox(
+                width: context.widthPx * 0.45,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Gender
+                    AppText(
+                      text: 'Gender',
+                      color: AppColors.black,
+                      fontWeight: FontWeight.w600,
+                      size: context.widthPx * 0.035,
+                    ),
+
+                    const VerticalSpace(size: 10),
+
+                    AppTextField(
+                      hintText: 'Male',
+                      controller: TextEditingController(),
+                      textInputType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.unspecified,
+                    ),
+                  ],
+                ),
+              ),
+
+              const HorizontalSpace(size: 10),
+
+              // Marital Status
+              SizedBox(
+                width: context.widthPx * 0.45,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppText(
+                      text: 'Marital Status',
+                      color: AppColors.black,
+                      fontWeight: FontWeight.w600,
+                      size: context.widthPx * 0.035,
+                    ),
+                    const VerticalSpace(size: 10),
+                    AppTextField(
+                      hintText: 'Single',
+                      controller: TextEditingController(),
+                      textInputType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.unspecified,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const VerticalSpace(
+            size: 20,
+          ),
+
+          // DOB and State Of Origin
+          Row(
+            children: [
+              // DOB
+              SizedBox(
+                width: context.widthPx * 0.45,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Gender
+                    AppText(
+                      text: 'Date of Birth',
+                      color: AppColors.black,
+                      fontWeight: FontWeight.w600,
+                      size: context.widthPx * 0.035,
+                    ),
+
+                    const VerticalSpace(size: 10),
+
+                    AppTextField(
+                      hintText: '11-09-20',
+                      controller: TextEditingController(),
+                      textInputType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.unspecified,
+                    ),
+                  ],
+                ),
+              ),
+
+              const HorizontalSpace(size: 10),
+
+              // State of Origin
+              SizedBox(
+                width: context.widthPx * 0.45,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppText(
+                      text: 'State of Origin',
+                      color: AppColors.black,
+                      fontWeight: FontWeight.w600,
+                      size: context.widthPx * 0.035,
+                    ),
+                    const VerticalSpace(size: 10),
+                    AppTextField(
+                      hintText: 'Anambra',
+                      controller: TextEditingController(),
+                      textInputType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.unspecified,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const VerticalSpace(
+            size: 20,
+          ),
+
+          // Address
+          AppText(
+            text: 'Address',
+            color: AppColors.black,
+            fontWeight: FontWeight.w600,
+            size: context.widthPx * 0.035,
+          ),
+
+          const VerticalSpace(size: 10),
+
+          AppTextField(
+            hintText: '11 Lorem Ipsun dolo Lagos, Nigeria',
+            maxLines: 4,
+            controller: TextEditingController(),
+            textInputType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.unspecified,
+          ),
+
+          const Spacer(),
+
+          GeneralButton(
+            onPressed: () => navigationService.navigateTo(RouteName.login),
+            buttonTextColor: Colors.white,
+            child: const Text(
+              'Confirm',
+              style: TextStyle(color: Colors.white),
             ),
-          ],
-        ).paddingSymmetric(horizontal: context.widthPx * 0.037),
-      ),
+          ),
+
+          const SizedBox(
+            height: 25,
+          ),
+        ],
+      ).paddingSymmetric(horizontal: context.widthPx * 0.037),
     );
   }
 }
