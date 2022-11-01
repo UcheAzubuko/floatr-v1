@@ -286,7 +286,8 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
           const Spacer(),
 
           GeneralButton(
-            onPressed: () => navigationService.navigateTo(RouteName.login),
+            // onPressed: () => navigationService.navigateTo(RouteName.login),
+            onPressed: () {},
             buttonTextColor: Colors.white,
             child: const Text(
               'Confirm',
@@ -302,44 +303,3 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
     );
   }
 }
-
-// class HeaderAndTextField extends StatelessWidget {
-//   const HeaderAndTextField({
-//     Key? key,
-//     required this.header,
-//     required this.controller,
-//     this.prefixIcon,
-//     this.width,
-//   }) : super(key: key);
-
-//   final String header;
-//   final TextEditingController controller;
-//   final Widget? prefixIcon;
-//   final double? width;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return SizedBox(
-//       width: width ?? context.widthPx,
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           AppText(
-//             text: 'Marital Status',
-//             color: AppColors.black,
-//             fontWeight: FontWeight.w600,
-//             size: context.widthPx * 0.035,
-//           ),
-//           const VerticalSpace(size: 10),
-//           AppTextField(
-//             hintText: '+2348131234567',
-//             controller: TextEditingController(),
-//             textInputType: TextInputType.emailAddress,
-//             textInputAction: TextInputAction.unspecified,
-//             prefixIcon: prefixIcon,
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }

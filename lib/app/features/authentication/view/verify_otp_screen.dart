@@ -13,6 +13,7 @@ import '../../../../core/route/route_names.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../widgets/app_text.dart';
 import '../../../widgets/custom_appbar.dart';
+import '../../../widgets/disabled_button.dart';
 import '../../../widgets/general_button.dart';
 
 class VerifyPhoneScreen extends StatefulWidget {
@@ -24,6 +25,9 @@ class VerifyPhoneScreen extends StatefulWidget {
 
 class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
   final NavigationService navigationService = di<NavigationService>();
+
+  bool? _hasInputtedOTP = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,6 +82,17 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                 fontWeight: FontWeight.w600,
                 textStyle: Theme.of(context).textTheme.bodyText1,
               ),
+              onChanged: (str) {
+                if (str.length < 4) {
+                  setState(() {
+                    _hasInputtedOTP = false;
+                  });
+                } else {
+                  setState(() {
+                    _hasInputtedOTP = true;
+                  });
+                }
+              },
               outlineBorderRadius: 15,
               inputFormatter: [
                 FilteringTextInputFormatter.digitsOnly,
@@ -129,14 +144,24 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
 
             const Spacer(),
 
-            GeneralButton(
-              onPressed: () =>
-                  navigationService.navigateTo(RouteName.verifyBVN),
-              buttonTextColor: Colors.white,
-              child: const Text(
-                'Verify Phone',
-                style: TextStyle(color: Colors.white),
-              ),
+            Container(
+              child: _hasInputtedOTP!
+                  ? GeneralButton(
+                      onPressed: () =>
+                          navigationService.navigateTo(RouteName.verifyBVN),
+                      buttonTextColor: Colors.white,
+                      child: const Text(
+                        'Verify Phone',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    )
+                  : DisabledButton(
+                      onPressed: () => _hasInputtedOTP!
+                          ? navigationService.navigateTo(RouteName.verifyOTP)
+                          : null,
+                      buttonTextColor: Colors.white,
+                      child: const Text('Verify Phone'),
+                    ),
             ),
 
             const SizedBox(

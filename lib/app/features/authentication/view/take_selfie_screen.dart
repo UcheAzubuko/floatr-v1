@@ -33,10 +33,10 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(),
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Center(
           child: Column(
-            // crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // center photo circle
