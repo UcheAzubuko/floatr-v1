@@ -1,5 +1,6 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/widgets/disabled_button.dart';
 import 'package:floatr/app/widgets/text_field.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/route/route_names.dart';
@@ -25,6 +26,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final NavigationService navigationService = di<NavigationService>();
 
   DateTime? dateOfBirth;
+  bool? acceptedTC = false;
 
   TextEditingController dateController = TextEditingController();
 
@@ -41,6 +43,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
       dateOfBirth = date!;
     });
     dateController.text = dateFormat.format(date!);
+  }
+
+  void _toggleTC(value) {
+    setState(() {
+      acceptedTC = value;
+    });
   }
 
   @override
@@ -213,24 +221,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
 
-              const VerticalSpace(size: 30),
+              const VerticalSpace(size: 10),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    height: 0,
-                    width: 20,
-                    child: Checkbox(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      value: false,
-                      onChanged: (_) {},
+                  Checkbox(
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    fillColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.disabled)) {
+                        return AppColors.backgroundColor;
+                      }
+                      return AppColors.primaryColor;
+                    }),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
                     ),
+                    value: acceptedTC,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        acceptedTC = value;
+                        print(value);
+                      });
+                    },
                   ),
-                  const HorizontalSpace(size: 10),
                   Row(
                     children: [
                       AppText(
@@ -250,13 +266,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ],
               ),
 
-              const VerticalSpace(size: 20),
+              const VerticalSpace(size: 15),
 
-              GeneralButton(
-                onPressed: () =>
-                    navigationService.navigateTo(RouteName.verifyOTP),
-                buttonTextColor: Colors.white,
-                child: const Text('Next'),
+              Container(
+                child: acceptedTC!
+                    ? GeneralButton(
+                        onPressed: () => acceptedTC!
+                            ? navigationService.navigateTo(RouteName.verifyOTP)
+                            : null,
+                        buttonTextColor: Colors.white,
+                        child: const Text('Next'),
+                      )
+                    : DisabledButton(
+                        onPressed: () => acceptedTC!
+                            ? navigationService.navigateTo(RouteName.verifyOTP)
+                            : null,
+                        buttonTextColor: Colors.white,
+                        child: const Text('Next'),
+                      ),
+              ),
+
+              const SizedBox(
+                height: 25,
               ),
             ],
           ),

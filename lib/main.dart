@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: false,
         // primarySwatch: Colors.white,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
         appBarTheme: const AppBarTheme(
           color: Colors.white,
           scrolledUnderElevation: 0,
