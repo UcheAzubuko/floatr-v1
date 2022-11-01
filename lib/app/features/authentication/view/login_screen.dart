@@ -7,6 +7,7 @@ import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../widgets/custom_appbar.dart';
@@ -26,81 +27,95 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: CustomAppBar(),
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const VerticalSpace(size: 30),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const VerticalSpace(size: 30),
 
-            // lets sign in
-            AppText(
-              text: 'Let\'s Sign You In',
-              color: AppColors.primaryColor,
-              fontWeight: FontWeight.w900,
-              size: context.widthPx * 0.089,
-            ),
-
-            // sub text
-            AppText(
-              text: 'Welcome back! We\'ve missed you.',
-              color: AppColors.grey,
-              fontWeight: FontWeight.w600,
-              size: context.widthPx * 0.035,
-            ),
-
-            const VerticalSpace(size: 50),
-
-            // phone number text and textfield
-            AppText(
-              text: 'Phone number',
-              color: Colors.black,
-              fontWeight: FontWeight.w600,
-              size: context.widthPx * 0.035,
-            ),
-
-            const VerticalSpace(size: 10),
-
-            AppTextField(
-                hintText: '+234 813 123 4567',
-                controller: TextEditingController(),
-                textInputType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.unspecified),
-
-            const VerticalSpace(size: 10),
-
-            // password text and textfield
-            AppText(
-              text: 'Password',
-              color: Colors.black,
-              fontWeight: FontWeight.w600,
-              size: context.widthPx * 0.035,
-            ),
-
-            const VerticalSpace(size: 10),
-
-            AppTextField(
-                hintText: 'Password',
-                controller: TextEditingController(),
-                textInputType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.unspecified),
-
-            const VerticalSpace(size: 100),
-
-            GeneralButton(
-              onPressed: () => navigationService.navigateTo(RouteName.createPin),
-              child: const Text('Login'),
-            ),
-
-            const VerticalSpace(size: 20),
-
-            Center(
-              child: AppText(
-                text: 'Don\'t have an account? Sign Up',
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-                size: context.widthPx * 0.032,
+              // lets sign in
+              AppText(
+                text: 'Let\'s Sign You In',
+                color: AppColors.primaryColor,
+                fontWeight: FontWeight.w900,
+                size: context.widthPx * 0.089,
               ),
-            ),
-          ],
+
+              // sub text
+              AppText(
+                text: 'Welcome back! We\'ve missed you.',
+                color: AppColors.grey,
+                fontWeight: FontWeight.w600,
+                size: context.widthPx * 0.035,
+              ),
+
+              const VerticalSpace(size: 50),
+
+              // phone number text and textfield
+              AppText(
+                text: 'Phone number',
+                color: AppColors.black,
+                fontWeight: FontWeight.w600,
+                size: context.widthPx * 0.035,
+              ),
+
+              const VerticalSpace(size: 10),
+
+              AppTextField(
+                  prefixIcon: Padding(
+                    padding: EdgeInsets.all(context.diagonalPx * 0.01),
+                    child: SizedBox(
+                      child: SvgPicture.asset(
+                        'assets/icons/fill/nigeria-flag.svg',
+                      ),
+                    ),
+                  ),
+                  hintText: '+234 813 123 4567',
+                  controller: TextEditingController(),
+                  textInputType: TextInputType.phone,
+                  textInputAction: TextInputAction.unspecified),
+
+              const VerticalSpace(size: 10),
+
+              // password text and textfield
+              AppText(
+                text: 'Password',
+                color: AppColors.black,
+                fontWeight: FontWeight.w600,
+                size: context.widthPx * 0.035,
+              ),
+
+              const VerticalSpace(size: 10),
+
+              AppTextField(
+                  hintText: 'Password',
+                  controller: TextEditingController(),
+                  textInputType: TextInputType.visiblePassword,
+                  textInputAction: TextInputAction.unspecified),
+
+              const VerticalSpace(size: 100),
+
+              GeneralButton(
+                onPressed: () =>
+                    navigationService.navigateTo(RouteName.createPin),
+                child: const Text('Login'),
+              ),
+
+              const VerticalSpace(size: 20),
+
+              GestureDetector(
+                onTap: () => navigationService.navigateTo(RouteName.signup),
+                child: Center(
+                  child: AppText(
+                    text: 'Don\'t have an account? Sign Up',
+                    color: AppColors.black,
+                    fontWeight: FontWeight.w600,
+                    size: context.widthPx * 0.032,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ).paddingSymmetric(horizontal: context.widthPx * 0.037),
     );

@@ -50,10 +50,12 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
 
             AppText(
               text: 'BVN',
-              color: Colors.black,
+              color: AppColors.black,
               fontWeight: FontWeight.w600,
               size: context.widthPx * 0.035,
             ),
+
+            const VerticalSpace(size: 10),
 
             AppTextField(
                 hintText: '234353633333',
@@ -67,7 +69,7 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
 
             AppText(
               text:
-                  '''Don't know your BNV? Dial *556*0# with the number you used to register it.''',
+                  '''Don't know your BVN? Dial *556*0# with the number you used to register it.''',
               color: AppColors.grey,
               fontWeight: FontWeight.w600,
               size: context.widthPx * 0.031,
@@ -83,7 +85,11 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
                 'Take Selfie',
                 style: TextStyle(color: Colors.white),
               ),
-            )
+            ),
+
+            const SizedBox(
+              height: 25,
+            ),
           ],
         ),
       ).paddingSymmetric(horizontal: context.widthPx * 0.037),

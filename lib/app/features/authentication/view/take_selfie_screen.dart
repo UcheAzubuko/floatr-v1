@@ -71,7 +71,7 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
               AppText(
                 text: '''Align your face to the center of the selfie area
                                        and capture.''',
-                color: Colors.black,
+                color: AppColors.black,
                 fontWeight: FontWeight.w600,
                 size: context.widthPx * 0.031,
               ),

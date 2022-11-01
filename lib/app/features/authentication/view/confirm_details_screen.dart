@@ -1,6 +1,7 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/route/navigation_service.dart';
@@ -60,7 +61,7 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
                       // Gender
                       AppText(
                         text: 'First Name',
-                        color: Colors.black,
+                        color: AppColors.black,
                         fontWeight: FontWeight.w600,
                         size: context.widthPx * 0.035,
                       ),
@@ -87,7 +88,7 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
                     children: [
                       AppText(
                         text: 'Last Name',
-                        color: Colors.black,
+                        color: AppColors.black,
                         fontWeight: FontWeight.w600,
                         size: context.widthPx * 0.035,
                       ),
@@ -111,7 +112,7 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
             // phone number text and textfield
             AppText(
               text: 'Phone number',
-              color: Colors.black,
+              color: AppColors.black,
               fontWeight: FontWeight.w600,
               size: context.widthPx * 0.035,
             ),
@@ -119,6 +120,14 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
             const VerticalSpace(size: 10),
 
             AppTextField(
+              prefixIcon: Padding(
+                padding: EdgeInsets.all(context.diagonalPx * 0.01),
+                child: SizedBox(
+                  child: SvgPicture.asset(
+                    'assets/icons/fill/nigeria-flag.svg',
+                  ),
+                ),
+              ),
               hintText: '+2348131234567',
               controller: TextEditingController(),
               textInputType: TextInputType.emailAddress,
@@ -128,7 +137,6 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
             const VerticalSpace(
               size: 20,
             ),
-
 
             // Gender and Marital Status
             Row(
@@ -141,7 +149,7 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
                       // Gender
                       AppText(
                         text: 'Gender',
-                        color: Colors.black,
+                        color: AppColors.black,
                         fontWeight: FontWeight.w600,
                         size: context.widthPx * 0.035,
                       ),
@@ -168,7 +176,7 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
                     children: [
                       AppText(
                         text: 'Marital Status',
-                        color: Colors.black,
+                        color: AppColors.black,
                         fontWeight: FontWeight.w600,
                         size: context.widthPx * 0.035,
                       ),
@@ -189,7 +197,6 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
               size: 20,
             ),
 
-
             // DOB and State Of Origin
             Row(
               children: [
@@ -201,8 +208,8 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
                     children: [
                       // Gender
                       AppText(
-                        text: 'Date Of Birth',
-                        color: Colors.black,
+                        text: 'Date of Birth',
+                        color: AppColors.black,
                         fontWeight: FontWeight.w600,
                         size: context.widthPx * 0.035,
                       ),
@@ -228,8 +235,8 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AppText(
-                        text: 'State Of Origin',
-                        color: Colors.black,
+                        text: 'State of Origin',
+                        color: AppColors.black,
                         fontWeight: FontWeight.w600,
                         size: context.widthPx * 0.035,
                       ),
@@ -253,7 +260,7 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
             // Address
             AppText(
               text: 'Address',
-              color: Colors.black,
+              color: AppColors.black,
               fontWeight: FontWeight.w600,
               size: context.widthPx * 0.035,
             ),
@@ -261,8 +268,7 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
             const VerticalSpace(size: 10),
 
             AppTextField(
-              hintText: '''11 Lorem Ipsun dolo
-Lagos, Nigeria''',
+              hintText: '11 Lorem Ipsun dolo Lagos, Nigeria',
               maxLines: 4,
               controller: TextEditingController(),
               textInputType: TextInputType.emailAddress,
@@ -272,17 +278,20 @@ Lagos, Nigeria''',
             const Spacer(),
 
             GeneralButton(
-              onPressed: () =>
-                  navigationService.navigateTo(RouteName.login),
+              onPressed: () => navigationService.navigateTo(RouteName.login),
               buttonTextColor: Colors.white,
               child: const Text(
                 'Confirm',
                 style: TextStyle(color: Colors.white),
               ),
-            )
+            ),
+
+            const SizedBox(
+              height: 25,
+            ),
           ],
-        ),
-      ).paddingSymmetric(horizontal: context.widthPx * 0.037),
+        ).paddingSymmetric(horizontal: context.widthPx * 0.037),
+      ),
     );
   }
 }
@@ -310,7 +319,7 @@ Lagos, Nigeria''',
 //         children: [
 //           AppText(
 //             text: 'Marital Status',
-//             color: Colors.black,
+//             color: AppColors.black,
 //             fontWeight: FontWeight.w600,
 //             size: context.widthPx * 0.035,
 //           ),

@@ -39,9 +39,23 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
               size: context.widthPx * 0.089,
             ),
 
+            SizedBox(
+              height: context.heightPx * 0.009,
+            ),
+
             AppText(
-              text: '''Please enter the code that was sent to:     
-+2348147990002''',
+              text: 'Please enter the code that was sent to:',
+              color: AppColors.grey,
+              fontWeight: FontWeight.w600,
+              size: context.widthPx * 0.035,
+            ),
+
+            SizedBox(
+              height: context.heightPx * 0.009,
+            ),
+
+            AppText(
+              text: '+2348147990002',
               color: AppColors.grey,
               fontWeight: FontWeight.w600,
               size: context.widthPx * 0.035,
@@ -71,11 +85,39 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
               size: 60,
             ),
 
-            AppText(
-              text: 'Didn\'t get the code? Resend Code',
-              color: Colors.black,
-              fontWeight: FontWeight.w600,
-              size: context.widthPx * 0.031,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                AppText(
+                  text: 'Didn\'t get the code?',
+                  color: AppColors.greyAsparagus,
+                  fontWeight: FontWeight.w600,
+                  size: context.widthPx * 0.031,
+                ),
+                SizedBox(
+                  width: context.widthPx * 0.009,
+                ),
+                Container(
+                  padding: EdgeInsets.only(
+                    bottom: context.heightPx * 0.0006,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: AppColors.primaryColor,
+                        width: context.widthPx * 0.001,
+                      ),
+                    ),
+                  ),
+                  child: AppText(
+                    text: 'Resend Code',
+                    color: AppColors.primaryColor,
+                    fontWeight: FontWeight.w600,
+                    size: context.widthPx * 0.031,
+                  ),
+                ),
+              ],
             ),
 
             const Spacer(),
@@ -88,7 +130,11 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                 'Verify Phone',
                 style: TextStyle(color: Colors.white),
               ),
-            )
+            ),
+
+            const SizedBox(
+              height: 25,
+            ),
           ],
         ),
       ).paddingSymmetric(horizontal: context.widthPx * 0.037),
