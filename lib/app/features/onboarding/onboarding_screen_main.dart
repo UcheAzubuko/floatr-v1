@@ -64,8 +64,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    if (_pageController.page! == 2) {
-                      navigationService.navigateTo(RouteName.login);
+                    if (_pageController.page! == 2.0) {
+                      navigationService.navigateTo(RouteName.signup);
                     }
                     _pageController.nextPage(
                         duration: const Duration(milliseconds: 500),
