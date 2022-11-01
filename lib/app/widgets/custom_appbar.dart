@@ -1,4 +1,3 @@
-
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -25,10 +24,11 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
       leading: InkWell(
         onTap: () => navigationService.maybePop(),
         child: SvgPicture.asset('assets/icons/fill/arrow-left.svg',
-            height: context.heightPx * 0.02, width: context.widthPx * 0.02, fit: BoxFit.scaleDown),
+            height: context.heightPx * 0.02,
+            width: context.widthPx * 0.02,
+            fit: BoxFit.scaleDown),
       ),
       centerTitle: true,
-      // backgroundColor: Colors.black54,
     );
   }
 }

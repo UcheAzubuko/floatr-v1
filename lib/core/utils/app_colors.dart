@@ -6,5 +6,9 @@ class AppColors {
   static const Color grey = Color(0xFF96989E);
   static const Color yellow = Color(0xFFFFE58F);
   static const Color lightYellow = Color(0xFFFFFBE6);
-  // #96989E
+  static const Color greyAsparagus = Color(0xFF3E5543);
+  static const Color gunMetal = Color(0xFF96989E);
+  static const Color black = Color(0xFF2B1308);
+  static const Color textFieldBackground = Color(0xFFD5D6D8);
+  static const Color disableButtonBackground = Color(0xFFEBAF93);
 }

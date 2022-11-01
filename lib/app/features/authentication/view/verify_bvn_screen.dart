@@ -1,6 +1,7 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/route/navigation_service.dart';
@@ -25,6 +26,7 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(),
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,10 +52,12 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
 
             AppText(
               text: 'BVN',
-              color: Colors.black,
+              color: AppColors.black,
               fontWeight: FontWeight.w600,
               size: context.widthPx * 0.035,
             ),
+
+            const VerticalSpace(size: 10),
 
             AppTextField(
                 hintText: '234353633333',
@@ -65,12 +69,28 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
               size: 15,
             ),
 
-            AppText(
-              text:
-                  '''Don't know your BNV? Dial *556*0# with the number you used to register it.''',
-              color: AppColors.grey,
-              fontWeight: FontWeight.w600,
-              size: context.widthPx * 0.031,
+            RichText(
+              text: TextSpan(
+                style: GoogleFonts.plusJakartaSans(
+                  color: AppColors.gunMetal,
+                  fontSize: context.widthPx * 0.031,
+                  fontWeight: FontWeight.w600,
+                ),
+                children: <TextSpan>[
+                  const TextSpan(text: 'Don\'t know your BVN? Dial '),
+                  TextSpan(
+                    text: '*556*0# ',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: AppColors.primaryColor,
+                      fontSize: context.widthPx * 0.031,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const TextSpan(
+                    text: 'with the number you used to register it',
+                  ),
+                ],
+              ),
             ),
 
             const Spacer(),
@@ -83,7 +103,11 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
                 'Take Selfie',
                 style: TextStyle(color: Colors.white),
               ),
-            )
+            ),
+
+            const SizedBox(
+              height: 25,
+            ),
           ],
         ),
       ).paddingSymmetric(horizontal: context.widthPx * 0.037),

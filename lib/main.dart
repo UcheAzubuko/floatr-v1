@@ -1,13 +1,9 @@
-// import 'package:flutter/material.dart';
-
-// import '../screens/onboarding_screen.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart' hide Router;
 
 import 'core/misc/dependency_injectors.dart';
 import 'core/route/router.dart';
-import 'core/utils/theme_config.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,16 +20,18 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Floatr',
       theme: ThemeData(
-          scaffoldBackgroundColor: AppTheme.backgroundColor,
-          useMaterial3: false,
-          // primarySwatch: Colors.white,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          appBarTheme: const AppBarTheme(
-            color: Colors.white,
-            scrolledUnderElevation: 0,
-            elevation: 0,
-            iconTheme: IconThemeData(color: AppColors.primaryColor),
-          ),),
+        scaffoldBackgroundColor: AppColors.backgroundColor,
+        useMaterial3: false,
+        // primarySwatch: Colors.white,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
+        appBarTheme: const AppBarTheme(
+          color: Colors.white,
+          scrolledUnderElevation: 0,
+          elevation: 0,
+          iconTheme: IconThemeData(color: AppColors.primaryColor),
+        ),
+      ),
       navigatorKey: di<NavigationService>().navigationKey,
       onGenerateRoute: Router.generateRoute,
       // home: const SplashScreen(),

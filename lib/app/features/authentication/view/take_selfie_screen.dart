@@ -22,17 +22,24 @@ class TakeSelefieScreen extends StatefulWidget {
 
 class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
   final NavigationService navigationService = di<NavigationService>();
+
+  static const List _selfieInstructions = [
+    'Make sure you are well lit',
+    'Clearly show your face and ears',
+    'Keep your phone vertical',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(),
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Center(
           child: Column(
-            // crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Center Photo Circle
+              // center photo circle
               DottedBorder(
                 strokeWidth: 2,
                 color: AppColors.primaryColor,
@@ -44,10 +51,12 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
                   height: context.heightPx * 0.32,
                   width: context.widthPx * 0.68,
                   decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      border: Border.all(color: AppColors.primaryColor),
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(400))),
+                    color: Colors.transparent,
+                    border: Border.all(color: AppColors.primaryColor),
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(400),
+                    ),
+                  ),
                 ),
               ),
 
@@ -71,7 +80,7 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
               AppText(
                 text: '''Align your face to the center of the selfie area
                                        and capture.''',
-                color: Colors.black,
+                color: AppColors.black,
                 fontWeight: FontWeight.w600,
                 size: context.widthPx * 0.031,
               ),
@@ -85,9 +94,20 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
                 height: context.heightPx * 0.12,
                 width: context.widthPx * 3,
                 decoration: BoxDecoration(
-                    color: AppColors.lightYellow,
-                    border: Border.all(color: AppColors.yellow),
-                    borderRadius: const BorderRadius.all(Radius.circular(10))),
+                  color: AppColors.lightYellow,
+                  border: Border.all(color: AppColors.yellow),
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(10),
+                  ),
+                ),
+                // child: ListView.builder(
+                //   itemBuilder: (context, index) => Container(
+                //     height: context.heightPx * 0.12,
+                //     child: Text(
+                //       _selfieInstructions[index],
+                //     ),
+                //   ),
+                // ),
               ),
 
               const VerticalSpace(

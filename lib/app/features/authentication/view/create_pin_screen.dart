@@ -74,11 +74,14 @@ Floatr account''',
                 'Confirm Code',
                 style: TextStyle(color: Colors.white),
               ),
-            )
+            ),
+
+            const SizedBox(
+              height: 25,
+            ),
           ],
         ),
       ).paddingSymmetric(horizontal: context.widthPx * 0.037),
     );
-  
   }
 }
