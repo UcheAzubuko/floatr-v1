@@ -63,18 +63,19 @@ class _LoginScreenState extends State<LoginScreen> {
               const VerticalSpace(size: 10),
 
               AppTextField(
-                  prefixIcon: Padding(
-                    padding: EdgeInsets.all(context.diagonalPx * 0.01),
-                    child: SizedBox(
-                      child: SvgPicture.asset(
-                        'assets/icons/fill/nigeria-flag.svg',
-                      ),
+                prefixIcon: Padding(
+                  padding: EdgeInsets.all(context.diagonalPx * 0.01),
+                  child: SizedBox(
+                    child: SvgPicture.asset(
+                      'assets/icons/fill/nigeria-flag.svg',
                     ),
                   ),
-                  hintText: '+234 813 123 4567',
-                  controller: TextEditingController(),
-                  textInputType: TextInputType.phone,
-                  textInputAction: TextInputAction.unspecified),
+                ),
+                hintText: '+234 813 123 4567',
+                controller: TextEditingController(),
+                textInputType: TextInputType.phone,
+                textInputAction: TextInputAction.unspecified,
+              ),
 
               const VerticalSpace(size: 10),
 
@@ -89,16 +90,18 @@ class _LoginScreenState extends State<LoginScreen> {
               const VerticalSpace(size: 10),
 
               AppTextField(
-                  hintText: 'Password',
-                  controller: TextEditingController(),
-                  textInputType: TextInputType.visiblePassword,
-                  textInputAction: TextInputAction.unspecified),
+                hintText: 'Password',
+                controller: TextEditingController(),
+                textInputType: TextInputType.visiblePassword,
+                textInputAction: TextInputAction.unspecified,
+              ),
 
               const VerticalSpace(size: 100),
 
               GeneralButton(
-                onPressed: () =>
-                    navigationService.navigateTo(RouteName.createPin),
+                // onPressed: () =>
+                //     navigationService.navigateTo(RouteName.createPin),
+                onPressed: () {},
                 child: const Text('Login'),
               ),
 
@@ -111,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     text: TextSpan(
                       style: GoogleFonts.plusJakartaSans(
                         color: AppColors.black,
-                        fontSize: context.widthPx * 0.035,
+                        fontSize: context.widthPx * 0.045,
                         fontWeight: FontWeight.w700,
                       ),
                       children: <TextSpan>[
