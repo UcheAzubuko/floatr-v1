@@ -1,5 +1,5 @@
 name: floatr
-description: A new Flutter project.
+description: Providing Balance.
 
 publish_to: 'none'
 
@@ -26,7 +26,6 @@ dependencies:
   cupertino_icons: ^1.0.2
   smooth_page_indicator: ^1.0.0+2
   flutter_svg: ^1.1.6
-  flutter_native_splash: ^2.2.12
   google_fonts: ^3.0.1
   get_it: ^7.2.0
   otp_text_field: ^1.1.3
@@ -37,14 +36,6 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^2.0.0
 
-flutter_native_splash:
-  color: '#ffffff'
-  image: assets/images/main_logo.png
-
-  android_12:
-    image: assets/images/main_logo.png
-    icon_background_color: '#ffffff'
-
 flutter:
   uses-material-design: true
 
@@ -53,45 +44,7 @@ flutter:
     - assets/icons/fill/
     - assets/images/
 
-  fonts:
-    - family: PlusJakartaSans
-      fonts:
-        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-ExtraBold.ttf
-          weight: 800
-        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-ExtraBoldItalic.ttf
-          weight: 800
-          style: italic
-        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-BoldItalic.ttf
-          weight: 700
-          style: italic
-        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-SemiBoldItalic.ttf
-          weight: 600
-          style: italic
-        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-MediumItalic.ttf
-          weight: 500
-          style: italic
-        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-Regular.ttf
-          weight: 400
-        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-Italic.ttf
-          weight: 400
-          style: italic
-        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-Light.ttf
-          weight: 300
-        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-LightItalic.ttf
-          weight: 300
-          style: italic
-        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-ExtraLight.ttf
-          weight: 200
-        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-ExtraLightItalic.ttf
-          weight: 200
-          style: italic
-
+  # fonts:
         # - asset: fonts/Schyler-Italic.ttf
           # style: italic
   #   - family: Trajan Pro

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:floatr/app/features/onboarding/onboarding_screen_main.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -62,8 +61,8 @@ class _SplashScreenState extends State<SplashScreen>
       height: MediaQuery.of(context).size.height,
       child: Center(
         child: SvgPicture.asset(
-          'assets/images/onboarding1.svg',
-          fit: BoxFit.fitHeight,
+          'assets/images/entry-logo.svg',
+          fit: BoxFit.cover,
         ),
       ),
     );
