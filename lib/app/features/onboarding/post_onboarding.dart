@@ -30,9 +30,11 @@ class PostOnboarding extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Image.asset(
-                'assets/images/post-onboarding-logo.png',
+              SvgPicture.asset(
+                "assets/images/main-logo.svg",
                 fit: BoxFit.scaleDown,
+                height: context.heightPx * 0.035,
+                width: context.widthPx * 0.035,
               ),
               AppText(
                 text: 'floatr',
