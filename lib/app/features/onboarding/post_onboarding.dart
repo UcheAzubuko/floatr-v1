@@ -83,9 +83,9 @@ class PostOnboarding extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                     ),
                     children: <TextSpan>[
-                      const TextSpan(text: 'Don\'t have an account? '),
+                      const TextSpan(text: 'Already have an account? '),
                       TextSpan(
-                        text: 'Sign Up',
+                        text: 'Sign in',
                         style: GoogleFonts.plusJakartaSans(
                           color: AppColors.primaryColor,
                           fontWeight: FontWeight.w700,
