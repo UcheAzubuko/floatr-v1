@@ -9,12 +9,10 @@ import 'package:otp_text_field/style.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/route/navigation_service.dart';
-import '../../../../core/route/route_names.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../widgets/app_text.dart';
 import '../../../widgets/custom_appbar.dart';
-import '../../../widgets/disabled_button.dart';
-import '../../../widgets/general_button.dart';
+import '../../../widgets/custom_keyboard.dart';
 
 class VerifyPhoneScreen extends StatefulWidget {
   const VerifyPhoneScreen({super.key});
@@ -25,6 +23,7 @@ class VerifyPhoneScreen extends StatefulWidget {
 
 class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
   final NavigationService navigationService = di<NavigationService>();
+  final OtpFieldController _otpFieldController = OtpFieldController();
 
   bool? _hasInputtedOTP = false;
 
@@ -75,6 +74,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
               width: context.widthPx,
               fieldStyle: FieldStyle.box,
               fieldWidth: context.widthPx * 0.18,
+              controller: _otpFieldController,
               contentPadding: EdgeInsets.all(context.diagonalPx * 0.02),
               style: GoogleFonts.plusJakartaSans(
                 color: AppColors.black,
@@ -144,26 +144,27 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
 
             const Spacer(),
 
-            Container(
-              child: _hasInputtedOTP!
-                  ? GeneralButton(
-                      onPressed: () =>
-                          navigationService.navigateTo(RouteName.verifyBVN),
-                      buttonTextColor: Colors.white,
-                      child: const Text(
-                        'Verify Phone',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    )
-                  : DisabledButton(
-                      onPressed: () => _hasInputtedOTP!
-                          ? navigationService.navigateTo(RouteName.verifyOTP)
-                          : null,
-                      buttonTextColor: Colors.white,
-                      child: const Text('Verify Phone'),
-                    ),
-            ),
+            // Container(
+            //   child: _hasInputtedOTP!
+            //       ? GeneralButton(
+            //           onPressed: () =>
+            //               navigationService.navigateTo(RouteName.verifyBVN),
+            //           buttonTextColor: Colors.white,
+            //           child: const Text(
+            //             'Verify Phone',
+            //             style: TextStyle(color: Colors.white),
+            //           ),
+            //         )
+            //       : DisabledButton(
+            //           onPressed: () => _hasInputtedOTP!
+            //               ? navigationService.navigateTo(RouteName.verifyOTP)
+            //               : null,
+            //           buttonTextColor: Colors.white,
+            //           child: const Text('Verify Phone'),
+            //         ),
+            // ),
 
+            CustomKeyboard(),
             const SizedBox(
               height: 25,
             ),
