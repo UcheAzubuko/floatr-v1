@@ -5,6 +5,7 @@ PODS:
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
 
 EXTERNAL SOURCES:
   Flutter:

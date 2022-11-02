@@ -11,4 +11,5 @@ class AppColors {
   static const Color black = Color(0xFF2B1308);
   static const Color textFieldBackground = Color(0xFFD5D6D8);
   static const Color disableButtonBackground = Color(0xFFEBAF93);
+  static const Color merlot = Color(0xFFE6D2D6);
 }

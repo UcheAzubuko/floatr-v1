@@ -9,6 +9,7 @@ class GeneralButton extends StatelessWidget {
   final Function onPressed;
   final double width;
   final double? height;
+  final double borderRadius;
   final Color borderColor;
   final Color backgroundColor;
   final Color? foregroundColor;
@@ -23,6 +24,7 @@ class GeneralButton extends StatelessWidget {
     this.width = double.infinity,
     this.height,
     this.foregroundColor,
+    this.borderRadius = 15,
     this.backgroundColor = AppColors.primaryColor,
     required this.child,
     this.buttonTextColor = const Color(0xffFFFFFF),
@@ -45,7 +47,7 @@ class GeneralButton extends StatelessWidget {
       ),
       shape: RoundedRectangleBorder(
         side: BorderSide(color: borderColor),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(borderRadius),
       ),
     );
 
