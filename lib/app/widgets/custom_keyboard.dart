@@ -1,6 +1,8 @@
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:otp_text_field/otp_field.dart';
+import 'package:provider/provider.dart';
 
 import 'app_text.dart';
 
@@ -11,6 +13,8 @@ class CustomKeyboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var keyboardProvider = context.read<KeyboardProvider>();
+
     return SizedBox(
       // color: Colors.red,
       height: context.heightPx * 0.32,
@@ -23,19 +27,19 @@ class CustomKeyboard extends StatelessWidget {
             children: [
               // 1
               KeyboardKey(
-                onTap: () {},
+                onTap: () => keyboardProvider.compose('1'),
                 keyValue: '1',
               ),
 
               // 2
               KeyboardKey(
-                onTap: () {},
+                onTap: () => keyboardProvider.compose('2'),
                 keyValue: '2',
               ),
 
               // 3
               KeyboardKey(
-                onTap: () {},
+                onTap: () => keyboardProvider.compose('3'),
                 keyValue: '3',
               ),
             ],
@@ -47,19 +51,19 @@ class CustomKeyboard extends StatelessWidget {
             children: [
               // 1
               KeyboardKey(
-                onTap: () {},
+                onTap: () => keyboardProvider.compose('4'),
                 keyValue: '4',
               ),
 
               // 2
               KeyboardKey(
-                onTap: () {},
+                onTap: () => keyboardProvider.compose('5'),
                 keyValue: '5',
               ),
 
               // 3
               KeyboardKey(
-                onTap: () {},
+                onTap: () => keyboardProvider.compose('6'),
                 keyValue: '6',
               ),
             ],
@@ -69,21 +73,21 @@ class CustomKeyboard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              // 1
+              // 7
               KeyboardKey(
-                onTap: () {},
+                onTap: () => keyboardProvider.compose('7'),
                 keyValue: '7',
               ),
 
-              // 2
+              // 8
               KeyboardKey(
-                onTap: () {},
+                onTap: () => keyboardProvider.compose('8'),
                 keyValue: '8',
               ),
 
-              // 3
+              // 9
               KeyboardKey(
-                onTap: () {},
+                onTap: () => keyboardProvider.compose('9'),
                 keyValue: '9',
               ),
             ],
@@ -92,21 +96,21 @@ class CustomKeyboard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              // 1
+              // #
               KeyboardKey(
-                onTap: () {},
+                onTap: () => keyboardProvider.compose('#'),
                 keyValue: '#',
               ),
 
-              // 2
+              // 0
               KeyboardKey(
-                onTap: () {},
+                onTap: () => keyboardProvider.compose('0'),
                 keyValue: '0',
               ),
 
-              // 3
+              // *
               KeyboardKey(
-                onTap: () {},
+                onTap: () => keyboardProvider.clearAll(),
                 keyValue: '*',
               ),
             ],
@@ -129,7 +133,7 @@ class KeyboardKey extends StatelessWidget {
     return InkWell(
       highlightColor: AppColors.primaryColor.withOpacity(0.2),
       borderRadius: const BorderRadius.all(Radius.circular(100)),
-      onTap: () => onTap,
+      onTap: () => onTap(),
       child: SizedBox(
         width: context.widthPx * 0.1,
         child: Center(
@@ -145,5 +149,35 @@ class KeyboardKey extends StatelessWidget {
 }
 
 class KeyboardProvider with ChangeNotifier {
-  
+  final List<String> _inputs = [];
+
+  OtpFieldController _otpFieldController = OtpFieldController();
+  OtpFieldController get controller => _otpFieldController;
+
+  // UnmodifiableListView<String> get inputs => UnmodifiableListView(_inputs);
+
+  updateController(OtpFieldController otpFieldController) {
+    _otpFieldController = otpFieldController;
+    notifyListeners();
+  }
+
+  // void updateInputs(List<String> inputs) {
+  //   _inputs = inputs;
+  //   print(_inputs);
+  //   notifyListeners();
+  // }
+  void clearAll() {
+    _inputs.clear();
+    _otpFieldController.clear();
+  }
+
+  void compose(String keyInput) {
+    // updateInputs(_inputs..add(keyInput));
+    // print(keyInput);
+    _inputs.add(keyInput);
+
+    updateController(_otpFieldController
+      ..setValue(keyInput, _inputs.length - 1)
+      ..setFocus(_inputs.length == 4 ? 3 : _inputs.length));
+  }
 }
