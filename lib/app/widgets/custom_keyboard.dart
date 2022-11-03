@@ -1,6 +1,7 @@
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:provider/provider.dart';
 
@@ -100,6 +101,7 @@ class CustomKeyboard extends StatelessWidget {
               KeyboardKey(
                 onTap: () => keyboardProvider.compose('#'),
                 keyValue: '#',
+                customizeKey: true,
               ),
 
               // 0
@@ -108,10 +110,12 @@ class CustomKeyboard extends StatelessWidget {
                 keyValue: '0',
               ),
 
-              // *
+              // clear
               KeyboardKey(
                 onTap: () => keyboardProvider.clearAll(),
                 keyValue: '*',
+                customizeKey: true,
+                widget: SizedBox(child: SvgPicture.asset('assets/icons/outline/clear.svg'),),
               ),
             ],
           ),
@@ -124,9 +128,15 @@ class CustomKeyboard extends StatelessWidget {
 class KeyboardKey extends StatelessWidget {
   final Function onTap;
   final String keyValue;
+  final bool customizeKey;
+  final Widget widget;
 
   // ignore: use_key_in_widget_constructors
-  const KeyboardKey({required this.onTap, required this.keyValue});
+  const KeyboardKey(
+      {required this.onTap,
+      required this.keyValue,
+      this.customizeKey = false,
+      this.widget = const SizedBox(width: 10)});
 
   @override
   Widget build(BuildContext context) {
@@ -137,11 +147,13 @@ class KeyboardKey extends StatelessWidget {
       child: SizedBox(
         width: context.widthPx * 0.1,
         child: Center(
-          child: AppText(
-            text: keyValue,
-            fontWeight: FontWeight.w500,
-            size: context.widthPx * 0.075,
-          ),
+          child: customizeKey
+              ? widget
+              : AppText(
+                  text: keyValue,
+                  fontWeight: FontWeight.w500,
+                  size: context.widthPx * 0.075,
+                ),
         ),
       ),
     );
