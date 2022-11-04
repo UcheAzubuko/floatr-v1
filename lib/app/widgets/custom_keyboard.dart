@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -7,10 +9,22 @@ import 'package:provider/provider.dart';
 
 import 'app_text.dart';
 
-class CustomKeyboard extends StatelessWidget {
+class CustomKeyboard extends StatefulWidget {
   const CustomKeyboard({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<CustomKeyboard> createState() => _CustomKeyboardState();
+}
+
+class _CustomKeyboardState extends State<CustomKeyboard> {
+  // clear keyboardProvider state
+  @override
+  void deactivate() {
+    context.read<KeyboardProvider>().clearKeys();
+    super.deactivate();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,10 +126,16 @@ class CustomKeyboard extends StatelessWidget {
 
               // clear
               KeyboardKey(
-                onTap: () => keyboardProvider.clearAll(),
+                onTap: () {
+                  keyboardProvider
+                    ..clearController()
+                    ..clearKeys();
+                },
                 keyValue: '*',
                 customizeKey: true,
-                widget: SizedBox(child: SvgPicture.asset('assets/icons/outline/clear.svg'),),
+                widget: SizedBox(
+                  child: SvgPicture.asset('assets/icons/outline/clear.svg'),
+                ),
               ),
             ],
           ),
@@ -178,18 +198,25 @@ class KeyboardProvider with ChangeNotifier {
   //   print(_inputs);
   //   notifyListeners();
   // }
-  void clearAll() {
+  void clearKeys() {
     _inputs.clear();
+    // _otpFieldController.clear();
+  }
+
+  void clearController() {
     _otpFieldController.clear();
   }
 
+  /// construct keys
   void compose(String keyInput) {
-    // updateInputs(_inputs..add(keyInput));
-    // print(keyInput);
     _inputs.add(keyInput);
 
     updateController(_otpFieldController
       ..setValue(keyInput, _inputs.length - 1)
       ..setFocus(_inputs.length == 4 ? 3 : _inputs.length));
+
+    _inputs.length < 4
+        ? log('Fields not yet filled')
+        : _otpFieldController.set(_inputs);
   }
 }

@@ -10,12 +10,10 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/route/navigation_service.dart';
-import '../../../../core/route/route_names.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../widgets/app_text.dart';
 import '../../../widgets/custom_appbar.dart';
 import '../../../widgets/custom_keyboard.dart';
-import '../../../widgets/general_button.dart';
 
 class VerifyPhoneScreen extends StatefulWidget {
   const VerifyPhoneScreen({super.key});
@@ -26,7 +24,7 @@ class VerifyPhoneScreen extends StatefulWidget {
 
 class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
   final NavigationService navigationService = di<NavigationService>();
-  final OtpFieldController _otpFieldController = OtpFieldController();
+  // final OtpFieldController _otpFieldController = OtpFieldController();
 
   bool _hasInputtedOTP = false;
 
@@ -81,6 +79,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
               fieldWidth: context.widthPx * 0.18,
               controller: keyboard.controller,
               contentPadding: EdgeInsets.all(context.diagonalPx * 0.02),
+              readOnly: true,
               style: GoogleFonts.plusJakartaSans(
                 color: AppColors.black,
                 fontSize: context.widthPx * 0.075,
@@ -89,6 +88,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
               ),
               onChanged: (str) {
                 if (str.length == 4) {
+                  FocusScope.of(context).unfocus();
                   setState(() {
                     _hasInputtedOTP = true;
                   });
@@ -98,6 +98,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                   });
                 }
               },
+              // onCompleted: (val) => FocusScope.of(context).unfocus(),
               outlineBorderRadius: 15,
               inputFormatter: [
                 FilteringTextInputFormatter.digitsOnly,
@@ -170,7 +171,10 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
             //         ),
             //       ),
 
-            CustomKeyboard(),
+            FocusScope.of(context).hasFocus
+                ? const CustomKeyboard()
+                : Container(),
+
             const SizedBox(
               height: 25,
             ),
