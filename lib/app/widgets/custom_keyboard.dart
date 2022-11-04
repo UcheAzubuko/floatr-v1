@@ -134,6 +134,7 @@ class _CustomKeyboardState extends State<CustomKeyboard> {
                 keyValue: '*',
                 customizeKey: true,
                 widget: SizedBox(
+                  width: context.widthPx * 0.1,
                   child: SvgPicture.asset('assets/icons/outline/clear.svg'),
                 ),
               ),
@@ -166,6 +167,7 @@ class KeyboardKey extends StatelessWidget {
       onTap: () => onTap(),
       child: SizedBox(
         width: context.widthPx * 0.1,
+        height: context.heightPx * 0.05,
         child: Center(
           child: customizeKey
               ? widget
