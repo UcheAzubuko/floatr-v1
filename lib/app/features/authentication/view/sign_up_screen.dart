@@ -243,7 +243,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     onChanged: (bool? value) {
                       setState(() {
                         acceptedTC = value;
-                        print(value);
                       });
                     },
                   ),

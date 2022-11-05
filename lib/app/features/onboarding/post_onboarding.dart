@@ -51,17 +51,17 @@ class PostOnboarding extends StatelessWidget {
           ),
           SizedBox(height: context.heightPx * 0.09),
           AppText(
-            text: 'Experience Ease,',
+            text: 'Ease, Speed & Freedom',
             color: AppColors.primaryColor,
             fontWeight: FontWeight.w800,
             size: context.widthPx * 0.065,
           ),
           SizedBox(height: context.heightPx * 0.01),
           AppText(
-            text: 'Speed & Freedom',
-            color: AppColors.primaryColor,
-            fontWeight: FontWeight.w800,
-            size: context.widthPx * 0.065,
+            text: 'The Floatr Experience',
+            color: AppColors.grey,
+            fontWeight: FontWeight.w600,
+            size: context.widthPx * 0.03,
           ),
           SizedBox(height: context.heightPx * 0.06),
           Container(
@@ -81,8 +81,8 @@ class PostOnboarding extends StatelessWidget {
                   text: TextSpan(
                     style: GoogleFonts.plusJakartaSans(
                       color: AppColors.black,
-                      fontSize: context.widthPx * 0.045,
-                      fontWeight: FontWeight.w700,
+                      fontSize: context.widthPx * 0.03,
+                      fontWeight: FontWeight.w600,
                     ),
                     children: <TextSpan>[
                       const TextSpan(text: 'Already have an account? '),
@@ -90,7 +90,7 @@ class PostOnboarding extends StatelessWidget {
                         text: 'Sign in',
                         style: GoogleFonts.plusJakartaSans(
                           color: AppColors.primaryColor,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
