@@ -6,15 +6,14 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:otp_text_field/otp_text_field.dart';
 import 'package:otp_text_field/style.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/route/navigation_service.dart';
-import '../../../../core/route/route_names.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../widgets/app_text.dart';
 import '../../../widgets/custom_appbar.dart';
-import '../../../widgets/disabled_button.dart';
-import '../../../widgets/general_button.dart';
+import '../../../widgets/custom_keyboard.dart';
 
 class VerifyPhoneScreen extends StatefulWidget {
   const VerifyPhoneScreen({super.key});
@@ -25,11 +24,14 @@ class VerifyPhoneScreen extends StatefulWidget {
 
 class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
   final NavigationService navigationService = di<NavigationService>();
+  // final OtpFieldController _otpFieldController = OtpFieldController();
 
-  bool? _hasInputtedOTP = false;
+  bool _hasInputtedOTP = false;
 
   @override
   Widget build(BuildContext context) {
+    var keyboard = context.watch<KeyboardProvider>();
+    // _otpFieldController..set(keyboard.inputs);
     return Scaffold(
       appBar: CustomAppBar(),
       body: SafeArea(
@@ -38,7 +40,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
           children: [
             // verify screen
             AppText(
-              text: 'Verify Screen',
+              text: 'Verify Phone',
               color: AppColors.primaryColor,
               fontWeight: FontWeight.w900,
               size: context.widthPx * 0.089,
@@ -75,7 +77,9 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
               width: context.widthPx,
               fieldStyle: FieldStyle.box,
               fieldWidth: context.widthPx * 0.18,
+              controller: keyboard.controller,
               contentPadding: EdgeInsets.all(context.diagonalPx * 0.02),
+              readOnly: true,
               style: GoogleFonts.plusJakartaSans(
                 color: AppColors.black,
                 fontSize: context.widthPx * 0.075,
@@ -83,16 +87,18 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                 textStyle: Theme.of(context).textTheme.bodyText1,
               ),
               onChanged: (str) {
-                if (str.length < 4) {
-                  setState(() {
-                    _hasInputtedOTP = false;
-                  });
-                } else {
+                if (str.length == 4) {
+                  FocusScope.of(context).unfocus();
                   setState(() {
                     _hasInputtedOTP = true;
                   });
+                } else {
+                  setState(() {
+                    _hasInputtedOTP = false;
+                  });
                 }
               },
+              // onCompleted: (val) => FocusScope.of(context).unfocus(),
               outlineBorderRadius: 15,
               inputFormatter: [
                 FilteringTextInputFormatter.digitsOnly,
@@ -144,25 +150,30 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
 
             const Spacer(),
 
-            Container(
-              child: _hasInputtedOTP!
-                  ? GeneralButton(
-                      onPressed: () =>
-                          navigationService.navigateTo(RouteName.verifyBVN),
-                      buttonTextColor: Colors.white,
-                      child: const Text(
-                        'Verify Phone',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    )
-                  : DisabledButton(
-                      onPressed: () => _hasInputtedOTP!
-                          ? navigationService.navigateTo(RouteName.verifyOTP)
-                          : null,
-                      buttonTextColor: Colors.white,
-                      child: const Text('Verify Phone'),
-                    ),
-            ),
+            // _hasInputtedOTP
+            //     ? GeneralButton(
+            //         onPressed: () =>
+            //             navigationService.navigateTo(RouteName.verifyBVN),
+            //         buttonTextColor: Colors.white,
+            //         child: const Text(
+            //           'Verify Phone',
+            //           style: TextStyle(color: Colors.white),
+            //         ),
+            //       )
+            //     : GeneralButton(
+            //         borderColor: Colors.transparent,
+            //         backgroundColor: AppColors.primaryColor.withOpacity(0.5),
+            //         onPressed: () {},
+            //         buttonTextColor: Colors.white,
+            //         child: const Text(
+            //           'Verify Phone',
+            //           style: TextStyle(color: Colors.white),
+            //         ),
+            //       ),
+
+            FocusScope.of(context).hasFocus
+                ? const CustomKeyboard()
+                : Container(),
 
             const SizedBox(
               height: 25,

@@ -165,12 +165,21 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0"
+  nested:
+    dependency: transitive
+    description:
+      name: nested
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   otp_text_field:
     dependency: "direct main"
     description:
-      name: otp_text_field
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: custom-keyboard
+      resolved-ref: "584deae11cc20a099283ee2d26cd103856af1b09"
+      url: "https://github.com/maykhid/OTPTextField.git"
+    source: git
     version: "1.1.3"
   path:
     dependency: transitive
@@ -270,6 +279,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.2.4"
+  provider:
+    dependency: "direct main"
+    description:
+      name: provider
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "6.0.4"
   sky_engine:
     dependency: transitive
     description: flutter
