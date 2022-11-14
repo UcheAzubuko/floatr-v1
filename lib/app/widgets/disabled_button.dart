@@ -21,9 +21,9 @@ class DisabledButton extends StatelessWidget {
     this.height,
     this.foregroundColor,
     required this.child,
-    this.backgroundColor = AppColors.disableButtonBackground,
+    this.backgroundColor = AppColors.disabledBackgroundColor,
     this.buttonTextColor = const Color(0xffFFFFFF),
-    this.borderColor = AppColors.disableButtonBackground,
+    this.borderColor = AppColors.disabledBackgroundColor,
     this.active = true,
   });
 

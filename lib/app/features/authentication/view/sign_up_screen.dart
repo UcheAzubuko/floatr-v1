@@ -45,11 +45,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     dateController.text = dateFormat.format(date!);
   }
 
-  void _toggleTC(value) {
-    setState(() {
-      acceptedTC = value;
-    });
-  }
+  // void _toggleTC(value) {
+  //   setState(() {
+  //     acceptedTC = value;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -120,18 +120,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const VerticalSpace(size: 10),
 
               AppTextField(
-                  prefixIcon: Padding(
-                    padding: EdgeInsets.all(context.diagonalPx * 0.01),
-                    child: SizedBox(
-                      child: SvgPicture.asset(
-                        'assets/icons/fill/nigeria-flag.svg',
-                      ),
+                prefixIcon: Padding(
+                  padding: EdgeInsets.all(context.diagonalPx * 0.01),
+                  child: SizedBox(
+                    child: SvgPicture.asset(
+                      'assets/icons/fill/nigeria-flag.svg',
                     ),
                   ),
-                  hintText: '+234 813 123 4567',
-                  controller: TextEditingController(),
-                  textInputType: TextInputType.phone,
-                  textInputAction: TextInputAction.unspecified),
+                ),
+                hintText: '+234 813 123 4567',
+                controller: TextEditingController(),
+                textInputType: TextInputType.phone,
+                textInputAction: TextInputAction.unspecified,
+              ),
 
               // password text and textfield
               const VerticalSpace(size: 10),
@@ -252,13 +253,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         text: 'I accept and agree all to all ',
                         color: AppColors.black,
                         fontWeight: FontWeight.w600,
-                        size: context.widthPx * 0.031,
+                        size: context.widthPx * 0.035,
                       ),
                       AppText(
                         text: 'terms and conditions',
                         color: AppColors.primaryColor,
                         fontWeight: FontWeight.w600,
-                        size: context.widthPx * 0.031,
+                        size: context.widthPx * 0.035,
                       ),
                     ],
                   ),

@@ -32,7 +32,24 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const VerticalSpace(size: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  SvgPicture.asset(
+                    "assets/images/main-logo.svg",
+                    fit: BoxFit.scaleDown,
+                    height: context.heightPx * 0.035,
+                    width: context.widthPx * 0.035,
+                  ),
+                  AppText(
+                    text: 'floatr',
+                    size: context.widthPx * 0.035,
+                    color: AppColors.black,
+                    fontWeight: FontWeight.w700,
+                  )
+                ],
+              ),
 
               // lets sign in
               AppText(
@@ -96,6 +113,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 textInputAction: TextInputAction.unspecified,
               ),
 
+              const VerticalSpace(size: 10),
+
+              GestureDetector(
+                onTap: () =>
+                    navigationService.navigateTo(RouteName.forgotPassword),
+                child: AppText(
+                  text: 'Forgot Password?',
+                  color: AppColors.primaryColor,
+                  fontWeight: FontWeight.w600,
+                  size: context.widthPx * 0.035,
+                ),
+              ),
+
               const VerticalSpace(size: 100),
 
               GeneralButton(
@@ -114,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     text: TextSpan(
                       style: GoogleFonts.plusJakartaSans(
                         color: AppColors.black,
-                        fontSize: context.widthPx * 0.03,
+                        fontSize: context.widthPx * 0.04,
                         fontWeight: FontWeight.w700,
                       ),
                       children: <TextSpan>[

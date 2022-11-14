@@ -23,12 +23,6 @@ class TakeSelefieScreen extends StatefulWidget {
 class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
   final NavigationService navigationService = di<NavigationService>();
 
-  static const List _selfieInstructions = [
-    'Make sure you are well lit',
-    'Clearly show your face and ears',
-    'Keep your phone vertical',
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,14 +94,49 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
                     Radius.circular(10),
                   ),
                 ),
-                // child: ListView.builder(
-                //   itemBuilder: (context, index) => Container(
-                //     height: context.heightPx * 0.12,
-                //     child: Text(
-                //       _selfieInstructions[index],
-                //     ),
-                //   ),
-                // ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: context.widthPx * 0.1,
+                      vertical: context.heightPx * 0.02),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: SvgPicture.asset(
+                            'assets/icons/outline/selfie-caution.svg'),
+                      ),
+                      SizedBox(
+                        width: context.widthPx * 0.06,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          AppText(
+                            text: '●   Make sure you are well lit.',
+                            color: AppColors.black,
+                            fontWeight: FontWeight.w600,
+                            size: context.widthPx * 0.031,
+                          ),
+                          AppText(
+                            text: '●   Clearly show your face and ears.',
+                            color: AppColors.black,
+                            fontWeight: FontWeight.w600,
+                            size: context.widthPx * 0.031,
+                          ),
+                          AppText(
+                            text: '●   Keep your phone vertical.',
+                            color: AppColors.black,
+                            fontWeight: FontWeight.w600,
+                            size: context.widthPx * 0.031,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
 
               const VerticalSpace(
@@ -125,7 +154,7 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
                   'assets/icons/outline/Camera.svg',
                   height: 40,
                   fit: BoxFit.fill,
-                  color: AppColors.backgroundColor,
+                  color: AppColors.wierdBlack,
                 ),
               ),
             ],

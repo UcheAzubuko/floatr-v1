@@ -11,19 +11,19 @@ class AppTextField extends StatelessWidget {
   final int? maxLines;
   final Widget? suffixIcon;
   final bool obscureText;
-  String? Function(String?)? validate;
+  final String? Function(String?)? validator;
   final TextInputType? textInputType;
   final TextInputAction? textInputAction;
   final void Function(String?)? onSaved;
   final VoidCallback? onTap;
   final bool readOnly;
 
-  AppTextField(
+  const AppTextField(
       {Key? key,
       this.hintText,
       this.prefixIcon,
       this.obscureText = false,
-      this.validate,
+      this.validator,
       required this.controller,
       this.textInputType,
       this.textInputAction,
@@ -39,7 +39,7 @@ class AppTextField extends StatelessWidget {
     return TextFormField(
       cursorColor: AppColors.primaryColor,
       obscureText: obscureText,
-      validator: validate,
+      validator: validator,
       maxLines: obscureText == true ? 1 : maxLines,
       decoration: InputDecoration(
         prefixIcon: prefixIcon,

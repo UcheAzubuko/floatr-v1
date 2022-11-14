@@ -1,9 +1,6 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:otp_text_field/otp_text_field.dart';
-import 'package:otp_text_field/style.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/route/navigation_service.dart';

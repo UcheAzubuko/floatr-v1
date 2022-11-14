@@ -2,10 +2,10 @@ import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/route/navigation_service.dart';
-import '../../../../core/route/route_names.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/spacing.dart';
 import '../../../widgets/app_text.dart';
@@ -33,17 +33,35 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
         children: [
           // BVN
           AppText(
-            text: 'Confirm Details',
+            text: 'Almost There...',
             color: AppColors.primaryColor,
             fontWeight: FontWeight.w900,
             size: context.widthPx * 0.089,
           ),
 
-          AppText(
-            text: 'Please confirm your details for 2225323322',
-            color: AppColors.grey,
-            fontWeight: FontWeight.w600,
-            size: context.widthPx * 0.035,
+          const VerticalSpace(
+            size: 15,
+          ),
+
+          RichText(
+            text: TextSpan(
+              style: GoogleFonts.plusJakartaSans(
+                color: AppColors.gunMetal,
+                fontSize: context.widthPx * 0.031,
+                fontWeight: FontWeight.w600,
+              ),
+              children: <TextSpan>[
+                const TextSpan(text: 'Please, confirm your details for '),
+                TextSpan(
+                  text: '22232829939939',
+                  style: GoogleFonts.plusJakartaSans(
+                    color: AppColors.primaryColor,
+                    fontSize: context.widthPx * 0.031,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ),
 
           const VerticalSpace(
@@ -276,7 +294,7 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
 
           AppTextField(
             hintText: '11 Lorem Ipsun dolo Lagos, Nigeria',
-            maxLines: 4,
+            maxLines: 3,
             controller: TextEditingController(),
             textInputType: TextInputType.emailAddress,
             textInputAction: TextInputAction.unspecified,

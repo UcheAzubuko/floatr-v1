@@ -1,7 +1,10 @@
 import 'package:floatr/app/features/authentication/view/biometrics_screen.dart';
 import 'package:floatr/app/features/authentication/view/confirm_details_screen.dart';
 import 'package:floatr/app/features/authentication/view/create_pin_screen.dart';
+import 'package:floatr/app/features/authentication/view/forgot_password_screen.dart';
+import 'package:floatr/app/features/authentication/view/forgot_password_otp_screen.dart';
 import 'package:floatr/app/features/authentication/view/login_screen.dart';
+import 'package:floatr/app/features/authentication/view/reset_password_screen.dart';
 import 'package:floatr/app/features/authentication/view/sign_up_screen.dart';
 import 'package:floatr/app/features/authentication/view/take_selfie_screen.dart';
 import 'package:floatr/app/features/authentication/view/verify_bvn_screen.dart';
@@ -34,6 +37,13 @@ class Router {
         return MaterialPageRoute(builder: (_) => const CreatePinScreen());
       case RouteName.biometrics:
         return MaterialPageRoute(builder: (_) => const BiometricsScreen());
+      case RouteName.forgotPassword:
+        return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
+      case RouteName.forgotPasswordOtp:
+        return MaterialPageRoute(
+            builder: (_) => const ForgotPasswordOtpScreen());
+      case RouteName.resetPassword:
+        return MaterialPageRoute(builder: (_) => const ResetPasswordScreen());
       default:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }
