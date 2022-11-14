@@ -105,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: const Text('Login'),
               ),
 
-              const VerticalSpace(size: 20),
+              SizedBox(height: context.heightPx * 0.03),
 
               GestureDetector(
                 onTap: () => navigationService.navigateTo(RouteName.signup),
@@ -114,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     text: TextSpan(
                       style: GoogleFonts.plusJakartaSans(
                         color: AppColors.black,
-                        fontSize: context.widthPx * 0.045,
+                        fontSize: context.widthPx * 0.03,
                         fontWeight: FontWeight.w700,
                       ),
                       children: <TextSpan>[
@@ -123,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           text: 'Sign Up',
                           style: GoogleFonts.plusJakartaSans(
                             color: AppColors.primaryColor,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
