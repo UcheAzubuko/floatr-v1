@@ -176,7 +176,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: custom-keyboard
+      ref: main-keyboard-v1
       resolved-ref: "584deae11cc20a099283ee2d26cd103856af1b09"
       url: "https://github.com/maykhid/OTPTextField.git"
     source: git
