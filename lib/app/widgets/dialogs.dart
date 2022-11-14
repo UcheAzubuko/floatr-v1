@@ -8,6 +8,10 @@ import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../core/misc/dependency_injectors.dart';
+import '../../core/route/navigation_service.dart';
+import '../../core/route/route_names.dart';
+
 class AppDialog {
   // modal
   static showAppModal(BuildContext context, Widget widget) {
@@ -25,17 +29,18 @@ class AppDialog {
   // pop dialog
   static showAppDialog(BuildContext context, Widget widget) {
     showDialog(
+      barrierColor: AppColors.dialogsBackgroundColor,
       context: context,
-      barrierDismissible: true,
+      barrierDismissible: false,
       builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         // insetPadding: EdgeInsets.symmetric(horizontal: context.widthPx * 0.30),
         child: Container(
           // padding: const EdgeInsets.symmetric(vertical: 30),
           decoration: BoxDecoration(
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(10)),
-          height: context.heightPx * 0.35,
+          height: context.heightPx * 0.36,
           width: context.widthPx,
           child: widget,
         ),
@@ -45,14 +50,21 @@ class AppDialog {
 }
 
 class OnSuccessDialogContent extends StatelessWidget {
+  final String subtext;
+  final bool isResetPassword;
+
   const OnSuccessDialogContent({
+    required this.subtext,
+    required this.isResetPassword,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final NavigationService navigationService = di<NavigationService>();
+
     return SizedBox(
-      height: (context.heightPx * 0.35),
+      // height: (context.heightPx * 0.5),
       width: context.widthPx,
       child: Stack(
         alignment: AlignmentDirectional.topCenter,
@@ -70,7 +82,7 @@ class OnSuccessDialogContent extends StatelessWidget {
           Column(
             children: [
               const VerticalSpace(
-                size: 10,
+                size: 15,
               ),
 
               // image
@@ -94,9 +106,8 @@ class OnSuccessDialogContent extends StatelessWidget {
 
               // text
               AppText(
-                text: '''Your account has successfully been
-                                      created!''',
-                color: AppColors.grey,
+                text: subtext,
+                color: AppColors.dialogsGrey,
                 fontWeight: FontWeight.w600,
                 size: context.widthPx * 0.031,
               ),
@@ -107,12 +118,15 @@ class OnSuccessDialogContent extends StatelessWidget {
 
               // button
               GeneralButton(
-                onPressed: () {},
-                height: 40,
-                width: 120,
+                onPressed: () => {
+                  if (isResetPassword)
+                    {navigationService.navigateTo(RouteName.login)}
+                },
+                height: context.heightPx * 0.06,
+                width: context.widthPx * 0.35,
                 borderRadius: 10,
                 child: const Text(
-                  'Log in',
+                  'Log In',
                   style: TextStyle(fontSize: 15),
                 ),
               ),
@@ -228,7 +242,9 @@ class BiometricModal extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SvgPicture.asset('assets/icons/outline/fingerprint_bare.svg'),
-              const HorizontalSpace(size: 5,),
+              const HorizontalSpace(
+                size: 5,
+              ),
               const AppText(text: "Scan your fingerprint"),
             ],
           ),

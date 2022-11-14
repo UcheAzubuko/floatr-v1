@@ -4,6 +4,7 @@ class AppColors {
   static const Color backgroundColor = Color(0xFFFFFFFF);
   static const Color primaryColor = Color(0xFFD75F26);
   static const Color grey = Color(0xFF96989E);
+  static const Color dialogsGrey = Color(0xFF78828A);
   static const Color yellow = Color(0xFFFFE58F);
   static const Color lightYellow = Color(0xFFFFFBE6);
   static const Color greyAsparagus = Color(0xFF3E5543);
@@ -12,6 +13,7 @@ class AppColors {
   static const Color textFieldBackground = Color(0xFFD5D6D8);
   static const Color disabledBackgroundColor = Color(0xFFEBAF93);
   static const Color merlot = Color(0xFFE6D2D6);
+  static const Color dialogsBackgroundColor = Color.fromRGBO(108, 48, 19, 0.63);
   // This is the black for the take_selfie_screen @ login
   static const Color wierdBlack = Color(0xFF363853);
 }

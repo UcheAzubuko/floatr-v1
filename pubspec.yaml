@@ -49,9 +49,9 @@ flutter:
     - assets/icons/fill/
     - assets/images/
 
-  fonts:
-    - family: FloatrIcons
-      fonts:
-        - asset: assets/fonts/floatr-outline-icons.ttf
+  # fonts:
+  #   - family: FloatrIcons
+  #     fonts:
+  #       - asset: assets/fonts/floatr-outline-icons.ttf
 
 

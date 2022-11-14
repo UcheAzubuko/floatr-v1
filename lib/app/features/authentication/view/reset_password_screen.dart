@@ -1,6 +1,7 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/widgets/app_text.dart';
+import 'package:floatr/app/widgets/dialogs.dart';
 import 'package:floatr/app/widgets/general_button.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/route/route_names.dart';
@@ -85,8 +86,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             const Spacer(),
 
             GeneralButton(
-              onPressed: () =>
-                  navigationService.navigateTo(RouteName.postOnboarding),
+              onPressed: () => AppDialog.showAppDialog(
+                  context,
+                  const OnSuccessDialogContent(
+                    subtext: 'You can now log in with your new password!',
+                    isResetPassword: true,
+                  )),
               buttonTextColor: Colors.white,
               child: const Text(
                 'Reset Password',
