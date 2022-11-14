@@ -31,7 +31,7 @@ dependencies:
   otp_text_field:
     git:
       url: https://github.com/maykhid/OTPTextField.git
-      ref: custom-keyboard
+      ref: main-keyboard-v1
   dotted_border: ^2.0.0+3
   intl: ^0.17.0
   provider: ^6.0.4
