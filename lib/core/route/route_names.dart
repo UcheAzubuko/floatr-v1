@@ -9,4 +9,7 @@ class RouteName {
   static const String confirmDetails = 'confirmDetails';
   static const String createPin = 'createPin';
   static const String biometrics = 'biometrics';
+  static const String forgotPassword = 'forgotPassword';
+  static const String forgotPasswordOtp = 'forgotPasswordOtp';
+  static const String resetPassword = 'resetPassword';
 }

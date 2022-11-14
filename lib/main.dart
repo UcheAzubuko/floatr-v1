@@ -1,6 +1,8 @@
+import 'package:floatr/core/misc/provider_registry.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart' hide Router;
+import 'package:provider/provider.dart';
 
 import 'core/misc/dependency_injectors.dart';
 import 'core/route/router.dart';
@@ -16,25 +18,28 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Floatr',
-      theme: ThemeData(
-        scaffoldBackgroundColor: AppColors.backgroundColor,
-        useMaterial3: false,
-        // primarySwatch: Colors.white,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
-        appBarTheme: const AppBarTheme(
-          color: Colors.white,
-          scrolledUnderElevation: 0,
-          elevation: 0,
-          iconTheme: IconThemeData(color: AppColors.primaryColor),
+    return MultiProvider(
+      providers: globalProviders,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Floatr',
+        theme: ThemeData(
+          scaffoldBackgroundColor: AppColors.backgroundColor,
+          useMaterial3: false,
+          // primarySwatch: Colors.white,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
+          appBarTheme: const AppBarTheme(
+            color: Colors.white,
+            scrolledUnderElevation: 0,
+            elevation: 0,
+            iconTheme: IconThemeData(color: AppColors.primaryColor),
+          ),
         ),
+        navigatorKey: di<NavigationService>().navigationKey,
+        onGenerateRoute: Router.generateRoute,
+        // home: const SplashScreen(),
       ),
-      navigatorKey: di<NavigationService>().navigationKey,
-      onGenerateRoute: Router.generateRoute,
-      // home: const SplashScreen(),
     );
   }
 }

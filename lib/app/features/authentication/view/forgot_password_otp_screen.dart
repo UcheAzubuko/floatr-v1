@@ -17,14 +17,15 @@ import '../../../widgets/app_text.dart';
 import '../../../widgets/custom_appbar.dart';
 import '../../../widgets/custom_keyboard.dart';
 
-class VerifyPhoneScreen extends StatefulWidget {
-  const VerifyPhoneScreen({super.key});
+class ForgotPasswordOtpScreen extends StatefulWidget {
+  const ForgotPasswordOtpScreen({super.key});
 
   @override
-  State<VerifyPhoneScreen> createState() => _VerifyPhoneScreenState();
+  State<ForgotPasswordOtpScreen> createState() =>
+      _ForgotPasswordOtpScreenState();
 }
 
-class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
+class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
   final NavigationService navigationService = di<NavigationService>();
   // final OtpFieldController _otpFieldController = OtpFieldController();
 
@@ -36,13 +37,14 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
     // _otpFieldController..set(keyboard.inputs);
     return Scaffold(
       appBar: CustomAppBar(),
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // verify screen
             AppText(
-              text: 'Verify Phone',
+              text: 'Forgot Password',
               color: AppColors.primaryColor,
               fontWeight: FontWeight.w900,
               size: context.widthPx * 0.089,
@@ -152,35 +154,14 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
 
             const Spacer(),
 
-            // _hasInputtedOTP
-            //     ? GeneralButton(
-            //         onPressed: () =>
-            //             navigationService.navigateTo(RouteName.verifyBVN),
-            //         buttonTextColor: Colors.white,
-            //         child: const Text(
-            //           'Verify Phone',
-            //           style: TextStyle(color: Colors.white),
-            //         ),
-            //       )
-            //     : GeneralButton(
-            //         borderColor: Colors.transparent,
-            //         backgroundColor: AppColors.primaryColor.withOpacity(0.5),
-            //         onPressed: () {},
-            //         buttonTextColor: Colors.white,
-            //         child: const Text(
-            //           'Verify Phone',
-            //           style: TextStyle(color: Colors.white),
-            //         ),
-            //       ),
-
             FocusScope.of(context).hasFocus
                 ? const CustomKeyboard()
                 : GeneralButton(
                     onPressed: () =>
-                        navigationService.navigateTo(RouteName.verifyBVN),
+                        navigationService.navigateTo(RouteName.resetPassword),
                     buttonTextColor: Colors.white,
                     child: const Text(
-                      'Verify Phone',
+                      'Verify',
                       style: TextStyle(color: Colors.white),
                     ),
                   ),

@@ -1,7 +1,7 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/route/navigation_service.dart';
@@ -13,14 +13,14 @@ import '../../../widgets/custom_appbar.dart';
 import '../../../widgets/general_button.dart';
 import '../../../widgets/text_field.dart';
 
-class VerifyBVNScreen extends StatefulWidget {
-  const VerifyBVNScreen({super.key});
+class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
 
   @override
-  State<VerifyBVNScreen> createState() => _VerifyBVNScreenState();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final NavigationService navigationService = di<NavigationService>();
   @override
   Widget build(BuildContext context) {
@@ -31,81 +31,52 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // BVN
             AppText(
-              text: 'BVN',
+              text: 'Forgot Password',
               color: AppColors.primaryColor,
               fontWeight: FontWeight.w900,
               size: context.widthPx * 0.089,
             ),
-
             AppText(
-              text: 'Please enter your Bank Verification Number (BVN)',
+              text: 'Please verify your phone number to reset your password.',
               color: AppColors.grey,
               fontWeight: FontWeight.w600,
               size: context.widthPx * 0.035,
             ),
-
             const VerticalSpace(
               size: 40,
             ),
-
             AppText(
-              text: 'BVN',
+              text: 'Phone number',
               color: AppColors.black,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
               size: context.widthPx * 0.035,
             ),
-
             const VerticalSpace(size: 10),
-
             AppTextField(
-              hintText: '234353633333',
+              prefixIcon: Padding(
+                padding: EdgeInsets.all(context.diagonalPx * 0.01),
+                child: SizedBox(
+                  child: SvgPicture.asset(
+                    'assets/icons/fill/nigeria-flag.svg',
+                  ),
+                ),
+              ),
+              hintText: '+234 813 123 4567',
               controller: TextEditingController(),
-              textInputType: TextInputType.emailAddress,
+              textInputType: TextInputType.phone,
               textInputAction: TextInputAction.unspecified,
             ),
-
-            const VerticalSpace(
-              size: 15,
-            ),
-
-            RichText(
-              text: TextSpan(
-                style: GoogleFonts.plusJakartaSans(
-                  color: AppColors.gunMetal,
-                  fontSize: context.widthPx * 0.031,
-                  fontWeight: FontWeight.w600,
-                ),
-                children: <TextSpan>[
-                  const TextSpan(text: 'Don\'t know your BVN? Dial '),
-                  TextSpan(
-                    text: '*556*0# ',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: AppColors.primaryColor,
-                      fontSize: context.widthPx * 0.031,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const TextSpan(
-                    text: 'with the number you used to register it',
-                  ),
-                ],
-              ),
-            ),
-
             const Spacer(),
-
             GeneralButton(
               onPressed: () =>
-                  navigationService.navigateTo(RouteName.takeSelfie),
+                  navigationService.navigateTo(RouteName.forgotPasswordOtp),
               buttonTextColor: Colors.white,
               child: const Text(
-                'Take Selfie',
+                'Verify Phone Number',
                 style: TextStyle(color: Colors.white),
               ),
             ),
-
             const SizedBox(
               height: 25,
             ),
