@@ -1,3 +1,4 @@
+import 'package:floatr/app/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:get_it/get_it.dart';
 
 import '../route/navigation_service.dart';
@@ -10,6 +11,7 @@ Future<void> setupLocator() async {
   // data
 
   // repos
+  di.registerLazySingleton<AuthenticationRepository>(() => AuthenticationRepository());
 
   // services
 
