@@ -38,7 +38,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               size: context.widthPx * 0.089,
             ),
             AppText(
-              text: 'Please verify your phone number to reset your password.',
+              text:
+                  'Please enter the phone number associated with your account to reset your password.',
               color: AppColors.grey,
               fontWeight: FontWeight.w600,
               size: context.widthPx * 0.035,
