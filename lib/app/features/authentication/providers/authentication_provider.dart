@@ -3,7 +3,6 @@ import 'package:floatr/app/features/authentication/data/repositories/authenticat
 import 'package:floatr/core/misc/dependency_injectors.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/route_names.dart';
-import 'package:flutter/material.dart';
 
 import '../../../../core/route/navigation_service.dart';
 import '../data/model/params/register_params.dart';
@@ -57,6 +56,7 @@ class AuthenticationProvider extends BaseProvider {
       // trigger error on ui
     }, (r) {
       updateLoadingState(LoadingState.loaded);
+      _navigationService.navigateTo(RouteName.verifyOTP);
     });
   }
 }

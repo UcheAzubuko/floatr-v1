@@ -1,13 +1,13 @@
 import 'package:equatable/equatable.dart';
 
-class RegisterParams extends Equatable {
-  final String email;
-  final String password;
-  final String name;
-  final String phoneNumber;
-  final String dateOfBirth;
+class RegisterParams{
+  String? email;
+  String? password;
+  String? name;
+  String? phoneNumber;
+  String? dateOfBirth;
 
-  const RegisterParams({
+   RegisterParams({
     required this.email,
     required this.password,
     required this.name,
@@ -24,7 +24,4 @@ class RegisterParams extends Equatable {
       "dob": dateOfBirth,
     };
   }
-
-  @override
-  List<Object?> get props => [email, password, name, phoneNumber, dateOfBirth];
 }

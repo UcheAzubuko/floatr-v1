@@ -36,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void initState() {
-    _loginParams = LoginParams(email: '', password: '');
+    _loginParams = LoginParams(email: null, password: null);
     super.initState();
   }
 

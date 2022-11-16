@@ -55,7 +55,7 @@ class AuthenticationRepository {
       final body = jsonDecode(response.body); // grab access_token
       return Right(body["access_token"]);
     } on ServerException catch (_) {
-      return Left(ServerFailure(code: _.code as String, message: _.message));
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }
   }
 }
