@@ -1,5 +1,5 @@
 class APIConfigs {
-  static const baseUrl = 'floatr-backend.herokuapp.com/v1';
-  static const loginPath = '/auth/login';
-  static const registerPath = '/auth/register';
+  static const baseUrl = 'floatr-backend.herokuapp.com';
+  static const loginPath = '/v1/auth/login';
+  static const registerPath = '/v1/auth/register';
 }

@@ -47,7 +47,7 @@ class APIService {
     } on ServerException catch (e) {
       throw ServerException(e.message, e.code);
     } catch (e) {
-      throw ServerException('An unknown error occured', 0);
+      throw ServerException(e.toString(), 0);
     }
     throw ServerException('An unknown error occured', 0);
   }
