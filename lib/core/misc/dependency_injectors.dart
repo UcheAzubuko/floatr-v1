@@ -1,5 +1,6 @@
 import 'package:floatr/app/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../route/navigation_service.dart';
 
@@ -11,12 +12,14 @@ Future<void> setupLocator() async {
   // data
 
   // repos
-  di.registerLazySingleton<AuthenticationRepository>(() => AuthenticationRepository());
+  di.registerLazySingleton<AuthenticationRepository>(() => AuthenticationRepository(prefs: di()));
 
   // services
 
   // external
-
+  final sharedPreferences = await SharedPreferences.getInstance();
+  di.registerLazySingleton(() => sharedPreferences);
+  
   // core
   di.registerLazySingleton(() => NavigationService());
 }
