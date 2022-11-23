@@ -8,9 +8,9 @@ import 'core/misc/dependency_injectors.dart';
 import 'core/route/router.dart';
 import 'core/utils/app_style.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  setupLocator();
+  await setupLocator();
   runApp(const MyApp());
 }
 

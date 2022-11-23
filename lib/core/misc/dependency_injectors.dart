@@ -21,5 +21,5 @@ Future<void> setupLocator() async {
   di.registerLazySingleton(() => sharedPreferences);
 
   // core
-  di.registerFactory<NavigationService>(() => NavigationService());
+  di.registerLazySingleton<NavigationService>(() => NavigationService());
 }
