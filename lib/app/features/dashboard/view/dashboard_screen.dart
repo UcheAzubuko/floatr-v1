@@ -106,40 +106,14 @@ class DashboardScreen extends StatelessWidget {
             ),
 
             const VerticalSpace(
-              size: 32,
+              size: 22,
             ),
 
             SizedBox(
               height: 256,
               width: context.widthPx,
-              child: Column(
-                // crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 110,
-                        width: 155,
-                        child: Image.asset('assets/images/analytics-image.png'),
-                      ),
-                      Text(
-                        'No Activity Yet',
-                        style: TextStyles.normalTextDarkF800,
-                      ),
-                      const VerticalSpace(
-                        size: 10,
-                      ),
-                      const Text(
-                        '''Start taking loans and all your history will 
-                        appear here''',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            )
+              child: const ActivitiesList(),
+            ),
           ],
         ).paddingOnly(
           left: 10,
@@ -147,6 +121,116 @@ class DashboardScreen extends StatelessWidget {
           top: 40,
         ),
       ),
+    );
+  }
+}
+
+class ActivitiesList extends StatelessWidget {
+  const ActivitiesList({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+        padding: const EdgeInsets.all(0),
+        itemBuilder: (_, __) => SizedBox(
+              height: 70,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      // icon
+                      Container(
+                        height: 52,
+                        width: 52,
+                        // color: AppColors.lightGrey,
+                        decoration: BoxDecoration(
+                            color: AppColors.lightGrey,
+                            borderRadius: BorderRadius.circular(40)),
+                        child: SvgPicture.asset(
+                          'assets/icons/outline/transfer_wallet.svg',
+                          height: 24,
+                          width: 24,
+                          fit: BoxFit.scaleDown,
+                        ),
+                      ).paddingOnly(right: 8),
+
+                      // activity title
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            'Loan Repaid',
+                            style: TextStyles.smallTextDark,
+                          ),
+                          Text(
+                            '18 Oct 2022',
+                            style: TextStyles.smallTextGrey,
+                          ),
+                        ],
+                      ),
+
+                      // amount // activity status
+                    ],
+                  ),
+                  SizedBox(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '₦10,000',
+                          style: TextStyles.smallTextDark,
+                        ).paddingOnly(bottom: 10),
+                        Container(
+                          height: 21,
+                          width: 65,
+                          decoration: BoxDecoration(
+                              color: AppColors.lightGreen,
+                              borderRadius: BorderRadius.circular(30)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        separatorBuilder: (_, __) => const SizedBox(
+              height: 10,
+            ),
+        itemCount: 4);
+  }
+}
+
+class NoActivityView extends StatelessWidget {
+  const NoActivityView({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          height: 110,
+          width: 155,
+          child: Image.asset('assets/images/analytics-image.png'),
+        ),
+        Text(
+          'No Activity Yet',
+          style: TextStyles.normalTextDarkF800,
+        ),
+        const VerticalSpace(
+          size: 10,
+        ),
+        const Text(
+          '''Start taking loans and all your history will 
+          appear here''',
+          style: TextStyle(fontSize: 12),
+        ),
+      ],
     );
   }
 }
@@ -183,7 +267,7 @@ class HighlightsCard extends StatelessWidget {
               const VerticalSpace(size: 12),
               Text(
                 '''We have offers just \nfor you!''',
-                style: TextStyles.largeTextDark,
+                style: TextStyles.largeTextDarkPoppins,
               ),
             ],
           ).paddingOnly(left: 26),
@@ -219,129 +303,132 @@ class HighlightsInfoCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // info
-        Column(
-          children: [
-            Container(
-              height: 144,
-              width: 283,
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
+        Container(
+          height: 144,
+          width: 283,
+          padding: const EdgeInsets.only(bottom: 10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            children: [
+              // details
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      // amount
-                      SizedBox(
-                        height: 54,
-                        width: 104.19,
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                SvgPicture.asset('assets/icons/fill/wallet.svg',
-                                        height: 24, width: 21)
-                                    .paddingOnly(right: 5),
-                                Text(
-                                  'Amount:',
-                                  style: TextStyles.smallerTextDark,
-                                ),
-                              ],
-                            ),
-                            const VerticalSpace(
-                              size: 6,
-                            ),
-                            Row(
-                              children: [
-                                Text(
-                                  '₦5,000',
-                                  style: TextStyles.normalTextDarkF600,
-                                ).paddingOnly(right: 6),
-                                Container(
-                                  width: 33,
-                                  height: 14,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primaryColor,
-                                    borderRadius: BorderRadius.circular(100),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // dotted border
-                      DottedBorder(
-                        color: AppColors.grey,
-                        strokeWidth: 0,
-                        padding: const EdgeInsets.all(0),
-                        borderType: BorderType.RRect,
-                        child: const SizedBox(
-                          height: 90,
-                          width: 0,
-                        ),
-                      ),
-
-                      // due date
-                      SizedBox(
-                        height: 54,
-                        width: 104.19,
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                SvgPicture.asset('assets/icons/fill/clock.svg',
-                                        height: 24, width: 21)
-                                    .paddingOnly(right: 5),
-                                Text(
-                                  'Tenure:',
-                                  style: TextStyles.smallerTextDark,
-                                ),
-                              ],
-                            ),
-                            const VerticalSpace(
-                              size: 6,
-                            ),
-                            Row(
-                              children: [
-                                Text(
-                                  '7 Days',
-                                  style: TextStyles.normalTextDarkF600,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  GeneralButton(
-                    width: 245,
-                    height: 30,
-                    onPressed: () {},
-                    borderRadius: 8,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  // amount
+                  SizedBox(
+                    height: 54,
+                    width: 104.19,
+                    child: Column(
                       children: [
-                        const AppText(
-                          size: 12,
-                          text: 'VIEW DETAILS',
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                        ).paddingOnly(right: 8),
-                        SvgPicture.asset('assets/icons/fill/arrow.svg',
-                            height: 8, width: 8),
+                        Row(
+                          children: [
+                            SvgPicture.asset('assets/icons/fill/wallet.svg',
+                                    height: 24, width: 21)
+                                .paddingOnly(right: 5),
+                            Text(
+                              'Amount:',
+                              style: TextStyles.smallerTextDark,
+                            ),
+                          ],
+                        ),
+                        const VerticalSpace(
+                          size: 6,
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              '₦5,000',
+                              style: TextStyles.normalTextDarkF600,
+                            ).paddingOnly(right: 6),
+                            Container(
+                              width: 33,
+                              height: 14,
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryColor,
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ).paddingOnly(left: 20),
+
+                  const HorizontalSpace(size: 10),
+
+                  // dotted border
+                  DottedBorder(
+                    color: AppColors.grey,
+                    strokeWidth: 0,
+                    padding: const EdgeInsets.all(0),
+                    borderType: BorderType.RRect,
+                    child: const SizedBox(
+                      height: 90,
+                      width: 0,
+                    ),
+                  ).paddingOnly(top: 5, bottom: 5, right: 27),
+
+                  // Spacer(),
+
+                  // due date
+                  SizedBox(
+                    height: 54,
+                    width: 104.19,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            SvgPicture.asset('assets/icons/fill/clock.svg',
+                                    height: 24, width: 21)
+                                .paddingOnly(right: 5),
+                            Text(
+                              'Tenure:',
+                              style: TextStyles.smallerTextDark,
+                            ),
+                          ],
+                        ),
+                        const VerticalSpace(
+                          size: 6,
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              '7 Days',
+                              style: TextStyles.normalTextDarkF600,
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
+
+              // button
+              GeneralButton(
+                width: 245,
+                height: 30,
+                onPressed: () {},
+                borderRadius: 8,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const AppText(
+                      size: 12,
+                      text: 'VIEW DETAILS',
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ).paddingOnly(right: 8),
+                    SvgPicture.asset('assets/icons/fill/arrow.svg',
+                        height: 8, width: 8),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
