@@ -9,6 +9,7 @@ import 'package:floatr/app/features/authentication/view/sign_up_screen.dart';
 import 'package:floatr/app/features/authentication/view/take_selfie_screen.dart';
 import 'package:floatr/app/features/authentication/view/verify_bvn_screen.dart';
 import 'package:floatr/app/features/authentication/view/verify_otp_screen.dart';
+import 'package:floatr/app/features/dashboard/view/dashboard_screen.dart';
 import 'package:floatr/app/features/onboarding/post_onboarding.dart';
 import 'package:floatr/app/features/onboarding/splash_screen.dart';
 import 'package:floatr/core/route/route_names.dart';
@@ -44,6 +45,8 @@ class Router {
             builder: (_) => const ForgotPasswordOtpScreen());
       case RouteName.resetPassword:
         return MaterialPageRoute(builder: (_) => const ResetPasswordScreen());
+      case RouteName.dashboard:
+        return MaterialPageRoute(builder: (_) => const DashboardScreen());
       default:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }

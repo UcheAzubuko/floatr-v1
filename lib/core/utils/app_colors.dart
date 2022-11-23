@@ -10,6 +10,7 @@ class AppColors {
   static const Color gunMetal = Color(0xFF96989E);
   static const Color black = Color(0xFF2B1308);
   static const Color textFieldBackground = Color(0xFFD5D6D8);
+  static const Color primaryColorLight = Color(0xFFF2CAB7);
   static const Color disabledBackgroundColor = Color(0xFFEBAF93);
   static const Color merlot = Color(0xFFE6D2D6);
   // This is the black for the take_selfie_screen @ login

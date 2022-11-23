@@ -19,7 +19,7 @@ Future<void> setupLocator() async {
   // external
   final sharedPreferences = await SharedPreferences.getInstance();
   di.registerLazySingleton(() => sharedPreferences);
-  
+
   // core
-  di.registerLazySingleton(() => NavigationService());
+  di.registerLazySingleton<NavigationService>(() => NavigationService());
 }
