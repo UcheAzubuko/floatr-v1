@@ -13,4 +13,5 @@ class RouteName {
   static const String forgotPasswordOtp = 'forgotPasswordOtp';
   static const String resetPassword = 'resetPassword';
   static const String dashboard = 'dashboard';
+  static const String profile = 'profile';
 }

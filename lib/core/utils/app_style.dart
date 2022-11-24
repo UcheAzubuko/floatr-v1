@@ -15,6 +15,12 @@ class TextStyles {
     fontWeight: FontWeight.w600,
   );
 
+  static TextStyle smallTextDark14Px = const TextStyle(
+    fontSize: 14,
+    color: AppColors.black,
+    fontWeight: FontWeight.w700,
+  );
+
   static TextStyle smallTextGrey = const TextStyle(
     fontSize: 12,
     color: AppColors.grey500,
