@@ -9,6 +9,7 @@ class AppText extends StatelessWidget {
   final TextAlign? textAlign;
   final TextOverflow? overflow;
   final TextTheme? textTheme;
+  final double? letterSpacing;
 
   const AppText(
       {Key? key,
@@ -18,6 +19,7 @@ class AppText extends StatelessWidget {
       required this.text,
       this.textTheme,
       this.overflow,
+      this.letterSpacing = 1,
       this.color})
       : super(key: key);
 
@@ -31,6 +33,7 @@ class AppText extends StatelessWidget {
         color: color,
         fontSize: size,
         fontWeight: fontWeight,
+        letterSpacing: letterSpacing,
         textStyle: Theme.of(context).textTheme.bodyText1,
       ),
     );

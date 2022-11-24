@@ -12,6 +12,7 @@ import 'package:floatr/app/features/authentication/view/verify_otp_screen.dart';
 import 'package:floatr/app/features/dashboard/view/dashboard_screen.dart';
 import 'package:floatr/app/features/onboarding/post_onboarding.dart';
 import 'package:floatr/app/features/onboarding/splash_screen.dart';
+import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
 import 'package:floatr/app/features/profile/view/screens/profile_screen.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,8 @@ class Router {
         return MaterialPageRoute(builder: (_) => const DashboardScreen());
       case RouteName.profile:
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
+      case RouteName.editProfile:
+        return MaterialPageRoute(builder: (_) => const EditProfileScreen());
       default:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }

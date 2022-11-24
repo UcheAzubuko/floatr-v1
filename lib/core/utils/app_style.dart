@@ -53,12 +53,18 @@ class TextStyles {
 
   static TextStyle normalTextDarkF800 = const TextStyle(
     fontSize: 16,
+    color: AppColors.black,
     fontWeight: FontWeight.w800,
   );
 
   static TextStyle normalTextDarkF600 = const TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w600,
+  );
+
+  static TextStyle normalTextDarkF500 = const TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
   );
 }
 

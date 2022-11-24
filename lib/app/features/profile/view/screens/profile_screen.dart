@@ -1,7 +1,10 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/widgets/app_text.dart';
+import 'package:floatr/app/widgets/dialogs.dart';
 import 'package:floatr/app/widgets/general_button.dart';
+import 'package:floatr/core/route/navigation_service.dart';
+import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/app_icons.dart';
 import 'package:floatr/core/utils/app_style.dart';
 import 'package:floatr/core/utils/spacing.dart';
@@ -9,13 +12,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
+import '../../../../../core/misc/dependency_injectors.dart';
 import '../../../../../core/utils/app_colors.dart';
+import '../widgets/account_info_card.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final NavigationService navigationService = di<NavigationService>();
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -46,8 +52,12 @@ class ProfileScreen extends StatelessWidget {
                       ),
 
                       // edit icon
-                      SvgPicture.asset(
-                        SvgAppIcons.icEdit,
+                      InkWell(
+                        onTap: () =>
+                            navigationService.navigateTo(RouteName.editProfile),
+                        child: SvgPicture.asset(
+                          SvgAppIcons.icEdit,
+                        ),
                       ),
                     ],
                   ),
@@ -185,6 +195,8 @@ class ProfileScreen extends StatelessWidget {
                       height: 20,
                       width: 6,
                     ),
+                    onTap: () =>
+                        AppDialog.showAppModal(context, const GovIDModalView()),
                   ),
 
                   // address
@@ -431,7 +443,7 @@ class ProfileScreen extends StatelessWidget {
                       style: TextStyles.smallTextDark14Px,
                     ),
                     thirdItem: SvgPicture.asset(
-                      'assets/icons/outline/arrow-right.svg',
+                      SvgAppIcons.icArrowRight,
                       color: Colors.black,
                       fit: BoxFit.scaleDown,
                       height: 20,
@@ -467,74 +479,133 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
+class GovIDModalView extends StatelessWidget {
+  const GovIDModalView({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 441,
+      padding: const EdgeInsets.all(24.5),
+      child: ListView(
+        children: [
+          Center(
+            child: Text(
+              'Which Official ID whould you like to use?',
+              style: TextStyles.smallTextDark14Px,
+            ),
+          ),
+
+          const VerticalSpace(size: 16),
+
+          // drivers license
+          const GovIDModalItem(
+            leadingIconPath: SvgAppIcons.icLicenseDriver,
+            itemTitle: 'Driver\'s License',
+            endIconPath: SvgAppIcons.icArrowRight,
+          ),
+
+          const VerticalSpace(size: 16),
+
+          // NIN
+          const GovIDModalItem(
+            leadingIconPath: SvgAppIcons.icLicenseDriver,
+            itemTitle: 'National Identity Card',
+            endIconPath: SvgAppIcons.icArrowRight,
+          ),
+
+          const VerticalSpace(size: 16),
+
+          // int passport
+          const GovIDModalItem(
+            leadingIconPath: SvgAppIcons.icLicenseDriver,
+            itemTitle: 'International Passport',
+            endIconPath: SvgAppIcons.icArrowRight,
+          ),
+
+          const VerticalSpace(size: 16),
+
+          // voters card
+          const GovIDModalItem(
+            leadingIconPath: SvgAppIcons.icLicenseDriver,
+            itemTitle: 'Voter’s Card',
+            endIconPath: SvgAppIcons.icArrowRight,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class GovIDModalItem extends StatelessWidget {
+  const GovIDModalItem({
+    Key? key,
+    required this.leadingIconPath,
+    required this.itemTitle,
+    required this.endIconPath,
+  }) : super(key: key);
+
+  final String leadingIconPath;
+  final String itemTitle;
+  final String endIconPath;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 72,
+      decoration: BoxDecoration(
+          color: AppColors.lightGrey300,
+          borderRadius: BorderRadius.circular(16)),
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
+          SvgPicture.asset(leadingIconPath),
+          const HorizontalSpace(size: 13),
+          Text(
+            itemTitle,
+            style: TextStyles.normalTextDarkF500,
+          ),
+          const Spacer(),
+          SvgPicture.asset(
+            endIconPath,
+            width: 16,
+            height: 16,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class CustomProfileRow extends StatelessWidget {
   const CustomProfileRow({
     Key? key,
     required this.firstItem,
     required this.secondItem,
     required this.thirdItem,
+    this.onTap,
   }) : super(key: key);
 
   final Widget firstItem;
   final Widget secondItem;
   final Widget thirdItem;
+  final Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        firstItem,
-        const HorizontalSpace(size: 13),
-        secondItem,
-        const Spacer(),
-        thirdItem
-      ],
-    ).paddingOnly(top: 20);
-  }
-}
-
-class AccountInfoCard extends StatelessWidget {
-  const AccountInfoCard({
-    Key? key,
-    this.height = 149,
-    this.width = 347,
-    required this.infoTitle,
-    required this.child,
-  }) : super(key: key);
-
-  final double height;
-  final double width;
-  final String infoTitle;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      width: width,
-      decoration: BoxDecoration(
-          border: Border.all(color: AppColors.lightGrey300, width: 2),
-          borderRadius: BorderRadius.circular(16)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return InkWell(
+      onTap: onTap,
+      child: Row(
         children: [
-          Text(
-            infoTitle,
-            style: TextStyles.normalTextDarkF800,
-          ).paddingSymmetric(horizontal: 16, vertical: 16),
-          Container(
-            // color: AppColors.black,
-            height: 2,
-            width: context.widthPx,
-            decoration: const BoxDecoration(
-              color: AppColors.lightGrey300,
-            ),
-          ),
-          SizedBox(
-              height: height - 58,
-              child: child.paddingSymmetric(horizontal: 16)),
+          firstItem,
+          const HorizontalSpace(size: 13),
+          secondItem,
+          const Spacer(),
+          thirdItem
         ],
-      ),
+      ).paddingOnly(top: 20),
     );
   }
 }
