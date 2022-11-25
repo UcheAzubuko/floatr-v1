@@ -1,5 +1,6 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/dialogs.dart';
 import 'package:floatr/app/widgets/general_button.dart';
@@ -54,7 +55,7 @@ class ProfileScreen extends StatelessWidget {
                       // edit icon
                       InkWell(
                         onTap: () =>
-                            navigationService.navigateTo(RouteName.editProfile),
+                            navigationService.navigateToRoute(const EditProfileScreen(editProfileView: EditProfile.personalDetails)),
                         child: SvgPicture.asset(
                           SvgAppIcons.icEdit,
                         ),
@@ -176,6 +177,8 @@ class ProfileScreen extends StatelessWidget {
                       height: 20,
                       width: 6,
                     ),
+                    onTap: () =>
+                            navigationService.navigateToRoute(const EditProfileScreen(editProfileView: EditProfile.personalDetails)),
                   ),
 
                   // gov-id
@@ -215,6 +218,8 @@ class ProfileScreen extends StatelessWidget {
                       height: 20,
                       width: 6,
                     ),
+                    onTap: () =>
+                            navigationService.navigateToRoute(const EditProfileScreen(editProfileView: EditProfile.residentialAddress)),
                   ),
 
                   // employment details
@@ -233,6 +238,8 @@ class ProfileScreen extends StatelessWidget {
                       height: 20,
                       width: 6,
                     ),
+                    onTap: () =>
+                            navigationService.navigateToRoute(const EditProfileScreen(editProfileView: EditProfile.employmentDetails)),
                   ),
 
                   // next of kin
@@ -251,6 +258,8 @@ class ProfileScreen extends StatelessWidget {
                       height: 20,
                       width: 6,
                     ),
+                    onTap: () =>
+                            navigationService.navigateToRoute(const EditProfileScreen(editProfileView: EditProfile.nextOfKin)),
                   ),
                 ],
               ),

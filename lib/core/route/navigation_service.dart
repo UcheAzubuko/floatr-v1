@@ -23,8 +23,16 @@ class NavigationService {
         .pushNamedAndRemoveUntil(newRoute, (Route<dynamic> route) => false);
   }
 
+  /// Pass in the widget to route to directly
+  Future<dynamic> navigateToRoute(Widget route) {
+    return _navigationKey.currentState!.push(
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) => route,
+      ),
+    );
+  }
+
   Future<dynamic> maybePop() {
-    return _navigationKey.currentState!
-        .maybePop();
+    return _navigationKey.currentState!.maybePop();
   }
 }

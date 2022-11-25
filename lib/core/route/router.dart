@@ -51,8 +51,8 @@ class Router {
         return MaterialPageRoute(builder: (_) => const DashboardScreen());
       case RouteName.profile:
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
-      case RouteName.editProfile:
-        return MaterialPageRoute(builder: (_) => const EditProfileScreen());
+      // case RouteName.editProfile:
+      //   return MaterialPageRoute(builder: (_) => const EditProfileScreen());
       default:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }
