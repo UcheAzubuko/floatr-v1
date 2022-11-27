@@ -48,18 +48,49 @@ class EditResidentialAddressView extends StatelessWidget {
 
         // primary info
         AccountInfoCard(
-          height: 453,
+          height: 433,
           width: context.widthPx,
           infoTitle: 'Residential Address',
           child: Column(
-            children: const [
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children:  [
+              const VerticalSpace(size: 20),
+
               // country
+              Text(
+                'Country',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(controller: TextEditingController(text: 'Nigeria')),
+
+              const VerticalSpace(size: 10),
 
               // state
+              Text(
+                'State',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(controller: TextEditingController(text: 'Lagos')),
+
+              const VerticalSpace(size: 10),
 
               // city
+              Text(
+                'City',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(controller: TextEditingController(text: 'Lekki')),
+
+              const VerticalSpace(size: 10),
 
               // street add
+              Text(
+                'Street Address',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(controller: TextEditingController(text: 'qwertyi')),
+
+              const VerticalSpace(size: 10),
             ],
           ),
         ),
@@ -100,19 +131,58 @@ class EditEmploymentView extends StatelessWidget {
         // primary info
         AccountInfoCard(
           width: context.widthPx,
-          height: 453,
+          height: 520,
           infoTitle: 'Employer’s Information',
           child: Column(
-            children: const [
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children:  [
+              
+              const VerticalSpace(size: 20),
+
               // company name
+              Text(
+                'Company Name',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(controller: TextEditingController(text: '')),
+
+              const VerticalSpace(size: 10),
 
               // employers address
+              Text(
+                'Employer\'s address',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(controller: TextEditingController(text: 'Lekki')),
+
+              const VerticalSpace(size: 10),
 
               // employment type
+              Text(
+                'Employment type',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(controller: TextEditingController(text: 'Single')),
+
+              const VerticalSpace(size: 10),
 
               // position
+              Text(
+                'Position (Title)',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(controller: TextEditingController(text: 'Hokage')),
+
+              const VerticalSpace(size: 10),
 
               // monthly income
+              Text(
+                'Monthly Income',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(controller: TextEditingController(text: '120000')),
+
+              const VerticalSpace(size: 10),
             ],
           ),
         ),
@@ -152,20 +222,59 @@ class EditNextOfKinView extends StatelessWidget {
 
         // primary info
         AccountInfoCard(
-          height: 453,
+          height: 440,
           width: context.widthPx,
           infoTitle: 'Next of Kin (Personal Details)',
           child: Column(
-            children: const [
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 
+              const VerticalSpace(size: 20),
+
               // relationship
+              Text(
+                'Relationship',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(controller: TextEditingController(text: 'Nigeria')),
+
+              const VerticalSpace(size: 10),
 
               // name
+              Text(
+                'Full Name (Surname first)',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(controller: TextEditingController(text: 'Nigeria')),
 
-              // employment type
+              const VerticalSpace(size: 10),
+
+              // Phone Number
+              Text(
+                'Phone Number',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(controller: TextEditingController(text: 'Nigeria')),
+
+              const VerticalSpace(size: 10),
 
               // phone number
+              // Text(
+              //   'Email Address',
+              //   style: TextStyles.smallTextDark14Px,
+              // ).paddingOnly(bottom: 8),
+              // AppTextField(controller: TextEditingController(text: 'Nigeria')),
+
+              // const VerticalSpace(size: 10),
 
               // email address
+             Text(
+                'Email Address',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(controller: TextEditingController(text: 'Nigeria')),
+
+              const VerticalSpace(size: 10),
             ],
           ),
         ),
@@ -173,18 +282,49 @@ class EditNextOfKinView extends StatelessWidget {
         const VerticalSpace(size: 30),
 
         AccountInfoCard(
-          height: 453,
+          height: 430,
           width: context.widthPx,
           infoTitle: 'Next of Kin Address',
           child: Column(
-            children: const [
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children:  [
+             const VerticalSpace(size: 20),
+
               // country
+              Text(
+                'Country',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(controller: TextEditingController(text: 'Nigeria')),
+
+              const VerticalSpace(size: 10),
 
               // state
+              Text(
+                'State',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(controller: TextEditingController(text: 'Lagos')),
+
+              const VerticalSpace(size: 10),
 
               // city
+              Text(
+                'City',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(controller: TextEditingController(text: 'Lekki')),
 
-              // street address
+              const VerticalSpace(size: 10),
+
+              // street add
+              Text(
+                'Street Address',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(controller: TextEditingController(text: 'qwertyi')),
+
+              const VerticalSpace(size: 10),
             ],
           ),
         ),
