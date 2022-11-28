@@ -65,9 +65,9 @@ class DashboardScreen extends StatelessWidget {
             const VerticalSpace(size: 31),
 
             // card with progress or card with offers
-            // const DebtCard(),
+            const DebtCard(),
 
-            const HighlightsCard(),
+            // const HighlightsCard(),
 
             const VerticalSpace(size: 40),
 
@@ -520,7 +520,7 @@ class DueDebtInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 144,
-      width: 283,
+      width: 288,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -534,7 +534,7 @@ class DueDebtInfoCard extends StatelessWidget {
               // amount
               SizedBox(
                 height: 54,
-                width: 104.19,
+                width: 109.19,
                 child: Column(
                   children: [
                     Row(
