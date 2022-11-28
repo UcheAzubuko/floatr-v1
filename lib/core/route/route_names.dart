@@ -15,4 +15,5 @@ class RouteName {
   static const String dashboard = 'dashboard';
   static const String profile = 'profile';
   static const String editProfile = 'editProfile';
+  static const String snapDocument = 'snapDocument';
 }

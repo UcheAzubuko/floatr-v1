@@ -10,9 +10,10 @@ import 'package:flutter_svg/svg.dart';
 
 class AppDialog {
   // modal
-  static showAppModal(BuildContext context, Widget widget) {
+  static showAppModal(BuildContext context, Widget widget, [Color? backgroundColor]) {
     showModalBottomSheet(
         context: context,
+        backgroundColor: backgroundColor,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(10),

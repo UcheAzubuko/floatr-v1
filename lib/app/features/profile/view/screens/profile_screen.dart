@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
@@ -54,8 +55,9 @@ class ProfileScreen extends StatelessWidget {
 
                       // edit icon
                       InkWell(
-                        onTap: () =>
-                            navigationService.navigateToRoute(const EditProfileScreen(editProfileView: EditProfile.personalDetails)),
+                        onTap: () => navigationService.navigateToRoute(
+                            const EditProfileScreen(
+                                editProfileView: EditProfile.personalDetails)),
                         child: SvgPicture.asset(
                           SvgAppIcons.icEdit,
                         ),
@@ -177,8 +179,9 @@ class ProfileScreen extends StatelessWidget {
                       height: 20,
                       width: 6,
                     ),
-                    onTap: () =>
-                            navigationService.navigateToRoute(const EditProfileScreen(editProfileView: EditProfile.personalDetails)),
+                    onTap: () => navigationService.navigateToRoute(
+                        const EditProfileScreen(
+                            editProfileView: EditProfile.personalDetails)),
                   ),
 
                   // gov-id
@@ -198,8 +201,8 @@ class ProfileScreen extends StatelessWidget {
                       height: 20,
                       width: 6,
                     ),
-                    onTap: () =>
-                        AppDialog.showAppModal(context, const GovIDModalView()),
+                    onTap: () => AppDialog.showAppModal(
+                        context, const GovIDModalView(), Colors.transparent),
                   ),
 
                   // address
@@ -218,8 +221,9 @@ class ProfileScreen extends StatelessWidget {
                       height: 20,
                       width: 6,
                     ),
-                    onTap: () =>
-                            navigationService.navigateToRoute(const EditProfileScreen(editProfileView: EditProfile.residentialAddress)),
+                    onTap: () => navigationService.navigateToRoute(
+                        const EditProfileScreen(
+                            editProfileView: EditProfile.residentialAddress)),
                   ),
 
                   // employment details
@@ -238,8 +242,9 @@ class ProfileScreen extends StatelessWidget {
                       height: 20,
                       width: 6,
                     ),
-                    onTap: () =>
-                            navigationService.navigateToRoute(const EditProfileScreen(editProfileView: EditProfile.employmentDetails)),
+                    onTap: () => navigationService.navigateToRoute(
+                        const EditProfileScreen(
+                            editProfileView: EditProfile.employmentDetails)),
                   ),
 
                   // next of kin
@@ -258,8 +263,9 @@ class ProfileScreen extends StatelessWidget {
                       height: 20,
                       width: 6,
                     ),
-                    onTap: () =>
-                            navigationService.navigateToRoute(const EditProfileScreen(editProfileView: EditProfile.nextOfKin)),
+                    onTap: () => navigationService.navigateToRoute(
+                        const EditProfileScreen(
+                            editProfileView: EditProfile.nextOfKin)),
                   ),
                 ],
               ),
@@ -495,57 +501,115 @@ class GovIDModalView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 441,
-      padding: const EdgeInsets.all(24.5),
-      child: ListView(
+    final NavigationService navigationService = di<NavigationService>();
+    return CustomPaint(
+      size: Size(
+          context.widthPx, (context.widthPx * 1.2833333333333334).toDouble()),
+      painter: ModalTipPainter(),
+      child: Stack(
+        alignment: const Alignment(0, -0.95),
         children: [
-          Center(
-            child: Text(
-              'Which Official ID whould you like to use?',
-              style: TextStyles.smallTextDark14Px,
+          const MyArc(diameter: 30,),
+          Container(
+            height: 491,
+            color: Colors.transparent,
+            padding: const EdgeInsets.only(left: 24.5, right: 24.5, top: 60),
+            child: ListView(
+              children: [
+                Center(
+                  child: Text(
+                    'Which Official ID whould you like to use?',
+                    style: TextStyles.smallTextDark14Px,
+                  ),
+                ),
+
+                const VerticalSpace(size: 16),
+
+                // drivers license
+                GovIDModalItem(
+                  leadingIconPath: SvgAppIcons.icLicenseDriver,
+                  itemTitle: 'Driver\'s License',
+                  endIconPath: SvgAppIcons.icArrowRight,
+                  onTap: () =>
+                      navigationService.navigateTo(RouteName.snapDocument),
+                ),
+
+                const VerticalSpace(size: 16),
+
+                // NIN
+                GovIDModalItem(
+                  leadingIconPath: SvgAppIcons.icLicenseDriver,
+                  itemTitle: 'National Identity Card',
+                  endIconPath: SvgAppIcons.icArrowRight,
+                  onTap: () =>
+                      navigationService.navigateTo(RouteName.snapDocument),
+                ),
+
+                const VerticalSpace(size: 16),
+
+                // int passport
+                GovIDModalItem(
+                  leadingIconPath: SvgAppIcons.icLicenseDriver,
+                  itemTitle: 'International Passport',
+                  endIconPath: SvgAppIcons.icArrowRight,
+                  onTap: () =>
+                      navigationService.navigateTo(RouteName.snapDocument),
+                ),
+
+                const VerticalSpace(size: 16),
+
+                // voters card
+                GovIDModalItem(
+                  leadingIconPath: SvgAppIcons.icLicenseDriver,
+                  itemTitle: 'Voter’s Card',
+                  endIconPath: SvgAppIcons.icArrowRight,
+                  onTap: () =>
+                      navigationService.navigateTo(RouteName.snapDocument),
+                ),
+              ],
             ),
-          ),
-
-          const VerticalSpace(size: 16),
-
-          // drivers license
-          const GovIDModalItem(
-            leadingIconPath: SvgAppIcons.icLicenseDriver,
-            itemTitle: 'Driver\'s License',
-            endIconPath: SvgAppIcons.icArrowRight,
-          ),
-
-          const VerticalSpace(size: 16),
-
-          // NIN
-          const GovIDModalItem(
-            leadingIconPath: SvgAppIcons.icLicenseDriver,
-            itemTitle: 'National Identity Card',
-            endIconPath: SvgAppIcons.icArrowRight,
-          ),
-
-          const VerticalSpace(size: 16),
-
-          // int passport
-          const GovIDModalItem(
-            leadingIconPath: SvgAppIcons.icLicenseDriver,
-            itemTitle: 'International Passport',
-            endIconPath: SvgAppIcons.icArrowRight,
-          ),
-
-          const VerticalSpace(size: 16),
-
-          // voters card
-          const GovIDModalItem(
-            leadingIconPath: SvgAppIcons.icLicenseDriver,
-            itemTitle: 'Voter’s Card',
-            endIconPath: SvgAppIcons.icArrowRight,
           ),
         ],
       ),
     );
   }
+}
+
+class MyArc extends StatelessWidget {
+  final double diameter;
+
+  const MyArc({super.key, this.diameter = 200});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: MyArcPainter(),
+      size: Size(diameter, diameter),
+    );
+  }
+}
+
+
+// This is the Painter class
+class MyArcPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()..color = AppColors.lightGrey300.withOpacity(0.8);
+    canvas.drawArc(
+      Rect.fromCenter(
+        center: Offset(size.height / 2, size.width / 2),
+        height: size.height,
+        width: (size.width) * 2 ,
+      ),
+      math.pi,
+      math.pi,
+      false,
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
 class GovIDModalItem extends StatelessWidget {
@@ -554,35 +618,40 @@ class GovIDModalItem extends StatelessWidget {
     required this.leadingIconPath,
     required this.itemTitle,
     required this.endIconPath,
+    this.onTap,
   }) : super(key: key);
 
   final String leadingIconPath;
   final String itemTitle;
   final String endIconPath;
+  final Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 72,
-      decoration: BoxDecoration(
-          color: AppColors.lightGrey300,
-          borderRadius: BorderRadius.circular(16)),
-      padding: const EdgeInsets.all(12),
-      child: Row(
-        children: [
-          SvgPicture.asset(leadingIconPath),
-          const HorizontalSpace(size: 13),
-          Text(
-            itemTitle,
-            style: TextStyles.normalTextDarkF500,
-          ),
-          const Spacer(),
-          SvgPicture.asset(
-            endIconPath,
-            width: 16,
-            height: 16,
-          ),
-        ],
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        height: 72,
+        decoration: BoxDecoration(
+            color: AppColors.lightGrey300,
+            borderRadius: BorderRadius.circular(16)),
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            SvgPicture.asset(leadingIconPath),
+            const HorizontalSpace(size: 13),
+            Text(
+              itemTitle,
+              style: TextStyles.normalTextDarkF500,
+            ),
+            const Spacer(),
+            SvgPicture.asset(
+              endIconPath,
+              width: 16,
+              height: 16,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -616,5 +685,69 @@ class CustomProfileRow extends StatelessWidget {
         ],
       ).paddingOnly(top: 20),
     );
+  }
+}
+
+// import 'dart:ui' as ui;
+
+//Add this CustomPaint widget to the Widget Tree
+// CustomPaint(
+//     size: Size(WIDTH, (WIDTH*1.2833333333333334).toDouble()), //You can Replace [WIDTH] with your desired width for Custom Paint and height will be calculated automatically
+//     painter: RPSCustomPainter(),
+// )
+
+//Copy this CustomPainter code to the Bottom of the File
+class ModalTipPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    Path path_0 = Path();
+    path_0.moveTo(size.width * 0.5492194, size.height * 0.007617013);
+    path_0.cubicTo(
+        size.width * 0.5161944,
+        size.height * -0.00002502965,
+        size.width * 0.4810278,
+        size.height * -0.00002502641,
+        size.width * 0.4480028,
+        size.height * 0.007617013);
+    path_0.lineTo(size.width * 0.2904333, size.height * 0.04407749);
+    path_0.lineTo(size.width * 0.08888889, size.height * 0.04407749);
+    path_0.cubicTo(
+        size.width * 0.04698639,
+        size.height * 0.04407749,
+        size.width * 0.02603494,
+        size.height * 0.04407749,
+        size.width * 0.01301747,
+        size.height * 0.05422100);
+    path_0.cubicTo(0, size.height * 0.06436450, 0, size.height * 0.08069026, 0,
+        size.height * 0.1133416);
+    path_0.lineTo(0, size.height);
+    path_0.lineTo(size.width, size.height);
+    path_0.lineTo(size.width, size.height * 0.1133416);
+    path_0.cubicTo(
+        size.width,
+        size.height * 0.08069026,
+        size.width,
+        size.height * 0.06436450,
+        size.width * 0.9869833,
+        size.height * 0.05422100);
+    path_0.cubicTo(
+        size.width * 0.9739639,
+        size.height * 0.04407749,
+        size.width * 0.9530139,
+        size.height * 0.04407749,
+        size.width * 0.9111111,
+        size.height * 0.04407749);
+    path_0.lineTo(size.width * 0.7067889, size.height * 0.04407749);
+    path_0.lineTo(size.width * 0.5492194, size.height * 0.007617013);
+    path_0.close();
+
+    Paint paint0Fill = Paint()..style = PaintingStyle.fill;
+    paint0Fill.color = Colors.white.withOpacity(1.0);
+    canvas.drawPath(path_0, paint0Fill);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
   }
 }
