@@ -1,7 +1,9 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/authentication/data/model/params/verify_phone_params.dart';
+import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:floatr/app/widgets/general_button.dart';
-import 'package:floatr/core/route/route_names.dart';
+import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,6 +31,13 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
   // final OtpFieldController _otpFieldController = OtpFieldController();
 
   // bool _hasInputtedOTP = false;
+  late VerifyPhoneParams _verifyPhoneParams;
+
+  @override
+  void initState() {
+    _verifyPhoneParams = VerifyPhoneParams(token: null);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +118,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                 backgroundColor: AppColors.textFieldBackground.withOpacity(0.4),
                 enabledBorderColor: Colors.transparent,
               ),
+              onCompleted: (otpToken) => _verifyPhoneParams.token = otpToken,
             ),
 
             const VerticalSpace(
@@ -175,15 +185,18 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
 
             FocusScope.of(context).hasFocus
                 ? const CustomKeyboard()
-                : GeneralButton(
-                    onPressed: () =>
-                        navigationService.navigateTo(RouteName.verifyBVN),
-                    buttonTextColor: Colors.white,
-                    child: const Text(
-                      'Verify Phone',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
+                : Consumer<AuthenticationProvider>(
+                    builder: (context, provider, _) {
+                    return GeneralButton(
+                      onPressed: () => _handleVerifyOTP(provider),
+                      buttonTextColor: Colors.white,
+                      isLoading: provider.loadingState == LoadingState.busy,
+                      child: const Text(
+                        'Verify Phone',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  }),
 
             const SizedBox(
               height: 25,
@@ -192,5 +205,10 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
         ),
       ).paddingSymmetric(horizontal: context.widthPx * 0.037),
     );
+  }
+
+  _handleVerifyOTP(AuthenticationProvider authProvider) async {
+    authProvider.updateVerifyPhoneParams(_verifyPhoneParams);
+    await authProvider.initiateVerifyPhone();
   }
 }

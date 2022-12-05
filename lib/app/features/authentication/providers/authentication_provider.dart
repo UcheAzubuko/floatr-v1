@@ -82,19 +82,21 @@ class AuthenticationProvider extends BaseProvider {
 
   Future<void> initiateVerifyPhone() async {
     updateLoadingState(LoadingState.busy);
-    var response = await authenticationRepository.verifyPhone(_verifyPhoneParams!);
+    var response =
+        await authenticationRepository.verifyPhone(_verifyPhoneParams!);
 
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'Phone verification failed!');
+
       // trigger error on ui
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
-      _navigationService.navigateTo(RouteName.verifyOTP);
+      _navigationService.navigateTo(RouteName.verifyBVN);
     });
   }
 
-   Future<void> initiateVerifyBVN() async {
+  Future<void> initiateVerifyBVN() async {
     updateLoadingState(LoadingState.busy);
     var response = await authenticationRepository.verifyBVN(_verifyBVNParams!);
 
@@ -104,7 +106,7 @@ class AuthenticationProvider extends BaseProvider {
       // trigger error on ui
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
-      _navigationService.navigateTo(RouteName.verifyOTP);
+      _navigationService.navigateTo(RouteName.takeSelfie);
     });
   }
 }

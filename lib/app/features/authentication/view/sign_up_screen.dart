@@ -3,6 +3,7 @@ import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/data/model/params/register_params.dart';
 import 'package:floatr/app/widgets/disabled_button.dart';
 import 'package:floatr/app/widgets/text_field.dart';
+import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
@@ -201,7 +202,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   controller: passwordController,
                   textInputType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.unspecified,
-                  onSaved: (String? password) => _registerParams.password = password,
+                  onSaved: (String? password) =>
+                      _registerParams.password = password,
                 ),
 
                 // confirm password text and textfield
@@ -322,29 +324,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const VerticalSpace(size: 15),
 
                 Consumer<AuthenticationProvider>(
-                  builder: (context, authProvider, __) {
-                    return Container(
-                      child: acceptedTC!
-                          ? GeneralButton(
-                              onPressed: () {
-                                acceptedTC!
-                                    ? _handleRegister(authProvider)
-                                    : null;
-                              },
-                              buttonTextColor: Colors.white,
-                              child: const Text('Next'),
-                            )
-                          : DisabledButton(
-                              onPressed: () => acceptedTC!
-                                  ? navigationService
-                                      .navigateTo(RouteName.verifyOTP)
-                                  : null,
-                              buttonTextColor: Colors.white,
-                              child: const Text('Next'),
-                            ),
-                    );
-                  }
-                ),
+                    builder: (context, authProvider, __) {
+                  return Container(
+                    child: acceptedTC!
+                        ? GeneralButton(
+                            onPressed: () {
+                              acceptedTC!
+                                  ? _handleRegister(authProvider)
+                                  : null;
+                              // navigationService.navigateTo(RouteName.profile);
+                            },
+                            buttonTextColor: Colors.white,
+                            isLoading: authProvider.loadingState == LoadingState.busy,
+                            child: const Text('Next'),
+                          )
+                        : DisabledButton(
+                            onPressed: () => acceptedTC!
+                                ? navigationService
+                                    .navigateTo(RouteName.verifyOTP)
+                                : null,
+                            buttonTextColor: Colors.white,
+                            child: const Text('Next'),
+                          ),
+                  );
+                }),
 
                 const SizedBox(
                   height: 25,

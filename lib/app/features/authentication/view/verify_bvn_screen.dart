@@ -1,11 +1,14 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/authentication/data/model/params/verify_bvn_params.dart';
+import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
+import 'package:floatr/core/providers/base_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/route/navigation_service.dart';
-import '../../../../core/route/route_names.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/spacing.dart';
 import '../../../widgets/app_text.dart';
@@ -22,6 +25,17 @@ class VerifyBVNScreen extends StatefulWidget {
 
 class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
   final NavigationService navigationService = di<NavigationService>();
+
+  late VerifyBVNParams _verifyBVNParams;
+
+   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    _verifyBVNParams = VerifyBVNParams(bvn: null);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,11 +73,15 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
 
             const VerticalSpace(size: 10),
 
-            AppTextField(
-              hintText: '234353633333',
-              controller: TextEditingController(),
-              textInputType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.unspecified,
+            Form(
+              key: _formKey,
+              child: AppTextField(
+                hintText: '234353633333',
+                controller: TextEditingController(),
+                textInputType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.unspecified,
+                onSaved: (bvn) => _verifyBVNParams.bvn = bvn,
+              ),
             ),
 
             const VerticalSpace(
@@ -96,15 +114,18 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
 
             const Spacer(),
 
-            GeneralButton(
-              onPressed: () =>
-                  navigationService.navigateTo(RouteName.takeSelfie),
-              buttonTextColor: Colors.white,
-              child: const Text(
-                'Take Selfie',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
+            Consumer<AuthenticationProvider>(
+                builder: (context, authProvider, _) {
+              return GeneralButton(
+                onPressed: () => _handleVerifyBVN(authProvider),
+                buttonTextColor: Colors.white,
+                isLoading: authProvider.loadingState == LoadingState.busy,
+                child: const Text(
+                  'Take Selfie',
+                  style: TextStyle(color: Colors.white),
+                ),
+              );
+            }),
 
             const SizedBox(
               height: 25,
@@ -113,5 +134,10 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
         ),
       ).paddingSymmetric(horizontal: context.widthPx * 0.037),
     );
+  }
+
+  Future<void> _handleVerifyBVN(AuthenticationProvider authProvider) async {
+    authProvider.updateVerifyBVNParams(_verifyBVNParams);
+    await authProvider.initiateVerifyPhone();
   }
 }

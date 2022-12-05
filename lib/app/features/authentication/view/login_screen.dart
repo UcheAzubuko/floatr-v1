@@ -4,6 +4,7 @@ import 'package:floatr/app/features/authentication/data/model/params/login_param
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/general_button.dart';
+import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/app_colors.dart';
@@ -157,6 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     // onPressed: () =>
                     //     navigationService.navigateTo(RouteName.createPin),
                     onPressed: () => _handleLogin(_),
+                    isLoading: _.loadingState == LoadingState.busy,
                     child: const Text('Login'),
                   );
                 }),
