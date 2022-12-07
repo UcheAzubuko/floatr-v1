@@ -67,6 +67,8 @@ class DashboardScreen extends StatelessWidget {
             // card with progress or card with offers
             const DebtCard(),
 
+            // const DataCompletionWidget(),
+
             // const HighlightsCard(),
 
             const VerticalSpace(size: 40),
@@ -124,6 +126,177 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 }
+
+class DataCompletionWidget extends StatelessWidget {
+  const DataCompletionWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 576,
+      width: context.widthPx,
+      // color: AppColors.primaryColor,
+      padding: const EdgeInsets.all(26),
+      decoration: BoxDecoration(
+        color: AppColors.primaryColorLight,
+        borderRadius: BorderRadius.circular(16),
+      ),
+
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // floatr logo
+          SvgPicture.asset(
+            "assets/images/main-logo.svg",
+            height: 24,
+            // fit: BoxFit.cover,
+          ),
+
+          const VerticalSpace(
+            size: 10,
+          ),
+
+          // ready.. set
+          Text(
+            'Ready... Set...',
+            style: TextStyles.largeTextDarkPoppins600,
+          ),
+
+          const VerticalSpace(
+            size: 10,
+          ),
+
+          // all cap
+          Text(
+            '''Your Floatr journey starts now. Complete your \nprofile to gain access to loan offers just for you.''',
+            style: TextStyles.smallTextDark,
+          ),
+
+          const VerticalSpace(
+            size: 34,
+          ),
+
+          // personal
+          const CriteriaWidget(
+            criteriaTitle: 'Personal Details',
+            criteriaState: CriteriaState.done,
+          ),
+
+          const VerticalSpace(
+            size: 20,
+          ),
+
+          // gov
+          const CriteriaWidget(
+            criteriaTitle: 'Government Issued ID',
+            criteriaState: CriteriaState.pending,
+          ),
+
+          const VerticalSpace(
+            size: 20,
+          ),
+
+          // res addy
+          const CriteriaWidget(
+            criteriaTitle: 'Residential Address',
+            criteriaState: CriteriaState.notDone,
+          ),
+
+          const VerticalSpace(
+            size: 20,
+          ),
+
+          // employment details
+          const CriteriaWidget(
+            criteriaTitle: 'Employment Details',
+            criteriaState: CriteriaState.notDone,
+          ),
+
+          const VerticalSpace(
+            size: 20,
+          ),
+
+          // next of kin
+          const CriteriaWidget(
+            criteriaTitle: 'Next of Kin',
+            criteriaState: CriteriaState.notDone,
+          ),
+
+          const VerticalSpace(
+            size: 34,
+          ),
+
+          // button
+          GeneralButton(
+              height: 48,
+              width: context.widthPx,
+              borderRadius: 12,
+              onPressed: () {},
+              child: const AppText(
+                text: 'LET\'S GO!',
+                color: Colors.white,
+                size: 14,
+              ))
+        ],
+      ),
+    );
+  }
+}
+
+class CriteriaWidget extends StatelessWidget {
+  const CriteriaWidget(
+      {Key? key, required this.criteriaTitle, required this.criteriaState})
+      : super(key: key);
+
+  final String criteriaTitle;
+  final CriteriaState criteriaState;
+
+  Widget prefferedIcon(CriteriaState criteriaState) {
+    switch (criteriaState) {
+      case CriteriaState.done:
+        return SvgPicture.asset(
+          'assets/icons/fill/tick-circle.svg',
+          color: Colors.green,
+        );
+      case CriteriaState.notDone:
+        return SvgPicture.asset(
+          'assets/icons/outline/tick-circle.svg',
+          color: Colors.grey,
+        );
+      case CriteriaState.pending:
+        return SvgPicture.asset(
+          'assets/icons/outline/tick-circle-broken.svg',
+          color: Colors.green,
+        );
+      default:
+        return SvgPicture.asset(
+          'assets/icons/fill/tick-circle.svg',
+          color: Colors.green,
+        );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          criteriaTitle,
+          style: TextStyles.smallTextDark14Px,
+        ),
+        CircleAvatar(
+            radius: 20,
+            backgroundColor: Colors.white,
+            child: prefferedIcon(criteriaState)),
+      ],
+    );
+  }
+}
+
+enum CriteriaState { pending, done, notDone }
 
 class ActivitiesList extends StatelessWidget {
   const ActivitiesList({

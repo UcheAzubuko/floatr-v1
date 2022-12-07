@@ -329,10 +329,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: acceptedTC!
                         ? GeneralButton(
                             onPressed: () {
-                              acceptedTC!
-                                  ? _handleRegister(authProvider)
-                                  : null;
-                              // navigationService.navigateTo(RouteName.profile);
+                              // acceptedTC!
+                              //     ? _handleRegister(authProvider)
+                              //     : null;
+                              navigationService.navigateTo(RouteName.dashboard);
                             },
                             buttonTextColor: Colors.white,
                             isLoading: authProvider.loadingState == LoadingState.busy,
