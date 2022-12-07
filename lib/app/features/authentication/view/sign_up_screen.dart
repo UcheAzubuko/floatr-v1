@@ -332,7 +332,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               // acceptedTC!
                               //     ? _handleRegister(authProvider)
                               //     : null;
-                              navigationService.navigateTo(RouteName.dashboard);
+                              navigationService.navigateTo(RouteName.navbar);
                             },
                             buttonTextColor: Colors.white,
                             isLoading: authProvider.loadingState == LoadingState.busy,

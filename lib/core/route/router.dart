@@ -12,11 +12,12 @@ import 'package:floatr/app/features/authentication/view/verify_otp_screen.dart';
 import 'package:floatr/app/features/dashboard/view/dashboard_screen.dart';
 import 'package:floatr/app/features/onboarding/post_onboarding.dart';
 import 'package:floatr/app/features/onboarding/splash_screen.dart';
-import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
 import 'package:floatr/app/features/profile/view/screens/profile_screen.dart';
 import 'package:floatr/app/features/profile/view/screens/snap_document_screen.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
+
+import '../../app/widgets/bottom_navbar.dart';
 
 class Router {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -54,8 +55,8 @@ class Router {
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
       case RouteName.snapDocument:
         return MaterialPageRoute(builder: (_) => const SnapDocumentScreen());
-      // case RouteName.editProfile:
-      //   return MaterialPageRoute(builder: (_) => const EditProfileScreen());
+      case RouteName.navbar:
+        return MaterialPageRoute(builder: (_) => const BottomNavigation());
       default:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }
