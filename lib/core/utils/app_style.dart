@@ -3,6 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class TextStyles {
+  static TextStyle smallerTextDark10px = const TextStyle(
+    fontSize: 10,
+    color: AppColors.black,
+    fontWeight: FontWeight.w700,
+  );
+
   static TextStyle smallTextPrimary = const TextStyle(
     fontSize: 10,
     color: AppColors.primaryColor,

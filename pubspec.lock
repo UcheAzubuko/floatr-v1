@@ -121,6 +121,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_xlider:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: master
+      resolved-ref: "8f9e3f23231640c617731e0d8c5527f3786ef9d2"
+      url: "https://github.com/swaroopsuthar/flutter_xlider.git"
+    source: git
+    version: "3.4.0"
   get_it:
     dependency: "direct main"
     description:

@@ -1,14 +1,18 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/loan/view/screens/loan_application_screen.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/general_button.dart';
+import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:floatr/core/utils/app_style.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+
+import '../../../../core/misc/dependency_injectors.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -65,11 +69,11 @@ class DashboardScreen extends StatelessWidget {
             const VerticalSpace(size: 31),
 
             // card with progress or card with offers
-            const DebtCard(),
+            // const DebtCard(),
 
             // const DataCompletionWidget(),
 
-            // const HighlightsCard(),
+            const HighlightsCard(),
 
             const VerticalSpace(size: 40),
 
@@ -470,8 +474,11 @@ class HighlightsInfoCard extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
+  
+
   @override
   Widget build(BuildContext context) {
+    NavigationService navigationService = di<NavigationService>();
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -584,7 +591,7 @@ class HighlightsInfoCard extends StatelessWidget {
               GeneralButton(
                 width: 245,
                 height: 30,
-                onPressed: () {},
+                onPressed: () => navigationService.navigateToRoute(const LoanApplicationScreen()),
                 borderRadius: 8,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
