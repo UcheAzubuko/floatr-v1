@@ -5,6 +5,7 @@ class AppImages {
   static const String onboardingScreenTwo = 'assets/images/onboarding2';
   static const String onboardingScreenThree = 'assets/images/onboarding3';
   static const String walletSad = 'assets/images/wallet_sad.png';
+  static const String successfulImage = 'assets/images/successful-image.png';
 }
 
 class SvgImages {

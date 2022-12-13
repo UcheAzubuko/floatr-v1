@@ -91,7 +91,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 icon: BottomItemIcon(
                   color:
                       currentTabIndex == 1 ? AppColors.primaryColor : AppColors.grey,
-                  assetName: 'assets/icons/outline/home.svg',
+                  assetName: 'assets/icons/outline/wallet-nav.svg',
                   height: 24,
                 ),
                 label: '',
@@ -102,7 +102,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 icon: BottomItemIcon(
                   color:
                       currentTabIndex == 2 ? AppColors.primaryColor : AppColors.grey,
-                  assetName: 'assets/icons/outline/home.svg',
+                  assetName: 'assets/icons/outline/card-nav.svg',
                   height: 24,
                 ),
                 label: '',
@@ -122,8 +122,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
               BottomNavigationBarItem(
                 icon: BottomItemIcon(
                   color:
-                      currentTabIndex == 3 ? AppColors.primaryColor : AppColors.grey,
-                  assetName: 'assets/icons/outline/profile.svg',
+                      currentTabIndex == 3 ? null : Colors.grey,
+                  assetName: currentTabIndex == 3 ? 'assets/icons/outline/user-nav.svg' : 'assets/icons/outline/user-nav.svg',
                   height: 24,
                 ),
                 label: '',
@@ -140,12 +140,12 @@ class _BottomNavigationState extends State<BottomNavigation> {
 class BottomItemIcon extends StatelessWidget {
   const BottomItemIcon(
       {Key? key,
-      required this.color,
+       this.color,
       required this.assetName,
       this.height = 18})
       : super(key: key);
 
-  final Color color;
+  final Color? color;
   final String assetName;
   final double height;
 

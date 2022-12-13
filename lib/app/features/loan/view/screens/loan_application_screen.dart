@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/loan/view/screens/loan_info_screen.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/dialogs.dart';
 import 'package:floatr/app/widgets/general_button.dart';
@@ -13,6 +16,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
 
+import '../../../../../core/misc/dependency_injectors.dart';
+import '../../../../../core/route/navigation_service.dart';
 import '../../../../widgets/custom_appbar.dart';
 
 class LoanApplicationScreen extends StatelessWidget {
@@ -223,10 +228,32 @@ class EligibleLenderView extends StatelessWidget {
   }
 }
 
-class CheckingEligibilityDialogContent extends StatelessWidget {
+class CheckingEligibilityDialogContent extends StatefulWidget {
   const CheckingEligibilityDialogContent({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<CheckingEligibilityDialogContent> createState() =>
+      _CheckingEligibilityDialogContentState();
+}
+
+class _CheckingEligibilityDialogContentState
+    extends State<CheckingEligibilityDialogContent> {
+  NavigationService navigationService = di<NavigationService>();
+
+  @override
+  void initState() {
+    Timer(
+      const Duration(seconds: 3),
+      (() => navigationService
+        ..pop() // remove dialog
+        ..navigateToRoute(
+          const EligibleScreen(),
+        )),
+    );
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -244,7 +271,6 @@ class CheckingEligibilityDialogContent extends StatelessWidget {
         const VerticalSpace(
           size: 42,
         ),
-
         SizedBox(
           height: 116,
           width: 154,
@@ -257,11 +283,9 @@ class CheckingEligibilityDialogContent extends StatelessWidget {
           'Checking Eligibility...',
           style: TextStyles.normalTextDarkF800,
         ),
-
         const VerticalSpace(
           size: 22,
         ),
-
         Text(
           '''Please hold on while we check if you are eligible \n                                               for this loan.''',
           style: TextStyles.smallTextGrey,
