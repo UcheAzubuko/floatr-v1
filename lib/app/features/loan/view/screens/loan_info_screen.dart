@@ -295,7 +295,7 @@ class AddNewCardScreen extends StatelessWidget {
           GeneralButton(
             height: 42,
             onPressed: () =>
-                navigationService.navigateToRoute(const AddNewBankScreen()),
+                navigationService.navigateToRoute(const SelectBankScreen()),
             borderRadius: 8,
             child: const AppText(
               text: 'CONTINUE',
@@ -315,7 +315,208 @@ class SelectCardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LoanApplicationInformationBaseView(
-      child: Column(),
+      child: Column(
+        children: [
+          const VerticalSpace(
+            size: 43,
+          ),
+
+          // title
+          Text(
+            'Select Bank',
+            style: TextStyles.largeTextDark,
+          ),
+
+          const VerticalSpace(
+            size: 9,
+          ),
+
+          Text(
+            'Which bank would you like us to send the funds \nto?',
+            style: TextStyles.smallTextGrey14Px,
+          ),
+
+          const Spacer(),
+        ],
+      ),
+    );
+  }
+}
+
+class SelectBankScreen extends StatelessWidget {
+  const SelectBankScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    NavigationService navigationService = di<NavigationService>();
+    return LoanApplicationInformationBaseView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const VerticalSpace(
+            size: 43,
+          ),
+
+          // title
+          Text(
+            'Select Bank',
+            style: TextStyles.largeTextDark,
+          ),
+
+          const VerticalSpace(
+            size: 9,
+          ),
+
+          Text(
+            'Which bank would you like us to send the funds \nto?',
+            style: TextStyles.smallTextGrey14Px,
+          ),
+
+          const VerticalSpace(
+            size: 29,
+          ),
+
+          SizedBox(
+            height: context.heightPx * 0.6,
+            child: ListView(
+              children: const [
+                SelectBank(
+                  color: AppColors.lightGrey300,
+                  bankName: 'United Bank for Africa',
+                  bankNumber: '2139872309',
+                  isDefault: true,
+                ),
+                VerticalSpace(
+                  size: 24,
+                ),
+                SelectBank(
+                  color: AppColors.lightGrey300,
+                  bankName: 'United Bank for Africa',
+                  bankNumber: '2139872309',
+                ),
+              ],
+            ),
+          ),
+
+          InkWell(
+            onTap: () =>
+                navigationService.navigateToRoute(const AddNewBankScreen()),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                // plus
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: AppColors.primaryColor,
+                  child: Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
+                ),
+
+                HorizontalSpace(
+                  size: 8,
+                ),
+
+                // add new bank
+                Text(
+                  'ADD NEW BANK',
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primaryColor),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class SelectBank extends StatelessWidget {
+  const SelectBank(
+      {Key? key,
+      required this.color,
+      required this.bankName,
+      required this.bankNumber,
+      this.isDefault = false})
+      : super(key: key);
+
+  final Color color;
+  final String bankName;
+  final String bankNumber;
+  final bool isDefault;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 72,
+      width: context.widthPx,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          // image and container
+          SizedBox.square(
+            dimension: 42,
+            child: Image.asset(
+              AppImages.bankBuilding,
+            ),
+          ),
+
+          const HorizontalSpace(
+            size: 16,
+          ),
+
+          // bank name and number column
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // bank name
+              Text(
+                bankName,
+                style: TextStyles.smallTextDark14Px,
+              ),
+
+              const VerticalSpace(
+                size: 5,
+              ),
+
+              // bank num
+              Text(
+                bankNumber,
+                style: TextStyles.smallTextGrey,
+              )
+            ],
+          ),
+
+          const Spacer(),
+
+          // show default
+          isDefault
+              ? Align(
+                  alignment: Alignment.bottomRight,
+                  child: Container(
+                    width: 60,
+                    height: 21,
+                    decoration: BoxDecoration(
+                        color: AppColors.textFieldBackground,
+                        borderRadius: BorderRadius.circular(8)),
+                    child: const Center(
+                        child: Text(
+                      'Default',
+                      style: TextStyle(fontSize: 10),
+                    )),
+                  ),
+                )
+              : Container()
+        ],
+      ),
     );
   }
 }
@@ -449,33 +650,165 @@ class LoanSummaryScreen extends StatelessWidget {
               'Please confirm the details of your loan.',
               style: TextStyles.smallTextGrey14Px,
             ),
+
+            const VerticalSpace(
+              size: 38,
+            ),
+
+            // loan info box A
             Container(
               height: 184,
               width: context.widthPx,
+              padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   color: AppColors.lightGrey1),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  // principal
+                  LoanSummaryRow(
+                    itemTitle: 'Principal',
+                    itemData: '₦20,000',
+                  ),
+
+                  //interest
+                  LoanSummaryRow(
+                    itemTitle: 'Interest',
+                    itemData: '₦1000 (5%)',
+                  ),
+
+                  //platform
+                  LoanSummaryRow(
+                    itemTitle: 'Platform Fee',
+                    itemData: '₦4000 (20%)',
+                  ),
+
+                  // payback amount
+                  LoanSummaryRow(
+                    itemTitle: 'Payback Amount',
+                    itemData: '₦25,000',
+                  ),
+                ],
+              ),
+            ),
+
+            const VerticalSpace(
+              size: 18,
+            ),
+
+            // loan info box B
+            Container(
+              height: 144,
+              width: context.widthPx,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: AppColors.lightGrey1),
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  // loan tenure
+                  LoanSummaryRow(
+                    itemTitle: 'Loan Tenure',
+                    itemData: '2 Weeks',
+                  ),
+
+                  //No of Payments
+                  LoanSummaryRow(
+                    itemTitle: 'No of Payments',
+                    itemData: '2 * ₦12,500 (Weekly)',
+                  ),
+
+                  //next payment
+                  LoanSummaryRow(
+                    itemTitle: 'Next Payment',
+                    itemData: '21 Dec 22',
+                  ),
+
+                
+                ],
+              ),
             ),
             const VerticalSpace(
               size: 18,
             ),
+
+            // bank and card
             Container(
               height: 184,
               width: context.widthPx,
+              padding: const EdgeInsets.all(13),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   color: AppColors.lightGrey1),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SelectBank(
+                      color: AppColors.primaryColorLight.withOpacity(0.25),
+                      bankName: 'United Bank for Africa',
+                      bankNumber: '2139872309'),
+                  Container(
+                    height: 72,
+                    width: context.widthPx,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryColorLight.withOpacity(0.25),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        // image and container
+                        Container(
+                          height: 109,
+                          width: 64,
+                          padding: const EdgeInsets.only(top: 20),
+                          child: Image.asset(
+                            AppImages.card,
+                            fit: BoxFit.fitHeight,
+                          ),
+                        ),
+
+                        const HorizontalSpace(
+                          size: 8,
+                        ),
+
+                        // bank name and number column
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // name
+                              Text(
+                                'John Doe',
+                                style: TextStyles.smallTextDark14Px,
+                              ),
+
+                              const VerticalSpace(
+                                size: 5,
+                              ),
+
+                              // bank num
+                              const Text(
+                                '• • • •     • • • •    • • • •    5318',
+                                // style: TextStyles.smallTextGrey,
+                                style: TextStyle(
+                                    wordSpacing: 0,
+                                    color: AppColors.grey500,
+                                    fontWeight: FontWeight.w600),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const VerticalSpace(
-              size: 18,
-            ),
-            Container(
-              height: 184,
-              width: context.widthPx,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: AppColors.lightGrey1),
-            ),
+
             const VerticalSpace(
               size: 30,
             ),
@@ -496,6 +829,33 @@ class LoanSummaryScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class LoanSummaryRow extends StatelessWidget {
+  const LoanSummaryRow({
+    Key? key,
+    required this.itemData,
+    required this.itemTitle,
+  }) : super(key: key);
+  final String itemTitle;
+  final String itemData;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          itemTitle,
+          style: TextStyles.smallTextGrey14Px,
+        ),
+        Text(
+          itemData,
+          style: TextStyles.normalTextDarkPoppins,
+        ),
+      ],
     );
   }
 }

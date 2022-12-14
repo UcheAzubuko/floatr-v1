@@ -51,6 +51,12 @@ class TextStyles {
     color: AppColors.black,
   );
 
+  static TextStyle normalTextDarkPoppins = GoogleFonts.poppins(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: AppColors.black,
+  );
+
   static TextStyle largeTextDarkPoppins = GoogleFonts.poppins(
     fontSize: 24,
     fontWeight: FontWeight.w700,

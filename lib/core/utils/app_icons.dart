@@ -4,6 +4,7 @@ class SvgAppIcons {
 
   static const String icArrowRight = 'assets/icons/outline/arrow-right.svg';
   static const String icArrowNormalLeft = 'assets/icons/fill/arrow-normal-left.svg';
+  static const String icBankBuilding = 'assets/icons/fill/bank-building-icon.svg';
   static const String icCaution = 'assets/icons/fill/caution.svg';
   static const String icCards = 'assets/icons/outline/cards.svg';
   static const String icClipboardText = 'assets/icons/outline/clipboard-text.svg';
