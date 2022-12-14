@@ -19,6 +19,7 @@ import 'package:flutter_xlider/flutter_xlider.dart';
 import '../../../../../core/misc/dependency_injectors.dart';
 import '../../../../../core/route/navigation_service.dart';
 import '../../../../widgets/custom_appbar.dart';
+import '../../../../widgets/prompt_widget.dart';
 
 class LoanApplicationScreen extends StatelessWidget {
   const LoanApplicationScreen({super.key});
@@ -245,7 +246,7 @@ class _CheckingEligibilityDialogContentState
   @override
   void initState() {
     Timer(
-      const Duration(seconds: 3),
+      const Duration(seconds: 1),
       (() => navigationService
         ..pop() // remove dialog
         ..navigateToRoute(
@@ -380,23 +381,5 @@ class IneligibleLenderView extends StatelessWidget {
   }
 }
 
-class PromptWidget extends StatelessWidget {
-  const PromptWidget({Key? key, required this.row}) : super(key: key);
-
-  final Row row;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: context.widthPx,
-      padding: const EdgeInsets.all(8),
-      height: 35,
-      decoration: BoxDecoration(
-          color: AppColors.lightYellow03,
-          borderRadius: BorderRadius.circular(12)),
-      child: row,
-    );
-  }
-}
 
 enum LoanApplicationView { ineligible, eligible }

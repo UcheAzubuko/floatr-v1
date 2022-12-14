@@ -18,6 +18,7 @@ class AppColors {
   static const Color disabledBackgroundColor = Color(0xFFEBAF93);
   static const Color merlot = Color(0xFFE6D2D6);
   static const Color lightGrey = Color(0xFFF8F8F8);
+  static const Color lightGrey1 = Color(0xFFF9FAFB);
   static const Color lightGrey300 = Color(0xFFF3F3F3);
   // This is the black for the take_selfie_screen @ login
   static const Color wierdBlack = Color(0xFF363853);
