@@ -7,6 +7,7 @@ import 'package:floatr/app/widgets/general_button.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:floatr/core/utils/app_style.dart';
+import 'package:floatr/core/utils/images.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -142,107 +143,122 @@ class DataCompletionWidget extends StatelessWidget {
       height: 576,
       width: context.widthPx,
       // color: AppColors.primaryColor,
-      padding: const EdgeInsets.all(26),
+      // padding: const EdgeInsets.all(26),
       decoration: BoxDecoration(
         color: AppColors.primaryColorLight,
         borderRadius: BorderRadius.circular(16),
       ),
 
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          // floatr logo
+           // bg overlay
           SvgPicture.asset(
-            "assets/images/main-logo.svg",
-            height: 24,
-            // fit: BoxFit.cover,
+            width: context.widthPx,
+            SvgImages.dashboardUnAuthBackground,
+            fit: BoxFit.fitWidth,
+            clipBehavior: Clip.hardEdge,
           ),
 
-          const VerticalSpace(
-            size: 10,
-          ),
+          Padding(
+            padding: const EdgeInsets.all(26),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // floatr logo
+                SvgPicture.asset(
+                  "assets/images/main-logo.svg",
+                  height: 24,
+                  // fit: BoxFit.cover,
+                ),
 
-          // ready.. set
-          Text(
-            'Ready... Set...',
-            style: TextStyles.largeTextDarkPoppins600,
-          ),
+                const VerticalSpace(
+                  size: 10,
+                ),
 
-          const VerticalSpace(
-            size: 10,
-          ),
+                // ready.. set
+                Text(
+                  'Ready... Set...',
+                  style: TextStyles.largeTextDarkPoppins600,
+                ),
 
-          // all cap
-          Text(
-            '''Your Floatr journey starts now. Complete your \nprofile to gain access to loan offers just for you.''',
-            style: TextStyles.smallTextDark,
-          ),
+                const VerticalSpace(
+                  size: 10,
+                ),
 
-          const VerticalSpace(
-            size: 34,
-          ),
+                // all cap
+                Text(
+                  '''Your Floatr journey starts now. Complete your \nprofile to gain access to loan offers just for you.''',
+                  style: TextStyles.smallTextDark,
+                ),
 
-          // personal
-          const CriteriaWidget(
-            criteriaTitle: 'Personal Details',
-            criteriaState: CriteriaState.done,
-          ),
+                const VerticalSpace(
+                  size: 34,
+                ),
 
-          const VerticalSpace(
-            size: 20,
-          ),
+                // personal
+                const CriteriaWidget(
+                  criteriaTitle: 'Personal Details',
+                  criteriaState: CriteriaState.done,
+                ),
 
-          // gov
-          const CriteriaWidget(
-            criteriaTitle: 'Government Issued ID',
-            criteriaState: CriteriaState.pending,
-          ),
+                const VerticalSpace(
+                  size: 20,
+                ),
 
-          const VerticalSpace(
-            size: 20,
-          ),
+                // gov
+                const CriteriaWidget(
+                  criteriaTitle: 'Government Issued ID',
+                  criteriaState: CriteriaState.pending,
+                ),
 
-          // res addy
-          const CriteriaWidget(
-            criteriaTitle: 'Residential Address',
-            criteriaState: CriteriaState.notDone,
-          ),
+                const VerticalSpace(
+                  size: 20,
+                ),
 
-          const VerticalSpace(
-            size: 20,
-          ),
+                // res addy
+                const CriteriaWidget(
+                  criteriaTitle: 'Residential Address',
+                  criteriaState: CriteriaState.notDone,
+                ),
 
-          // employment details
-          const CriteriaWidget(
-            criteriaTitle: 'Employment Details',
-            criteriaState: CriteriaState.notDone,
-          ),
+                const VerticalSpace(
+                  size: 20,
+                ),
 
-          const VerticalSpace(
-            size: 20,
-          ),
+                // employment details
+                const CriteriaWidget(
+                  criteriaTitle: 'Employment Details',
+                  criteriaState: CriteriaState.notDone,
+                ),
 
-          // next of kin
-          const CriteriaWidget(
-            criteriaTitle: 'Next of Kin',
-            criteriaState: CriteriaState.notDone,
-          ),
+                const VerticalSpace(
+                  size: 20,
+                ),
 
-          const VerticalSpace(
-            size: 34,
-          ),
+                // next of kin
+                const CriteriaWidget(
+                  criteriaTitle: 'Next of Kin',
+                  criteriaState: CriteriaState.notDone,
+                ),
 
-          // button
-          GeneralButton(
-              height: 48,
-              width: context.widthPx,
-              borderRadius: 12,
-              onPressed: () {},
-              child: const AppText(
-                text: 'LET\'S GO!',
-                color: Colors.white,
-                size: 14,
-              ))
+                const VerticalSpace(
+                  size: 34,
+                ),
+
+                // button
+                GeneralButton(
+                    height: 48,
+                    width: context.widthPx,
+                    borderRadius: 12,
+                    onPressed: () {},
+                    child: const AppText(
+                      text: 'LET\'S GO!',
+                      color: Colors.white,
+                      size: 14,
+                    ))
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -421,48 +437,62 @@ class HighlightsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 416,
+      width: context.widthPx,
       decoration: BoxDecoration(
         color: AppColors.primaryColorLight,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
+          // bg overlay
+          SvgPicture.asset(
+            width: context.widthPx,
+            SvgImages.dashboardAuthBackground,
+            fit: BoxFit.fitWidth,
+            clipBehavior: Clip.hardEdge,
+          ),
+
+          
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const VerticalSpace(size: 48),
+                  SvgPicture.asset(
+                    "assets/images/main-logo.svg",
+                    height: 24,
+                  ),
+                  const VerticalSpace(size: 12),
+                  Text(
+                    'Need money urgently?',
+                    style: TextStyles.smallTextDark,
+                  ),
+                  const VerticalSpace(size: 12),
+                  Text(
+                    '''We have offers just \nfor you!''',
+                    style: TextStyles.largeTextDarkPoppins,
+                  ),
+                ],
+              ).paddingOnly(left: 26),
               const VerticalSpace(size: 48),
-              SvgPicture.asset(
-                "assets/images/main-logo.svg",
-                height: 24,
-              ),
-              const VerticalSpace(size: 12),
-              Text(
-                'Need money urgently?',
-                style: TextStyles.smallTextDark,
-              ),
-              const VerticalSpace(size: 12),
-              Text(
-                '''We have offers just \nfor you!''',
-                style: TextStyles.largeTextDarkPoppins,
-              ),
+              SizedBox(
+                height: 150,
+                child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (_, index) =>
+                        const HighlightsInfoCard().paddingOnly(
+                          left: index == 0 ? 25 : 10,
+                          right: index == 3 ? 25 : 0,
+                        ), // this gives the first item more padding on the left and last item more padding on the right
+                    separatorBuilder: (_, __) => const SizedBox(
+                          width: 0,
+                        ),
+                    itemCount: 4),
+              )
             ],
-          ).paddingOnly(left: 26),
-          const VerticalSpace(size: 48),
-          SizedBox(
-            height: 150,
-            child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (_, index) =>
-                    const HighlightsInfoCard().paddingOnly(
-                      left: index == 0 ? 25 : 10,
-                      right: index == 3 ? 25 : 0,
-                    ), // this gives the first item more padding on the left and last item more padding on the right
-                separatorBuilder: (_, __) => const SizedBox(
-                      width: 0,
-                    ),
-                itemCount: 4),
-          )
+          ),
         ],
       ),
     );
@@ -473,8 +503,6 @@ class HighlightsInfoCard extends StatelessWidget {
   const HighlightsInfoCard({
     Key? key,
   }) : super(key: key);
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -591,7 +619,8 @@ class HighlightsInfoCard extends StatelessWidget {
               GeneralButton(
                 width: 245,
                 height: 30,
-                onPressed: () => navigationService.navigateToRoute(const LoanApplicationScreen()),
+                onPressed: () => navigationService
+                    .navigateToRoute(const LoanApplicationScreen()),
                 borderRadius: 8,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -629,62 +658,74 @@ class DebtCard extends StatelessWidget {
         color: AppColors.primaryColorLight,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
         children: [
-          Row(
+           // bg overlay
+          SvgPicture.asset(
+            width: context.widthPx,
+            SvgImages.dashboardAuthBackground,
+            fit: BoxFit.fitWidth,
+            clipBehavior: Clip.hardEdge,
+          ),
+          
+          Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // progress bar
-              Column(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularPercentIndicator(
-                    radius: 110.0,
-                    backgroundColor: Colors.white,
-                    percent: .7,
-                    lineWidth: 10,
-                    backgroundWidth: 15,
-                    progressColor: AppColors.primaryColor,
-                    fillColor: Colors.transparent,
-                    circularStrokeCap: CircularStrokeCap.round,
-                    arcBackgroundColor: AppColors.grey.withOpacity(0.4),
-                    arcType: ArcType.CUSTOM,
-                    center: Column(
-                      children: [
-                        const VerticalSpace(size: 48),
-                        SvgPicture.asset(
-                          "assets/images/main-logo.svg",
-                          height: 24,
-                          // fit: BoxFit.cover,
+                  // progress bar
+                  Column(
+                    children: [
+                      CircularPercentIndicator(
+                        radius: 110.0,
+                        backgroundColor: Colors.white,
+                        percent: .7,
+                        lineWidth: 10,
+                        backgroundWidth: 15,
+                        progressColor: AppColors.primaryColor,
+                        fillColor: Colors.transparent,
+                        circularStrokeCap: CircularStrokeCap.round,
+                        arcBackgroundColor: AppColors.grey.withOpacity(0.4),
+                        arcType: ArcType.CUSTOM,
+                        center: Column(
+                          children: [
+                            const VerticalSpace(size: 48),
+                            SvgPicture.asset(
+                              "assets/images/main-logo.svg",
+                              height: 24,
+                              // fit: BoxFit.cover,
+                            ),
+                            const VerticalSpace(size: 10),
+                            Text(
+                              'Your next payment is due',
+                              style: TextStyles.smallTextDark,
+                            ),
+                            const VerticalSpace(size: 7),
+                            RichText(
+                              text: TextSpan(
+                                text: 'in',
+                                style: TextStyles.largeTextDark,
+                                children: <TextSpan>[
+                                  TextSpan(
+                                      text: ' 10 days',
+                                      style: TextStyles.largeTextPrimary),
+                                  // TextSpan(text: ' world!'),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        const VerticalSpace(size: 10),
-                        Text(
-                          'Your next payment is due',
-                          style: TextStyles.smallTextDark,
-                        ),
-                        const VerticalSpace(size: 7),
-                        RichText(
-                          text: TextSpan(
-                            text: 'in',
-                            style: TextStyles.largeTextDark,
-                            children: <TextSpan>[
-                              TextSpan(
-                                  text: ' 10 days',
-                                  style: TextStyles.largeTextPrimary),
-                              // TextSpan(text: ' world!'),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
+
+              // card
+              const DueDebtInfoCard(),
             ],
           ),
-
-          // card
-          const DueDebtInfoCard(),
         ],
       ),
     );

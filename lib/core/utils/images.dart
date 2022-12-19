@@ -15,4 +15,7 @@ class AppImages {
 
 class SvgImages {
   static const String checkingDocument = 'assets/images/checking-document.svg';
+  static const String dashboardAuthBackground = 'assets/images/dashboard-auth-frame.svg';
+  static const String dashboardUnAuthBackground = 'assets/images/unauth-background-frame.svg';
+
 }
