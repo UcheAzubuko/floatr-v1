@@ -17,5 +17,6 @@ class SvgImages {
   static const String checkingDocument = 'assets/images/checking-document.svg';
   static const String dashboardAuthBackground = 'assets/images/dashboard-auth-frame.svg';
   static const String dashboardUnAuthBackground = 'assets/images/unauth-background-frame.svg';
+  static const String documentSnapShotFrame = 'assets/images/document-frame.svg';
 
 }

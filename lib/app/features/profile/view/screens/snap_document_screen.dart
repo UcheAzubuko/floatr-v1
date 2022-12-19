@@ -1,6 +1,7 @@
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:floatr/core/utils/app_style.dart';
+import 'package:floatr/core/utils/images.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -20,7 +21,7 @@ class SnapDocumentScreen extends StatelessWidget {
         useInAppArrow: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: SizedBox(
           width: context.widthPx,
           child: Column(
@@ -30,13 +31,25 @@ class SnapDocumentScreen extends StatelessWidget {
                 size: 141,
               ),
 
-              Container(
-                height: 190,
-                width: context.widthPx,
-                decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.primaryColor),
-                    borderRadius: BorderRadius.circular(10)),
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  SvgPicture.asset(
+                    width: context.widthPx,
+                    SvgImages.documentSnapShotFrame,
+                    fit: BoxFit.fill,
+                    color: AppColors.primaryColor,
+                  ),
+
+                  // image container
+                  Container(                
+                    height: 230,
+                    width: context.widthPx * 0.86,
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), color: Colors.grey,),
+                  )
+                ],
               ),
+              // ),
 
               const VerticalSpace(
                 size: 45,
