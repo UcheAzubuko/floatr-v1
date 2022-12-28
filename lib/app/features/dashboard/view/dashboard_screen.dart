@@ -6,6 +6,7 @@ import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/general_button.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/utils/app_colors.dart';
+import 'package:floatr/core/utils/app_icons.dart';
 import 'package:floatr/core/utils/app_style.dart';
 import 'package:floatr/core/utils/images.dart';
 import 'package:floatr/core/utils/spacing.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
+import '../../../widgets/prompt_widget.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -38,9 +40,7 @@ class DashboardScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const CircleAvatar(
-                            radius: 15,
-                          ),
+                          SvgPicture.asset(SvgAppIcons.icMorningSun),
                           const HorizontalSpace(
                             size: 10,
                           ),
@@ -65,6 +65,26 @@ class DashboardScreen extends StatelessWidget {
                   ),
                 ],
               ).paddingSymmetric(horizontal: 10),
+            ),
+
+            const VerticalSpace(size: 20),
+
+            PromptWidget(
+              row: Row(
+                children: [
+                  SvgPicture.asset(SvgAppIcons.icCaution),
+                  const HorizontalSpace(
+                    size: 8,
+                  ),
+                  const Text(
+                    'Update your profile to unlock all features!.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                ],
+              ),
             ),
 
             const VerticalSpace(size: 31),
@@ -151,7 +171,7 @@ class DataCompletionWidget extends StatelessWidget {
 
       child: Stack(
         children: [
-           // bg overlay
+          // bg overlay
           SvgPicture.asset(
             width: context.widthPx,
             SvgImages.dashboardUnAuthBackground,
@@ -382,6 +402,14 @@ class ActivitiesList extends StatelessWidget {
                           decoration: BoxDecoration(
                               color: AppColors.lightGreen,
                               borderRadius: BorderRadius.circular(30)),
+                          child: const Center(
+                            child: AppText(
+                              text: 'Success',
+                              color: Colors.green,
+                              size: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -452,7 +480,6 @@ class HighlightsCard extends StatelessWidget {
             clipBehavior: Clip.hardEdge,
           ),
 
-          
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -558,6 +585,18 @@ class HighlightsInfoCard extends StatelessWidget {
                                 color: AppColors.primaryColor,
                                 borderRadius: BorderRadius.circular(100),
                               ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset(SvgAppIcons.icSignalArrowUp),
+                                  const AppText(
+                                    text: '15%',
+                                    size: 8,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                  )
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -660,14 +699,14 @@ class DebtCard extends StatelessWidget {
       ),
       child: Stack(
         children: [
-           // bg overlay
+          // bg overlay
           SvgPicture.asset(
             width: context.widthPx,
             SvgImages.dashboardAuthBackground,
             fit: BoxFit.fitWidth,
             clipBehavior: Clip.hardEdge,
           ),
-          
+
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
