@@ -14,9 +14,12 @@ class AppImages {
 }
 
 class SvgImages {
+  static const String cardTypeVisa = 'assets/images/card-type-visa.svg';
   static const String checkingDocument = 'assets/images/checking-document.svg';
+  static const String chip = 'assets/images/chip.svg';
   static const String dashboardAuthBackground = 'assets/images/dashboard-auth-frame.svg';
   static const String dashboardUnAuthBackground = 'assets/images/unauth-background-frame.svg';
+  static const String debitCardBackground = 'assets/icons/outline/debit-card-frame.svg';
   static const String documentSnapShotFrame = 'assets/images/document-frame.svg';
 
 }

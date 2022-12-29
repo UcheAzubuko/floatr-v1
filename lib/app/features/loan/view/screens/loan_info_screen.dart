@@ -160,7 +160,7 @@ class EligibleScreen extends StatelessWidget {
           GeneralButton(
             height: 42,
             onPressed: () =>
-                navigationService.navigateToRoute(const AddNewCardScreen()),
+                navigationService.navigateToRoute(const SelectCardScreen()),
             borderRadius: 8,
             child: const AppText(
               text: 'CONTINUE',
@@ -302,7 +302,7 @@ class AddNewCardScreen extends StatelessWidget {
               color: Colors.white,
               fontWeight: FontWeight.w700,
             ),
-          )
+          ).paddingOnly(bottom: 30)
         ],
       ),
     );
@@ -314,8 +314,10 @@ class SelectCardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    NavigationService navigationService = di<NavigationService>();
     return LoanApplicationInformationBaseView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const VerticalSpace(
             size: 43,
@@ -323,7 +325,7 @@ class SelectCardScreen extends StatelessWidget {
 
           // title
           Text(
-            'Select Bank',
+            'Select Card',
             style: TextStyles.largeTextDark,
           ),
 
@@ -332,13 +334,144 @@ class SelectCardScreen extends StatelessWidget {
           ),
 
           Text(
-            'Which bank would you like us to send the funds \nto?',
+            'Which card would you like us to use for your \nrepayment?',
             style: TextStyles.smallTextGrey14Px,
           ),
 
-          const Spacer(),
+          const VerticalSpace(
+            size: 25,
+          ),
+
+          // const Spacer(),
+          SizedBox(
+            height: context.heightPx,
+            child: ListView(
+              children: [
+                const DebitCard(),
+                const VerticalSpace(size: 35,),
+                InkWell(
+                  onTap: () => navigationService
+                      .navigateToRoute(const AddNewCardScreen()),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      // plus
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundColor: AppColors.primaryColor,
+                        child: Icon(
+                          Icons.add,
+                          color: Colors.white,
+                        ),
+                      ),
+
+                      HorizontalSpace(
+                        size: 8,
+                      ),
+
+                      // add new bank
+                      Text(
+                        'ADD NEW BANK',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primaryColor),
+                      ),
+                    ],
+                  ),
+                ).paddingOnly(bottom: 30)
+              ],
+            ),
+          )
         ],
       ),
+    );
+  }
+}
+
+class DebitCard extends StatelessWidget {
+  const DebitCard({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+          height: 194,
+          width: context.widthPx,
+          decoration: BoxDecoration(
+              color: AppColors.card, borderRadius: BorderRadius.circular(16)),
+        ),
+        SvgPicture.asset(
+          height: 194,
+          width: context.widthPx,
+          SvgImages.debitCardBackground,
+          color: AppColors.primaryColor,
+          fit: BoxFit.contain,
+          clipBehavior: Clip.hardEdge,
+        ),
+        Container(
+          height: 194,
+          width: context.widthPx,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: SvgPicture.asset(
+                  SvgImages.cardTypeVisa,
+                ),
+              ),
+              const VerticalSpace(
+                size: 50,
+              ),
+              Row(
+                children: [
+                  SvgPicture.asset(
+                    SvgImages.chip,
+                  ),
+                  const Spacer(),
+                  const Text(
+                    '●●●● ●●●● ●●●● 2600',
+                    style: TextStyle(
+                        color: Colors.white,
+                        letterSpacing: 2,
+                        wordSpacing: 3,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700),
+                  )
+                ],
+              ),
+              const Spacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Text(
+                    'John Doe',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700),
+                  ),
+                  Text(
+                    'MM/YY',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -428,7 +561,7 @@ class SelectBankScreen extends StatelessWidget {
                 ),
               ],
             ),
-          )
+          ).paddingOnly(bottom: 30)
         ],
       ),
     );
@@ -565,6 +698,8 @@ class AddNewBankScreen extends StatelessWidget {
                   'Account Name should match your registered \nname.',
                   style: TextStyle(
                     color: AppColors.primaryColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
@@ -613,7 +748,7 @@ class AddNewBankScreen extends StatelessWidget {
               color: Colors.white,
               fontWeight: FontWeight.w700,
             ),
-          )
+          ).paddingOnly(bottom: 30)
         ],
       ),
     );
@@ -705,7 +840,7 @@ class LoanSummaryScreen extends StatelessWidget {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   color: AppColors.lightGrey1),
-                  child: Column(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
                   // loan tenure
@@ -725,8 +860,6 @@ class LoanSummaryScreen extends StatelessWidget {
                     itemTitle: 'Next Payment',
                     itemData: '21 Dec 22',
                   ),
-
-                
                 ],
               ),
             ),
@@ -915,7 +1048,7 @@ class LoanApplicationSuccessfulScreen extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                     color: AppColors.primaryColor),
               ),
-            ),
+            ).paddingOnly(bottom: 30),
           ],
         ),
       ),

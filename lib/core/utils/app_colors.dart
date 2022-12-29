@@ -15,6 +15,7 @@ class AppColors {
   static const Color textFieldBackground = Color(0xFFD5D6D8);
   static const Color red = Color(0xFFEC5555);
   static const Color primaryColorLight = Color(0xFFF2CAB7);
+  static const Color card = Color(0xFFEBAF92);
   static const Color disabledBackgroundColor = Color(0xFFEBAF93);
   static const Color merlot = Color(0xFFE6D2D6);
   static const Color lightGrey = Color(0xFFF8F8F8);

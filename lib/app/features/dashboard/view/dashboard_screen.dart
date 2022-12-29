@@ -36,6 +36,9 @@ class DashboardScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const VerticalSpace(
+                        size: 20,
+                      ),
                       // greet
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,

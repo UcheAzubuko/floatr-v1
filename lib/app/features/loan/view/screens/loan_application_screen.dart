@@ -51,11 +51,17 @@ Widget _view(LoanApplicationView loanApplicationView) {
   }
 }
 
-class EligibleLenderView extends StatelessWidget {
+class EligibleLenderView extends StatefulWidget {
   const EligibleLenderView({
     Key? key,
   }) : super(key: key);
 
+  @override
+  State<EligibleLenderView> createState() => _EligibleLenderViewState();
+}
+
+class _EligibleLenderViewState extends State<EligibleLenderView> {
+  double? amount;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -108,7 +114,7 @@ class EligibleLenderView extends StatelessWidget {
               style: TextStyles.smallTextDark14Px,
             ),
             Text(
-              'N20,000',
+              '₦ ${amount ?? 0}',
               style: TextStyles.largeTextDark,
             ),
           ],
@@ -144,9 +150,14 @@ class EligibleLenderView extends StatelessWidget {
                 width: context.widthPx,
                 child: FlutterSlider(
                   values: const [5000],
-                  max: 20000,
+                  max: 50000,
                   min: 5000,
-                  onDragging: (handlerIndex, lowerValue, upperValue) {},
+                  step: const FlutterSliderStep(step: 500),
+                  onDragging: (handlerIndex, lowerValue, upperValue) {
+                    amount = lowerValue;
+                    print(amount);
+                    setState(() {});
+                  },
                   trackBar: FlutterSliderTrackBar(
                     inactiveTrackBar: BoxDecoration(
                         color: AppColors.primaryColorLight,
@@ -193,10 +204,92 @@ class EligibleLenderView extends StatelessWidget {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: AppColors.primaryColor),
-                  color: AppColors.primaryColorLight),
+                  color: AppColors.primaryColorLight.withOpacity(0.5)),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const AppText(
+                    text: 'Loan Application',
+                    fontWeight: FontWeight.w700,
+                  ),
+                  const VerticalSpace(
+                    size: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          // loan amount
+                          LoanApplicationInformation(
+                            option: 'Loan Amount',
+                            optionValue: '20,000',
+                          ),
+
+                          VerticalSpace(
+                            size: 20,
+                          ),
+
+                          // loan tenure
+                          LoanApplicationInformation(
+                            option: 'Loan Tenure',
+                            optionValue: '2 Weeks',
+                          ),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          // interest
+                          LoanApplicationInformation(
+                            option: 'Interest',
+                            optionValue: 'N1,000',
+                          ),
+
+                          VerticalSpace(
+                            size: 20,
+                          ),
+
+                          // no of repayments
+
+                          LoanApplicationInformation(
+                            option: 'No of Repayments',
+                            optionValue: '2 * N12,500',
+                          ),
+
+                          // // Payback amount
+                          // LoanApplicationInformation(
+                          //   option: 'Payback Amount',
+                          //   optionValue: 'N25,000',
+                          // ),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          // // platform
+                          LoanApplicationInformation(
+                            option: 'Platform Fee',
+                            optionValue: 'N4,000',
+                          ),
+
+                          VerticalSpace(
+                            size: 20,
+                          ),
+
+                          // Payback amount
+                          LoanApplicationInformation(
+                            option: 'Payback Amount',
+                            optionValue: 'N25,000',
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const VerticalSpace(
+                    size: 22,
+                  ),
                   GeneralButton(
                     height: 30,
                     borderRadius: 8,
@@ -223,6 +316,39 @@ class EligibleLenderView extends StatelessWidget {
               ),
             ),
           ],
+        )
+      ],
+    ).paddingOnly(bottom: 30);
+  }
+}
+
+class LoanApplicationInformation extends StatelessWidget {
+  const LoanApplicationInformation({
+    Key? key,
+    required this.option,
+    required this.optionValue,
+  }) : super(
+          key: key,
+        );
+
+  final String option;
+  final String optionValue;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '$option:',
+          style: TextStyles.smallerTextDark,
+        ),
+        const VerticalSpace(
+          size: 3,
+        ),
+        Text(
+          optionValue,
+          style: TextStyles.normalTextDarkPoppins,
         )
       ],
     );
@@ -380,6 +506,5 @@ class IneligibleLenderView extends StatelessWidget {
     );
   }
 }
-
 
 enum LoanApplicationView { ineligible, eligible }
