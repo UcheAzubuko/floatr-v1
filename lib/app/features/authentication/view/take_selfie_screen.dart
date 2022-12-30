@@ -1,8 +1,10 @@
+import 'package:camera/camera.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/authentication/view/display_picture_screen.dart';
+import 'package:floatr/app/widgets/app_snackbar.dart';
 import 'package:floatr/app/widgets/general_button.dart';
-import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -20,8 +22,90 @@ class TakeSelefieScreen extends StatefulWidget {
   State<TakeSelefieScreen> createState() => _TakeSelefieScreenState();
 }
 
-class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
+class _TakeSelefieScreenState extends State<TakeSelefieScreen>
+    with WidgetsBindingObserver {
   final NavigationService navigationService = di<NavigationService>();
+  CameraController? controller;
+  // late List<CameraDescription>? _cameras;
+
+  // Future<void> initAvailableCameras() async {
+  //   _cameras = await availableCameras();
+  // }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    // initAvailableCameras();
+    // });
+
+    availableCameras().then((value) {
+      controller = CameraController(value[0], ResolutionPreset.high);
+
+      controller!.initialize().then((_) {
+        if (!mounted) {
+          return;
+        }
+        setState(() {});
+      }).catchError((Object e) {
+        if (e is CameraException) {
+          switch (e.code) {
+            case 'CameraAccessDenied':
+          AppSnackBar.showSnackBar(context, 'You have denied camera access.');
+          break;
+        case 'CameraAccessDeniedWithoutPrompt':
+          // iOS only
+          AppSnackBar.showSnackBar(context, 'Please go to Settings app to enable camera access.');
+          break;
+        case 'CameraAccessRestricted':
+          // iOS only
+          AppSnackBar.showSnackBar(context, 'Camera access is restricted.');
+          break;
+          }
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    controller!.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final CameraController? cameraController = controller;
+
+    // App state changed before we got the chance to initialize.
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive) {
+      cameraController.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      onNewCameraSelected(cameraController.description);
+    }
+  }
+
+  Future<void> onNewCameraSelected(CameraDescription cameraDescription) async {
+    final CameraController? oldController = controller;
+    if (oldController != null) {
+      // `controller` needs to be set to null before getting disposed,
+      // to avoid a race condition when we use the controller that is being
+      // disposed. This happens when camera permission dialog shows up,
+      // which triggers `didChangeAppLifecycleState`, which disposes and
+      // re-creates the controller.
+      controller = null;
+      await oldController.dispose();
+    }
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,15 +126,20 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
                 radius: const Radius.circular(400),
                 borderType: BorderType.Circle,
                 child: Container(
-                  height: context.heightPx * 0.32,
-                  width: context.widthPx * 0.68,
+                  height: 232,
+                  width: 232,
+                  clipBehavior: Clip.hardEdge,
                   decoration: BoxDecoration(
                     color: Colors.transparent,
-                    border: Border.all(color: AppColors.primaryColor),
+                    border: Border.all(
+                      color: AppColors.primaryColor,
+                    ),
                     borderRadius: const BorderRadius.all(
                       Radius.circular(400),
                     ),
                   ),
+                  child: Transform.rotate(
+                      angle: -1.5708, child: CameraPreview(controller!)),
                 ),
               ),
 
@@ -95,9 +184,8 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
                   ),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: context.widthPx * 0.1,
-                      vertical: context.heightPx * 0.02),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 26, vertical: 16),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -106,31 +194,28 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
                         alignment: Alignment.topCenter,
                         child: SvgPicture.asset(
                             'assets/icons/outline/selfie-caution.svg'),
-                      ),
-                      SizedBox(
-                        width: context.widthPx * 0.06,
-                      ),
+                      ).paddingOnly(right: 20),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
+                        children: const <Widget>[
                           AppText(
-                            text: '●   Make sure you are well lit.',
+                            text: '• Make sure you are well lit.',
                             color: AppColors.black,
-                            fontWeight: FontWeight.w600,
-                            size: context.widthPx * 0.031,
+                            fontWeight: FontWeight.w400,
+                            size: 12,
                           ),
                           AppText(
-                            text: '●   Clearly show your face and ears.',
+                            text: '• Clearly show your face and ears.',
                             color: AppColors.black,
-                            fontWeight: FontWeight.w600,
-                            size: context.widthPx * 0.031,
+                            fontWeight: FontWeight.w400,
+                            size: 12,
                           ),
                           AppText(
-                            text: '●   Keep your phone vertical.',
+                            text: '• Keep your phone vertical.',
                             color: AppColors.black,
-                            fontWeight: FontWeight.w600,
-                            size: context.widthPx * 0.031,
+                            fontWeight: FontWeight.w400,
+                            size: 12,
                           ),
                         ],
                       ),
@@ -146,15 +231,20 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen> {
               // capture button
 
               GeneralButton(
-                onPressed: () =>
-                    navigationService.navigateTo(RouteName.confirmDetails),
-                width: context.widthPx * 0.17,
-                height: context.heightPx * 0.079,
+                onPressed: () async {
+                  final image = await controller!.takePicture();
+
+                  if (!mounted) return;
+
+                  await navigationService.navigateToRoute(DisplayPictureScreen(image: image,));
+                },
+                width: 56,
+                height: 56,
                 child: SvgPicture.asset(
                   'assets/icons/outline/Camera.svg',
-                  height: 40,
+                  // height: 40,
                   fit: BoxFit.fill,
-                  color: AppColors.wierdBlack,
+                  color: Colors.white,
                 ),
               ),
             ],

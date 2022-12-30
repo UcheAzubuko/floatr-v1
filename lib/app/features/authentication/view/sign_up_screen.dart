@@ -1,6 +1,8 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/data/model/params/register_params.dart';
+import 'package:floatr/app/features/authentication/view/take_selfie_screen.dart';
+import 'package:floatr/app/features/dashboard/view/dashboard_screen.dart';
 import 'package:floatr/app/widgets/disabled_button.dart';
 import 'package:floatr/app/widgets/text_field.dart';
 import 'package:floatr/core/providers/base_provider.dart';
@@ -283,38 +285,45 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Checkbox(
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      fillColor: MaterialStateProperty.resolveWith<Color>(
-                          (Set<MaterialState> states) {
-                        if (states.contains(MaterialState.disabled)) {
-                          return AppColors.backgroundColor;
-                        }
-                        return AppColors.primaryColor;
-                      }),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
+                    SizedBox(
+                      width: 10,
+                      height: 10,
+                      child: Checkbox(
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        fillColor: MaterialStateProperty.resolveWith<Color>(
+                            (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.disabled)) {
+                            return AppColors.backgroundColor;
+                          }
+                          return AppColors.primaryColor;
+                        }),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        value: acceptedTC,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            acceptedTC = value;
+                          });
+                        },
                       ),
-                      value: acceptedTC,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          acceptedTC = value;
-                        });
-                      },
+                    ),
+                    const HorizontalSpace(
+                      size: 10,
                     ),
                     Row(
-                      children: [
+                      children: const [
                         AppText(
                           text: 'I accept and agree all to all ',
                           color: AppColors.black,
                           fontWeight: FontWeight.w600,
-                          size: context.widthPx * 0.035,
+                          size: 10,
                         ),
                         AppText(
                           text: 'terms and conditions',
                           color: AppColors.primaryColor,
                           fontWeight: FontWeight.w600,
-                          size: context.widthPx * 0.035,
+                          size: 10,
                         ),
                       ],
                     ),
@@ -330,12 +339,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ? GeneralButton(
                             onPressed: () {
                               // acceptedTC!
-                              //     ? _handleRegister(authProvider)
-                              //     : null;
-                              navigationService.navigateTo(RouteName.navbar);
+                                  // ? _handleRegister(authProvider)
+                                  // : null;
+                              navigationService
+                                  .navigateToRoute(const DashboardScreen());
                             },
                             buttonTextColor: Colors.white,
-                            isLoading: authProvider.loadingState == LoadingState.busy,
+                            isLoading:
+                                authProvider.loadingState == LoadingState.busy,
                             child: const Text('Next'),
                           )
                         : DisabledButton(
@@ -355,7 +366,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ],
             ),
           ),
-        ).paddingSymmetric(horizontal: context.widthPx * 0.037),
+        ).paddingSymmetric(horizontal: 24),
       ),
     );
   }

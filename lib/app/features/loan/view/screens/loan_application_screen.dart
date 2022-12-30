@@ -61,7 +61,7 @@ class EligibleLenderView extends StatefulWidget {
 }
 
 class _EligibleLenderViewState extends State<EligibleLenderView> {
-  double? amount;
+  double? amount = 5000;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -140,47 +140,57 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                 ),
               ],
             ),
-            UnconstrainedBox(
-              // constrainedAxis: Axis.vertical, // retain vertical axis
-              child: Container(
-                // padding: const EdgeInsets.symmetric(horizontal: 20),
-                constraints: const BoxConstraints(
-                  maxHeight: 30,
-                ),
-                width: context.widthPx,
-                child: FlutterSlider(
-                  values: const [5000],
-                  max: 50000,
-                  min: 5000,
-                  step: const FlutterSliderStep(step: 500),
-                  onDragging: (handlerIndex, lowerValue, upperValue) {
+            Container(
+              // padding: const EdgeInsets.symmetric(horizontal: 20),
+              constraints: const BoxConstraints(
+                maxHeight: 30,
+              ),
+              width: context.widthPx,
+              child: FlutterSlider(
+                selectByTap: false,
+                values: const [5000],
+                max: 50000,
+                min: 5000,
+                step: const FlutterSliderStep(step: 500),
+                onDragging: (handlerIndex, lowerValue, upperValue) {
+                  
+                  print(amount);
+                  setState(() {
                     amount = lowerValue;
-                    print(amount);
-                    setState(() {});
-                  },
-                  trackBar: FlutterSliderTrackBar(
-                    inactiveTrackBar: BoxDecoration(
-                        color: AppColors.primaryColorLight,
-                        borderRadius: BorderRadius.circular(8)),
-                    activeTrackBar: BoxDecoration(
-                        color: AppColors.primaryColor,
-                        borderRadius: BorderRadius.circular(8)),
-                    activeTrackBarHeight: 6,
-                    inactiveTrackBarHeight: 6,
-                  ),
-                  handler: FlutterSliderHandler(
-                    decoration: const BoxDecoration(),
-                    child: const CircleAvatar(
-                      radius: 9,
-                      backgroundColor: AppColors.primaryColor,
-                      child: CircleAvatar(
-                        radius: 8,
-                        backgroundColor: Colors.white,
-                      ),
+                  });
+                },
+                trackBar: FlutterSliderTrackBar(
+                  inactiveTrackBar: BoxDecoration(
+                      color: AppColors.primaryColorLight,
+                      borderRadius: BorderRadius.circular(8)),
+                  activeTrackBar: BoxDecoration(
+                      color: AppColors.primaryColor,
+                      borderRadius: BorderRadius.circular(8)),
+                  activeTrackBarHeight: 6,
+                  inactiveTrackBarHeight: 6,
+                ),
+                handler: FlutterSliderHandler(
+                  decoration: const BoxDecoration(),
+                  child: const CircleAvatar(
+                    radius: 9,
+                    backgroundColor: AppColors.primaryColor,
+                    child: CircleAvatar(
+                      radius: 8,
+                      backgroundColor: Colors.white,
                     ),
                   ),
                 ),
               ),
+              // child: Slider(
+              //   value: amount!,
+              //   min: 5000,
+              //   max: 50000,
+              //   onChanged: (value) {
+              //     setState(() {
+              //       amount = value;
+              //     });
+              //   },
+              // ),
             ),
             const VerticalSpace(
               size: 60,

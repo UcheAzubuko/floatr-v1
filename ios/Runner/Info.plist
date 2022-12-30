@@ -49,5 +49,9 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>NSCameraUsageDescription</key>
+		<string>App needs to use your Camera</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>App needs to use your Mic</string>
 	</dict>
 </plist>

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:floatr/app/features/authentication/data/model/params/login_params.dart';
 import 'package:floatr/app/features/authentication/data/model/params/verify_bvn_params.dart';
 import 'package:floatr/app/features/authentication/data/model/params/verify_phone_params.dart';
@@ -31,6 +33,10 @@ class AuthenticationProvider extends BaseProvider {
 
   VerifyBVNParams? get verifyBVNParams => _verifyBVNParams;
 
+  File? _imagefile;
+
+  File? get imagefile => _imagefile;
+
   updateLoginParams(LoginParams params) {
     _loginParams = params;
     notifyListeners();
@@ -48,6 +54,11 @@ class AuthenticationProvider extends BaseProvider {
 
   updateVerifyPhoneParams(VerifyPhoneParams params) {
     _verifyPhoneParams = params;
+    notifyListeners();
+  }
+
+  updateImage(File file) {
+    _imagefile = file;
     notifyListeners();
   }
 
@@ -88,7 +99,6 @@ class AuthenticationProvider extends BaseProvider {
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'Phone verification failed!');
-
       // trigger error on ui
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
@@ -107,6 +117,20 @@ class AuthenticationProvider extends BaseProvider {
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
       _navigationService.navigateTo(RouteName.takeSelfie);
+    });
+  }
+
+  Future<void> uploadimage() async {
+    updateLoadingState(LoadingState.busy);
+    var response = await authenticationRepository.uploadPicture(_imagefile!);
+    response.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? 'File upload failed!');
+      // trigger error on ui
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
+      print('from provider: File uploaded');
+      // _navigationService.navigateTo(RouteName.takeSelfie);
     });
   }
 }

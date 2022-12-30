@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/route/navigation_service.dart';
+import '../../../../core/route/route_names.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/spacing.dart';
 import '../../../widgets/app_text.dart';
@@ -117,7 +118,8 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
             Consumer<AuthenticationProvider>(
                 builder: (context, authProvider, _) {
               return GeneralButton(
-                onPressed: () => _handleVerifyBVN(authProvider),
+                onPressed: () => navigationService.navigateTo(RouteName.takeSelfie),
+                // _handleVerifyBVN(authProvider),
                 buttonTextColor: Colors.white,
                 isLoading: authProvider.loadingState == LoadingState.busy,
                 child: const Text(
