@@ -6,7 +6,6 @@ import 'package:floatr/app/features/loan/view/screens/loan_info_screen.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/dialogs.dart';
 import 'package:floatr/app/widgets/general_button.dart';
-import 'package:floatr/app/widgets/text_field.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:floatr/core/utils/app_icons.dart';
 import 'package:floatr/core/utils/app_style.dart';
@@ -14,7 +13,6 @@ import 'package:floatr/core/utils/images.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:flutter_xlider/flutter_xlider.dart';
 
 import '../../../../../core/misc/dependency_injectors.dart';
 import '../../../../../core/route/navigation_service.dart';
@@ -61,7 +59,47 @@ class EligibleLenderView extends StatefulWidget {
 }
 
 class _EligibleLenderViewState extends State<EligibleLenderView> {
+  List<String> loanTerms = ['1 Week', '2 Weeks'];
+  String? selectedLoanTerm = '1 Week';
+
+  int get loanTerm {
+    if (selectedLoanTerm == '1 Week') {
+      return 1;
+    }
+    if (selectedLoanTerm == '2 Weeks') {
+      return 2;
+    }
+    return 0;
+  }
+
   double? amount = 5000;
+
+  int get platformFee {
+    return (20 / 100 * amount!) ~/ 1;
+  }
+
+  int get interest {
+    return (5 / 100 * amount!) ~/ 1;
+  }
+
+  int get paybackAmount {
+    return (amount! + interest + platformFee) ~/ 1;
+  }
+
+  int get repaymentAmount {
+    return (amount! / loanTerm) ~/ 1;
+  }
+
+  int get loanAmount {
+    if (amount! ~/ 1 == 30999.999999999996) {
+      return 40000;
+    }
+    if (amount! ~/ 1 > 30000 && amount! ~/ 1 < 32000) {
+      return 31000;
+    }
+    return amount! ~/ 1;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -114,7 +152,7 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
               style: TextStyles.smallTextDark14Px,
             ),
             Text(
-              '₦ ${amount ?? 0}',
+              'N${loanAmount ?? 0}',
               style: TextStyles.largeTextDark,
             ),
           ],
@@ -146,51 +184,56 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                 maxHeight: 30,
               ),
               width: context.widthPx,
-              child: FlutterSlider(
-                selectByTap: false,
-                values: const [5000],
-                max: 50000,
-                min: 5000,
-                step: const FlutterSliderStep(step: 500),
-                onDragging: (handlerIndex, lowerValue, upperValue) {
-                  
-                  print(amount);
-                  setState(() {
-                    amount = lowerValue;
-                  });
-                },
-                trackBar: FlutterSliderTrackBar(
-                  inactiveTrackBar: BoxDecoration(
-                      color: AppColors.primaryColorLight,
-                      borderRadius: BorderRadius.circular(8)),
-                  activeTrackBar: BoxDecoration(
-                      color: AppColors.primaryColor,
-                      borderRadius: BorderRadius.circular(8)),
-                  activeTrackBarHeight: 6,
-                  inactiveTrackBarHeight: 6,
-                ),
-                handler: FlutterSliderHandler(
-                  decoration: const BoxDecoration(),
-                  child: const CircleAvatar(
-                    radius: 9,
-                    backgroundColor: AppColors.primaryColor,
-                    child: CircleAvatar(
-                      radius: 8,
-                      backgroundColor: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-              // child: Slider(
-              //   value: amount!,
-              //   min: 5000,
+              // child: FlutterSlider(
+              //   selectByTap: false,
+              //   values: const [5000],
               //   max: 50000,
-              //   onChanged: (value) {
+              //   min: 5000,
+              //   step: const FlutterSliderStep(step: 500),
+              //   onDragging: (handlerIndex, lowerValue, upperValue) {
+              //     // ignore: avoid_print
+              //     print(amount);
               //     setState(() {
-              //       amount = value;
+              //       amount = lowerValue;
               //     });
               //   },
+              //   trackBar: FlutterSliderTrackBar(
+              //     inactiveTrackBar: BoxDecoration(
+              //         color: AppColors.primaryColorLight,
+              //         borderRadius: BorderRadius.circular(8)),
+              //     activeTrackBar: BoxDecoration(
+              //         color: AppColors.primaryColor,
+              //         borderRadius: BorderRadius.circular(8)),
+              //     activeTrackBarHeight: 6,
+              //     inactiveTrackBarHeight: 6,
+              //   ),
+              //   handler: FlutterSliderHandler(
+              //     decoration: const BoxDecoration(),
+              //     child: const CircleAvatar(
+              //       radius: 9,
+              //       backgroundColor: AppColors.primaryColor,
+              //       child: CircleAvatar(
+              //         radius: 8,
+              //         backgroundColor: Colors.white,
+              //       ),
+              //     ),
+              //   ),
               // ),
+              child: Slider(
+                value: amount!,
+                min: 5000.0,
+                max: 50000.0,
+                divisions: 45,
+                label: loanAmount.toString(),
+                activeColor: AppColors.primaryColor,
+                inactiveColor: AppColors.disabledBackgroundColor,
+                onChanged: (double value) {
+                  setState(() {
+                    amount = value;
+                    print(amount);
+                  });
+                },
+              ),
             ),
             const VerticalSpace(
               size: 60,
@@ -198,10 +241,26 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
 
             //
             Text(
-              'Choose a loan  term',
+              'Choose a loan term',
               style: TextStyles.smallTextDark,
             ).paddingOnly(bottom: 10),
-            AppTextField(controller: TextEditingController(text: '1 week')),
+            // AppTextField(controller: TextEditingController(text: '1 week')),\
+            SizedBox(
+              width: context.widthPx,
+              child: DropdownButtonFormField<String>(
+                borderRadius: BorderRadius.circular(16),
+                items: loanTerms
+                    .map((lt) => DropdownMenuItem<String>(
+                        value: lt,
+                        child: AppText(
+                          text: lt,
+                          fontWeight: FontWeight.w700,
+                        )))
+                    .toList(),
+                onChanged: (lt) => setState(() => selectedLoanTerm = lt),
+                value: selectedLoanTerm,
+              ),
+            ),
 
             const VerticalSpace(
               size: 26,
@@ -230,34 +289,39 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                     children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           // loan amount
                           LoanApplicationInformation(
                             option: 'Loan Amount',
-                            optionValue: '20,000',
+                            optionValue: 'N$loanAmount',
+                            percentage: '',
                           ),
 
-                          VerticalSpace(
+                          const VerticalSpace(
                             size: 20,
                           ),
 
                           // loan tenure
                           LoanApplicationInformation(
                             option: 'Loan Tenure',
-                            optionValue: '2 Weeks',
+                            optionValue: loanTerm == 1
+                                ? '$loanTerm Week'
+                                : '$loanTerm Weeks',
+                            percentage: '',
                           ),
                         ],
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           // interest
                           LoanApplicationInformation(
                             option: 'Interest',
-                            optionValue: 'N1,000',
+                            optionValue: 'N$interest',
+                            percentage: '5',
                           ),
 
-                          VerticalSpace(
+                          const VerticalSpace(
                             size: 20,
                           ),
 
@@ -265,7 +329,8 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
 
                           LoanApplicationInformation(
                             option: 'No of Repayments',
-                            optionValue: '2 * N12,500',
+                            optionValue: '$loanTerm * N$repaymentAmount',
+                            percentage: '',
                           ),
 
                           // // Payback amount
@@ -277,21 +342,23 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           // // platform
                           LoanApplicationInformation(
                             option: 'Platform Fee',
-                            optionValue: 'N4,000',
+                            optionValue: 'N$platformFee',
+                            percentage: '20',
                           ),
 
-                          VerticalSpace(
+                          const VerticalSpace(
                             size: 20,
                           ),
 
                           // Payback amount
                           LoanApplicationInformation(
                             option: 'Payback Amount',
-                            optionValue: 'N25,000',
+                            optionValue: 'N$paybackAmount',
+                            percentage: '',
                           ),
                         ],
                       ),
@@ -337,12 +404,14 @@ class LoanApplicationInformation extends StatelessWidget {
     Key? key,
     required this.option,
     required this.optionValue,
+    required this.percentage,
   }) : super(
           key: key,
         );
 
   final String option;
   final String optionValue;
+  final String percentage;
 
   @override
   Widget build(BuildContext context) {
@@ -356,10 +425,28 @@ class LoanApplicationInformation extends StatelessWidget {
         const VerticalSpace(
           size: 3,
         ),
-        Text(
-          optionValue,
-          style: TextStyles.normalTextDarkPoppins,
-        )
+        // Text(
+        //   optionValue,
+        //   style: TextStyles.normalTextDarkPoppins,
+        // ),
+        if (percentage != '')
+          RichText(
+            text: TextSpan(
+              style: TextStyles.largeTextDark,
+              children: <TextSpan>[
+                TextSpan(
+                    text: optionValue, style: TextStyles.normalTextDarkPoppins),
+                TextSpan(
+                    text: ' ($percentage%)',
+                    style: TextStyles.smallTextPrimary),
+              ],
+            ),
+          )
+        else
+          Text(
+            optionValue,
+            style: TextStyles.normalTextDarkPoppins,
+          ),
       ],
     );
   }
