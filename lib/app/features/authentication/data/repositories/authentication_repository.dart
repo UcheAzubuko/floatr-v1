@@ -16,8 +16,9 @@ import 'package:path/path.dart';
 
 class AuthenticationRepository {
   final SharedPreferences prefs;
+  final APIService apiService;
 
-  AuthenticationRepository({required this.prefs});
+  AuthenticationRepository({required this.prefs, required this.apiService});
 
   /// authHeaders
   final Map<String, String> _authHeaders = {
@@ -35,7 +36,7 @@ class AuthenticationRepository {
     final loginBody = params.toMap();
 
     try {
-      final response = await APIService.post(
+      final response = await apiService.post(
         url: url,
         body: loginBody,
         headers: _authHeaders,
@@ -60,7 +61,7 @@ class AuthenticationRepository {
     final registerBody = params.toMap();
 
     try {
-      final response = await APIService.post(
+      final response = await apiService.post(
         url: url,
         body: registerBody,
         headers: _authHeaders,
@@ -89,7 +90,7 @@ class AuthenticationRepository {
     final reqBody = {"mode": "sms"};
 
     try {
-      await APIService.post(
+      await apiService.post(
         url: url,
         body: reqBody,
         headers: _authHeaders..addAll({"Authorization": "Bearer $accessToken"}),
@@ -110,7 +111,7 @@ class AuthenticationRepository {
 
     try {
       final accessToken = prefs.getString(StorageKeys.accessTokenKey);
-      final response = await APIService.post(
+      final response = await apiService.post(
         url: url,
         body: verifyPhoneBody,
         headers: _authHeaders
@@ -136,7 +137,7 @@ class AuthenticationRepository {
 
     try {
       final accessToken = prefs.getString(StorageKeys.accessTokenKey);
-      final response = await APIService.post(
+      final response = await apiService.post(
         url: url,
         body: verifyBvnBody,
         headers: _authHeaders
@@ -155,7 +156,7 @@ class AuthenticationRepository {
     // final convertedImageFile =
     //     await PictureUploadService.convertToWebp(imageFile);
 
-    final url = Uri.https(
+    final filesUploadUrl = Uri.https(
       APIConfigs.baseUrl,
       APIConfigs.filesUploadPath,
     );
@@ -171,8 +172,8 @@ class AuthenticationRepository {
     // prepare upload
     try {
       final accessToken = prefs.getString(StorageKeys.accessTokenKey);
-      final response = await APIService.post(
-        url: url,
+      final response = await apiService.post(
+        url: filesUploadUrl,
         body: reqBody,
         headers: _authHeaders
           ..addAll({
@@ -190,7 +191,7 @@ class AuthenticationRepository {
 
         List<int> imageData = await imageFile.readAsBytes();
 
-        final uploadReqest = await APIService.put(
+        final uploadReqest = await apiService.put(
             url: Uri.parse(body["url"]),
             body: imageData,
             headers: imageUploadHeader);
@@ -202,23 +203,47 @@ class AuthenticationRepository {
           ],
           "type": "single",
         };
+
+
         // complete request
         try {
-          final response = await APIService.put(
-            url: url,
+          final response = await apiService.put(
+            url: filesUploadUrl,
             body: jsonEncode(putBody),
             headers: _authHeaders, // add access token authorization to header
           );
           log('Completed request ${response.statusCode}');
+          
+          final saveSelfieUrl = Uri.https(
+            APIConfigs.baseUrl,
+            APIConfigs.saveSelfiePath,
+          );
+          try {
+            final saveFileBody = {
+              "fileId": body["id"],
+            };
+            // save selfie
+            await apiService.post(
+                url: saveSelfieUrl,
+                body: saveFileBody,
+                headers: _authHeaders);
+          } on ServerException catch (_) {
+            
+            return Left(
+                ServerFailure(code: _.code.toString(), message: _.message));
+          }
         } on ServerException catch (_) {
+          
           return Left(
               ServerFailure(code: _.code.toString(), message: _.message));
         }
       } on ServerException catch (_) {
+        
         return Left(ServerFailure(code: _.code.toString(), message: _.message));
       }
       return const Right(true);
     } on ServerException catch (_) {
+      
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     } catch (e) {
       throw Exception(e);

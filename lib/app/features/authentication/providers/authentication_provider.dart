@@ -64,7 +64,7 @@ class AuthenticationProvider extends BaseProvider {
     notifyListeners();
   }
 
-  Future<void> initiateLogin() async {
+  Future<void> initiateLogin(BuildContext context) async {
     updateLoadingState(LoadingState.busy);
 
     var response = await authenticationRepository.login(_loginParams!);
@@ -73,13 +73,14 @@ class AuthenticationProvider extends BaseProvider {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'A login error occured!');
       // trigger error on ui
+      AppSnackBar.showErrorSnackBar(context, errorMsg);
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
       _navigationService.navigateTo(RouteName.createPin);
     });
   }
 
-  Future<void> initiateRegistration() async {
+  Future<void> initiateRegistration(BuildContext context) async {
     updateLoadingState(LoadingState.busy);
     var response = await authenticationRepository.register(_registerParams!);
 
@@ -87,13 +88,14 @@ class AuthenticationProvider extends BaseProvider {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'A registration error occured!');
       // trigger error on ui
+      AppSnackBar.showErrorSnackBar(context, errorMsg);
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
       _navigationService.navigateTo(RouteName.verifyOTP);
     });
   }
 
-  Future<void> initiateVerifyPhone() async {
+  Future<void> initiateVerifyPhone(BuildContext context) async {
     updateLoadingState(LoadingState.busy);
     var response =
         await authenticationRepository.verifyPhone(_verifyPhoneParams!);
@@ -102,19 +104,21 @@ class AuthenticationProvider extends BaseProvider {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'Phone verification failed!');
       // trigger error on ui
+      AppSnackBar.showErrorSnackBar(context, errorMsg);
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
       _navigationService.navigateTo(RouteName.verifyBVN);
     });
   }
 
-  Future<void> initiateVerifyBVN() async {
+  Future<void> initiateVerifyBVN(BuildContext context) async {
     updateLoadingState(LoadingState.busy);
     var response = await authenticationRepository.verifyBVN(_verifyBVNParams!);
 
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'BVN verification failed!');
+      AppSnackBar.showErrorSnackBar(context, errorMsg);
       // trigger error on ui
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);

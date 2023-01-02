@@ -141,6 +141,6 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
   Future<void> _handleVerifyBVN(AuthenticationProvider authProvider) async {
      _formKey.currentState!.save();
     authProvider.updateVerifyBVNParams(_verifyBVNParams);
-    await authProvider.initiateVerifyBVN();
+    await authProvider.initiateVerifyBVN(context);
   }
 }

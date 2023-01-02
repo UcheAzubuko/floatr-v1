@@ -372,6 +372,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   _handleRegister(AuthenticationProvider authProvider) async {
     _formKey.currentState!.save();
     authProvider.updateRegisterParams(_registerParams);
-    await authProvider.initiateRegistration();
+    await authProvider.initiateRegistration(context);
   }
 }

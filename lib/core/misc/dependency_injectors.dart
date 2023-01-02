@@ -2,6 +2,7 @@ import 'package:floatr/app/features/authentication/data/repositories/authenticat
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/services/api_service.dart';
 import '../route/navigation_service.dart';
 
 GetIt di = GetIt.instance;
@@ -12,9 +13,10 @@ Future<void> setupLocator() async {
   // data
 
   // repos
-  di.registerLazySingleton<AuthenticationRepository>(() => AuthenticationRepository(prefs: di()));
+  di.registerLazySingleton<AuthenticationRepository>(() => AuthenticationRepository(prefs: di(), apiService: di()));
 
   // services
+  di.registerLazySingleton<APIService>(() => APIService());
 
   // external
   final sharedPreferences = await SharedPreferences.getInstance();

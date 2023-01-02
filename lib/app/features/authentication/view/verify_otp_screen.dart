@@ -209,6 +209,6 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
 
   _handleVerifyOTP(AuthenticationProvider authProvider) async {
     authProvider.updateVerifyPhoneParams(_verifyPhoneParams);
-    await authProvider.initiateVerifyPhone();
+    await authProvider.initiateVerifyPhone(context);
   }
 }

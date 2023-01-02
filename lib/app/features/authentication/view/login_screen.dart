@@ -200,6 +200,6 @@ class _LoginScreenState extends State<LoginScreen> {
   _handleLogin(AuthenticationProvider authProvider) async {
     _formKey.currentState!.save();
     authProvider.updateLoginParams(_loginParams);
-    await authProvider.initiateLogin();
+    await authProvider.initiateLogin(context);
   }
 }
