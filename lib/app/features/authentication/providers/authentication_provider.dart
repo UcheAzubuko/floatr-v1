@@ -4,9 +4,11 @@ import 'package:floatr/app/features/authentication/data/model/params/login_param
 import 'package:floatr/app/features/authentication/data/model/params/verify_bvn_params.dart';
 import 'package:floatr/app/features/authentication/data/model/params/verify_phone_params.dart';
 import 'package:floatr/app/features/authentication/data/repositories/authentication_repository.dart';
+import 'package:floatr/app/widgets/app_snackbar.dart';
 import 'package:floatr/core/misc/dependency_injectors.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/route_names.dart';
+import 'package:flutter/material.dart';
 
 import '../../../../core/route/navigation_service.dart';
 import '../data/model/params/register_params.dart';
@@ -120,17 +122,17 @@ class AuthenticationProvider extends BaseProvider {
     });
   }
 
-  Future<void> uploadimage() async {
+  Future<void> uploadimage(BuildContext context) async {
     updateLoadingState(LoadingState.busy);
     var response = await authenticationRepository.uploadPicture(_imagefile!);
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'File upload failed!');
+      AppSnackBar.showErrorSnackBar(context, errorMsg);
       // trigger error on ui
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
-      print('from provider: File uploaded');
-      // _navigationService.navigateTo(RouteName.takeSelfie);
+      _navigationService.navigateTo(RouteName.confirmDetails);
     });
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
@@ -8,10 +9,10 @@ import 'package:floatr/app/features/authentication/data/model/params/verify_bvn_
 import 'package:floatr/app/features/authentication/data/model/params/verify_phone_params.dart';
 import 'package:floatr/core/data/data_source/remote/api_configs.dart';
 import 'package:floatr/core/data/services/api_service.dart';
-import 'package:floatr/core/data/services/picture_upload.dart';
 import 'package:floatr/core/errors/exception.dart';
 import 'package:floatr/core/errors/failure.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path/path.dart';
 
 class AuthenticationRepository {
   final SharedPreferences prefs;
@@ -150,9 +151,9 @@ class AuthenticationRepository {
     }
   }
 
-  Future<Either<Failure, String>> uploadPicture(File imageFile) async {
-    final convertedImageFile =
-        await PictureUploadService.convertToWebp(imageFile);
+  Future<Either<Failure, bool>> uploadPicture(File imageFile) async {
+    // final convertedImageFile =
+    //     await PictureUploadService.convertToWebp(imageFile);
 
     final url = Uri.https(
       APIConfigs.baseUrl,
@@ -160,13 +161,14 @@ class AuthenticationRepository {
     );
 
     final reqBody = {
-      "ext": "webp",
-      "name": "selfie.webp",
+      "ext": "jpg",
+      "name": basename(imageFile.path),
       "purpose": "user/profile/pictures",
-      "size": 234905,
-      "type": "image_webp",
+      "size": await imageFile.length(),
+      "type": "image_jpg",
     };
 
+    // prepare upload
     try {
       final accessToken = prefs.getString(StorageKeys.accessTokenKey);
       final response = await APIService.post(
@@ -178,18 +180,47 @@ class AuthenticationRepository {
           }), // add access token authorization to header
       );
       final body = jsonDecode(response.body);
-      print(body);
+
+      // upload to bucket
       try {
-        await APIService.multiPartUpload(body["url"], imageFile);
-      } catch (e) {
-        print('Multi part upload failed');
+        final imageUploadHeader = {
+          "Content-Type": "octet-stream",
+          "Content-Length": imageFile.lengthSync().toString()
+        };
+
+        List<int> imageData = await imageFile.readAsBytes();
+
+        final uploadReqest = await APIService.put(
+            url: Uri.parse(body["url"]),
+            body: imageData,
+            headers: imageUploadHeader);
+
+        final putBody = {
+          "id": body["id"],
+          "completedParts": [
+            {"ETag": uploadReqest.headers["etag"], "PartNumber": 1}
+          ],
+          "type": "single",
+        };
+        // complete request
+        try {
+          final response = await APIService.put(
+            url: url,
+            body: jsonEncode(putBody),
+            headers: _authHeaders, // add access token authorization to header
+          );
+          log('Completed request ${response.statusCode}');
+        } on ServerException catch (_) {
+          return Left(
+              ServerFailure(code: _.code.toString(), message: _.message));
+        }
+      } on ServerException catch (_) {
+        return Left(ServerFailure(code: _.code.toString(), message: _.message));
       }
-      return const Right('Sucess');
+      return const Right(true);
     } on ServerException catch (_) {
-      print('Server exception ${_.message}');
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     } catch (e) {
-      print('file upload failed $e');
       throw Exception(e);
     }
   }

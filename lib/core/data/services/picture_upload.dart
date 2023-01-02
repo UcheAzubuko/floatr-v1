@@ -17,7 +17,6 @@ class PictureUploadService {
       );
       return result;
     } catch (e) {
-      print('Conversion to webp $e');
       throw Exception(e);
     }
   }

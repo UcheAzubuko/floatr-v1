@@ -154,7 +154,6 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                 step: const FlutterSliderStep(step: 500),
                 onDragging: (handlerIndex, lowerValue, upperValue) {
                   
-                  print(amount);
                   setState(() {
                     amount = lowerValue;
                   });

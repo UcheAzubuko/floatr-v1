@@ -1,7 +1,6 @@
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:floatr/app/extensions/sized_context.dart';
 
 class AppTextField extends StatelessWidget {
   final String? hintText;
@@ -41,6 +40,12 @@ class AppTextField extends StatelessWidget {
       obscureText: obscureText,
       validator: validator,
       maxLines: obscureText == true ? 1 : maxLines,
+      style: GoogleFonts.plusJakartaSans(
+          color: AppColors.black,
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          // textStyle: Theme.of(context).textTheme.bodyText1,
+        ),
       decoration: InputDecoration(
         prefixIcon: prefixIcon,
         contentPadding:
@@ -49,7 +54,7 @@ class AppTextField extends StatelessWidget {
         labelText: labelText,
         hintStyle: GoogleFonts.plusJakartaSans(
           color: AppColors.grey,
-          fontSize: context.widthPx * 0.03,
+          fontSize: 12,
           fontWeight: FontWeight.w600,
           textStyle: Theme.of(context).textTheme.bodyText1,
         ),

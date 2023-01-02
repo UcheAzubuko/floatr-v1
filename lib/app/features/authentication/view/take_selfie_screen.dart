@@ -138,8 +138,7 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen>
                       Radius.circular(400),
                     ),
                   ),
-                  child: Transform.rotate(
-                      angle: -1.5708, child: CameraPreview(controller!)),
+                  child: CameraPreview(controller!),
                 ),
               ),
 

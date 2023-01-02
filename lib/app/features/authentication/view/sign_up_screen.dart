@@ -1,8 +1,6 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/data/model/params/register_params.dart';
-import 'package:floatr/app/features/authentication/view/take_selfie_screen.dart';
-import 'package:floatr/app/features/dashboard/view/dashboard_screen.dart';
 import 'package:floatr/app/widgets/disabled_button.dart';
 import 'package:floatr/app/widgets/text_field.dart';
 import 'package:floatr/core/providers/base_provider.dart';
@@ -129,11 +127,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const VerticalSpace(size: 10),
 
                 // email text and textfield
-                AppText(
+                const AppText(
                   text: 'Email Address',
                   color: AppColors.black,
                   fontWeight: FontWeight.w600,
-                  size: context.widthPx * 0.035,
+                  size: 12,
                 ),
 
                 const VerticalSpace(size: 10),
@@ -152,18 +150,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
+                  children: const [
                     AppText(
                       text: 'Phone number ',
                       color: AppColors.black,
                       fontWeight: FontWeight.w600,
-                      size: context.widthPx * 0.035,
+                      size: 12,
                     ),
                     AppText(
                       text: '(Linked with BVN)',
                       color: AppColors.black,
                       fontWeight: FontWeight.w500,
-                      size: context.widthPx * 0.035,
+                      size: 12,
                     ),
                   ],
                 ),
@@ -190,11 +188,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 // password text and textfield
                 const VerticalSpace(size: 10),
 
-                AppText(
+                const AppText(
                   text: 'Password',
                   color: AppColors.black,
                   fontWeight: FontWeight.w600,
-                  size: context.widthPx * 0.035,
+                  size: 12,
                 ),
 
                 const VerticalSpace(size: 10),
@@ -211,11 +209,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 // confirm password text and textfield
                 const VerticalSpace(size: 10),
 
-                AppText(
+                const AppText(
                   text: 'Confirm Password',
                   color: AppColors.black,
                   fontWeight: FontWeight.w600,
-                  size: context.widthPx * 0.035,
+                  size: 12,
                 ),
 
                 const VerticalSpace(size: 10),
@@ -231,11 +229,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const VerticalSpace(size: 10),
 
                 // dob text and textfield
-                AppText(
+                const AppText(
                   text: 'Date of Birth',
                   color: AppColors.black,
                   fontWeight: FontWeight.w600,
-                  size: context.widthPx * 0.035,
+                  size: 12,
                 ),
 
                 const VerticalSpace(size: 10),
@@ -271,11 +269,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                   ),
-                  child: AppText(
+                  child: const AppText(
                     text: 'Have a referral code?',
                     color: AppColors.gunMetal,
                     fontWeight: FontWeight.w600,
-                    size: context.widthPx * 0.031,
+                    size: 12,
                   ),
                 ),
 
@@ -338,11 +336,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: acceptedTC!
                         ? GeneralButton(
                             onPressed: () {
-                              // acceptedTC!
-                                  // ? _handleRegister(authProvider)
-                                  // : null;
-                              navigationService
-                                  .navigateToRoute(const DashboardScreen());
+                              acceptedTC!
+                                  ? _handleRegister(authProvider)
+                                  : null;
+                              // navigationService
+                              //     .navigateToRoute(const DashboardScreen());
                             },
                             buttonTextColor: Colors.white,
                             isLoading:

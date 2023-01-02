@@ -27,7 +27,6 @@ class DisplayPictureScreen extends StatefulWidget {
 }
 
 class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
-  late File _imageFile;
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +104,8 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                   builder: (context, authProvider, __) {
                 return GeneralButton(
                     height: 55,
-                    onPressed: () => _handleImageUpload(authProvider, File(widget.image.path)),
+                    onPressed: () => _handleImageUpload(
+                        authProvider, File(widget.image.path)),
                     isLoading: authProvider.loadingState == LoadingState.busy,
                     child: const Text(
                       'VERIFY',
@@ -120,8 +120,12 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
     );
   }
 
-  _handleImageUpload(AuthenticationProvider authProvider, File imageFile) async{
-    authProvider.updateImage(imageFile);
-    await authProvider.uploadimage();
+  _handleImageUpload(
+      AuthenticationProvider authProvider, File imageFile) async {
+    // authProvider.updateImage(imageFile);
+    context.read<AuthenticationProvider>()
+      ..updateImage(imageFile)
+      ..uploadimage(context);
+    // await authProvider.uploadimage();
   }
 }
