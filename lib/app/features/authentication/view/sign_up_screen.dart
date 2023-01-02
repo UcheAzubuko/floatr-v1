@@ -1,5 +1,6 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/extensions/validator_extension.dart';
 import 'package:floatr/app/features/authentication/data/model/params/register_params.dart';
 import 'package:floatr/app/widgets/disabled_button.dart';
 import 'package:floatr/app/widgets/text_field.dart';
@@ -7,6 +8,7 @@ import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
+import 'package:form_validator/form_validator.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -39,6 +41,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool? acceptedTC = false;
 
   TextEditingController dateController = TextEditingController();
+
+  final _fullnameValidator = ValidationBuilder().fullname().maxLength(20).build();
+  final _emailValidator = ValidationBuilder().email().maxLength(50).build();
+  final _passwordValidator = ValidationBuilder().password().build();
+  final _phoneValidator = ValidationBuilder().phone().build();
 
   DateFormat dateFormat = DateFormat('yyyy-MMM-dd');
 
@@ -83,6 +90,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: SafeArea(
           child: Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             // TODO: Add validation for register
             // autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
@@ -122,6 +130,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   textInputType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.unspecified,
                   onSaved: (String? name) => _registerParams.name = name!,
+                  validator: _fullnameValidator,
                 ),
 
                 const VerticalSpace(size: 10),
@@ -142,6 +151,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   textInputType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.unspecified,
                   onSaved: (String? email) => _registerParams.email = email!,
+                  validator: _emailValidator,
                 ),
 
                 const VerticalSpace(size: 10),
@@ -183,6 +193,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   textInputAction: TextInputAction.unspecified,
                   onSaved: (String? number) =>
                       _registerParams.phoneNumber = number!,
+                  validator: _phoneValidator,
                 ),
 
                 // password text and textfield
@@ -204,6 +215,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   textInputAction: TextInputAction.unspecified,
                   onSaved: (String? password) =>
                       _registerParams.password = password,
+                  validator: _passwordValidator,
                 ),
 
                 // confirm password text and textfield
@@ -224,6 +236,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   textInputType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.unspecified,
                   // onSaved: (String? password) => _registerParams.password = password,
+                  validator: (password) {
+                    if (passwordController.text != password) {
+                      return 'Both Passwords are not similar.';
+                    }
+                    return null;
+                  },
                 ),
 
                 const VerticalSpace(size: 10),
@@ -253,6 +271,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   hintText: 'DD-MM-YYYY',
                   readOnly: true,
                   onSaved: (String? dob) => _registerParams.dateOfBirth = dob!,
+                  validator: (dob) {
+                    if (dateOfBirth == null) {
+                      return 'Please pick a date';
+                    }
+                    return null;
+                  },
                 ),
 
                 const VerticalSpace(size: 30),
@@ -370,8 +394,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   _handleRegister(AuthenticationProvider authProvider) async {
-    _formKey.currentState!.save();
-    authProvider.updateRegisterParams(_registerParams);
-    await authProvider.initiateRegistration(context);
+    final bool isValid = _formKey.currentState!.validate();
+
+    if (isValid) {
+      _formKey.currentState!.save();
+      authProvider.updateRegisterParams(_registerParams);
+      await authProvider.initiateRegistration(context);
+    }
   }
 }

@@ -1,9 +1,11 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/extensions/validator_extension.dart';
 import 'package:floatr/app/features/authentication/data/model/params/verify_bvn_params.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:form_validator/form_validator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -27,10 +29,11 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
   final NavigationService navigationService = di<NavigationService>();
 
   TextEditingController bvnController = TextEditingController();
+  final _bvnValidator = ValidationBuilder().bvn().maxLength(11).build();
 
   late VerifyBVNParams _verifyBVNParams;
 
-   final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -46,6 +49,7 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
       body: SafeArea(
         child: Form(
           key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -56,39 +60,40 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
                 fontWeight: FontWeight.w900,
                 size: context.widthPx * 0.089,
               ),
-        
+
               AppText(
                 text: 'Please enter your Bank Verification Number (BVN)',
                 color: AppColors.grey,
                 fontWeight: FontWeight.w600,
                 size: context.widthPx * 0.035,
               ),
-        
+
               const VerticalSpace(
                 size: 40,
               ),
-        
+
               AppText(
                 text: 'BVN',
                 color: AppColors.black,
                 fontWeight: FontWeight.w600,
                 size: context.widthPx * 0.035,
               ),
-        
+
               const VerticalSpace(size: 10),
-        
+
               AppTextField(
                 hintText: '234353633333',
                 controller: bvnController,
-                textInputType: TextInputType.emailAddress,
+                textInputType: TextInputType.number,
                 textInputAction: TextInputAction.unspecified,
                 onSaved: (bvn) => _verifyBVNParams.bvn = bvn,
+                validator: _bvnValidator,
               ),
-        
+
               const VerticalSpace(
                 size: 15,
               ),
-        
+
               RichText(
                 text: TextSpan(
                   style: GoogleFonts.plusJakartaSans(
@@ -112,9 +117,9 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
                   ],
                 ),
               ),
-        
+
               const Spacer(),
-        
+
               Consumer<AuthenticationProvider>(
                   builder: (context, authProvider, _) {
                 return GeneralButton(
@@ -127,7 +132,7 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
                   ),
                 );
               }),
-        
+
               const SizedBox(
                 height: 25,
               ),
@@ -139,8 +144,11 @@ class _VerifyBVNScreenState extends State<VerifyBVNScreen> {
   }
 
   Future<void> _handleVerifyBVN(AuthenticationProvider authProvider) async {
-     _formKey.currentState!.save();
+    final bool isValid = _formKey.currentState!.validate();
+    if(isValid) {
+      _formKey.currentState!.save();
     authProvider.updateVerifyBVNParams(_verifyBVNParams);
     await authProvider.initiateVerifyBVN(context);
+    }
   }
 }

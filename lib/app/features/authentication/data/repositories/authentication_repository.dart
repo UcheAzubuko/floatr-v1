@@ -204,7 +204,6 @@ class AuthenticationRepository {
           "type": "single",
         };
 
-
         // complete request
         try {
           final response = await apiService.put(
@@ -213,7 +212,7 @@ class AuthenticationRepository {
             headers: _authHeaders, // add access token authorization to header
           );
           log('Completed request ${response.statusCode}');
-          
+
           final saveSelfieUrl = Uri.https(
             APIConfigs.baseUrl,
             APIConfigs.saveSelfiePath,
@@ -223,27 +222,22 @@ class AuthenticationRepository {
               "fileId": body["id"],
             };
             // save selfie
-            await apiService.post(
-                url: saveSelfieUrl,
-                body: saveFileBody,
-                headers: _authHeaders);
+            final saveFileResponse = await apiService.post(
+                url: saveSelfieUrl, body: saveFileBody, headers: _authHeaders);
+            print(saveFileResponse.body);
           } on ServerException catch (_) {
-            
             return Left(
                 ServerFailure(code: _.code.toString(), message: _.message));
           }
         } on ServerException catch (_) {
-          
           return Left(
               ServerFailure(code: _.code.toString(), message: _.message));
         }
       } on ServerException catch (_) {
-        
         return Left(ServerFailure(code: _.code.toString(), message: _.message));
       }
       return const Right(true);
     } on ServerException catch (_) {
-      
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     } catch (e) {
       throw Exception(e);
