@@ -81,10 +81,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               const HorizontalSpace(
                                 size: 10,
                               ),
-                              Text('GOOD MORNING',
-                                  style: TextStyles.smallTextPrimary),
+                              Text(_periodOfDay,
+                              style: TextStyles.smallTextPrimary)
                             ],
                           ),
+
 
                           const VerticalSpace(size: 4),
 
@@ -93,8 +94,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             '${user!.firstName} ${user.lastName}',
                             style: TextStyles.largeTextDark,
                           ),
-                          Text(_periodOfDay,
-                              style: TextStyles.smallTextPrimary),
+                          
                         ],
                       ),
 
@@ -132,7 +132,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 // card with progress or card with offers
                 // const DebtCard(),
 
-                // const DataCompletionWidget(),
+                const DataCompletionWidget(),
 
                 const HighlightsCard(),
 
