@@ -64,12 +64,10 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                       Radius.circular(400),
                     ),
                   ),
-                  child: Transform.rotate(
-                      angle: -1.5708,
-                      child: Image.file(
-                        File(widget.image.path),
-                        fit: BoxFit.fill,
-                      )),
+                  child: Image.file(
+                    File(widget.image.path),
+                    fit: BoxFit.fill,
+                  ),
                 ),
               ),
 

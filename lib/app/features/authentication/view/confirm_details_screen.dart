@@ -31,7 +31,9 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
 
   @override
   void initState() {
-    context.read<AuthenticationProvider>().getUser();
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => context.read<AuthenticationProvider>().getUser());
+    
     super.initState();
   }
 
