@@ -53,9 +53,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
     super.dispose();
   }
 
-  void onEnd() {
-    print('onEnd');
-  }
+  void onEnd() {}
 
   void restart() {
     context.read<AuthenticationProvider>().resendOTP(context).then((value) {
@@ -63,7 +61,6 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
         endTime = DateTime.now().millisecondsSinceEpoch + 1000 * 120;
       });
     }, onError: (error) {
-      print('error');
       AppSnackBar.showErrorSnackBar(context, error);
     });
   }
@@ -190,11 +187,13 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                                   ),
                                 ),
                               ),
-                              child: 
-                                  isLoading ? const SizedBox(
+                              child: isLoading
+                                  ? const SizedBox(
                                       height: 10,
                                       width: 10,
-                                      child: CircularProgressIndicator(strokeWidth: 1.5,)).paddingOnly(left: 5)
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 1.5,
+                                      )).paddingOnly(left: 5)
                                   : AppText(
                                       text: 'Resend Code',
                                       color: AppColors.primaryColor,
