@@ -247,33 +247,37 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
             ).paddingOnly(bottom: 10),
             // AppTextField(controller: TextEditingController(text: '1 week')),\
             Container(
+              height: 42,
+              padding:
+                  const EdgeInsets.symmetric(vertical: 1.0, horizontal: 8.0),
               decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.grey, width: 2.0),
+                  color: AppColors.grey.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(10)),
-              child: DropdownButtonFormField<String>(
-                // decoration: InputDecoration(
-                //     fillColor: AppColors.grey500,
-                //     border: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(16),
-                //     )),
-                focusColor: AppColors.black,
-                style: const TextStyle(color: AppColors.grey500),
-                borderRadius: BorderRadius.circular(16),
-                icon: const Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  color: AppColors.grey,
+              child: Align(
+                alignment: Alignment.center,
+                child: DropdownButtonFormField<String>(
+                  decoration: const InputDecoration.collapsed(hintText: ''),
+                  // value: ,
+                  focusColor: AppColors.black,
+                 
+                  borderRadius: BorderRadius.circular(12),
+                  icon: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: AppColors.grey.withOpacity(0.3),
+                  ),
+                  isExpanded: true,
+                  items: loanTerms
+                      .map((lt) => DropdownMenuItem<String>(
+                          value: lt,
+                          child: AppText(
+                            text: lt,
+                            fontWeight: FontWeight.w500,
+                            size: 12,
+                          )))
+                      .toList(),
+                  onChanged: (lt) => setState(() => selectedLoanTerm = lt),
+                  value: selectedLoanTerm,
                 ),
-                isExpanded: true,
-                items: loanTerms
-                    .map((lt) => DropdownMenuItem<String>(
-                        value: lt,
-                        child: AppText(
-                          text: lt,
-                          fontWeight: FontWeight.w700,
-                        )))
-                    .toList(),
-                onChanged: (lt) => setState(() => selectedLoanTerm = lt),
-                value: selectedLoanTerm,
               ),
             ),
 
