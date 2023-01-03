@@ -337,7 +337,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     Row(
                       children: const [
                         AppText(
-                          text: 'I accept and agree all to all ',
+                          text: 'I accept and agree to all ',
                           color: AppColors.black,
                           fontWeight: FontWeight.w600,
                           size: 10,

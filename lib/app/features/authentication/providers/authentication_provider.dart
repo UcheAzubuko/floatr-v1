@@ -126,7 +126,7 @@ class AuthenticationProvider extends BaseProvider {
       AppSnackBar.showErrorSnackBar(context, errorMsg);
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
-      _navigationService.navigateTo(RouteName.verifyBVN);
+      _navigationService.navigateReplacementTo(RouteName.verifyBVN);
     });
   }
 
@@ -141,7 +141,7 @@ class AuthenticationProvider extends BaseProvider {
       // trigger error on ui
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
-      _navigationService.navigateTo(RouteName.takeSelfie);
+      _navigationService.navigateReplacementTo(RouteName.takeSelfie);
     });
   }
 
@@ -182,7 +182,7 @@ class AuthenticationProvider extends BaseProvider {
       // trigger error on ui
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
-      _navigationService.navigateTo(RouteName.confirmDetails);
+      _navigationService.pushAndRemoveUntil(RouteName.confirmDetails);
     });
   }
 }
