@@ -56,7 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       body: Consumer<AuthenticationProvider>(
         builder: (context, provider, _) {
           final user = provider.user;
-          
+
           return SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
