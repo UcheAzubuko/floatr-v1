@@ -87,7 +87,7 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
   }
 
   int get repaymentAmount {
-    return (amount! / loanTerm) ~/ 1;
+    return (paybackAmount / loanTerm) ~/ 1;
   }
 
   int get loanAmount {
@@ -152,7 +152,7 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
               style: TextStyles.smallTextDark14Px,
             ),
             Text(
-              'N${loanAmount ?? 0}',
+              'N$loanAmount',
               style: TextStyles.largeTextDark,
             ),
           ],
@@ -230,6 +230,7 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                 onChanged: (double value) {
                   setState(() {
                     amount = value;
+                    // ignore: avoid_print
                     print(amount);
                   });
                 },
@@ -245,10 +246,24 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
               style: TextStyles.smallTextDark,
             ).paddingOnly(bottom: 10),
             // AppTextField(controller: TextEditingController(text: '1 week')),\
-            SizedBox(
-              width: context.widthPx,
+            Container(
+              decoration: BoxDecoration(
+                  border: Border.all(color: AppColors.grey, width: 2.0),
+                  borderRadius: BorderRadius.circular(10)),
               child: DropdownButtonFormField<String>(
+                // decoration: InputDecoration(
+                //     fillColor: AppColors.grey500,
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(16),
+                //     )),
+                focusColor: AppColors.black,
+                style: const TextStyle(color: AppColors.grey500),
                 borderRadius: BorderRadius.circular(16),
+                icon: const Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: AppColors.grey,
+                ),
+                isExpanded: true,
                 items: loanTerms
                     .map((lt) => DropdownMenuItem<String>(
                         value: lt,
