@@ -8,6 +8,8 @@ import 'package:floatr/app/widgets/text_field.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../../core/misc/dependency_injectors.dart';
+import '../../../../../core/route/navigation_service.dart';
 import '../../../../../core/utils/app_style.dart';
 
 class EditProfileScreen extends StatelessWidget {
@@ -39,10 +41,12 @@ class EditResidentialAddressView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    NavigationService navigationService = di<NavigationService>();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const VerticalSpace(size: 60),
+        // const VerticalSpace(size: 60),
 
         const VerticalSpace(size: 30),
 
@@ -53,7 +57,7 @@ class EditResidentialAddressView extends StatelessWidget {
           infoTitle: 'Residential Address',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children:  [
+            children: [
               const VerticalSpace(size: 20),
 
               // country
@@ -98,7 +102,7 @@ class EditResidentialAddressView extends StatelessWidget {
         const VerticalSpace(size: 30),
 
         GeneralButton(
-          onPressed: () {},
+          onPressed: () => navigationService.pop(),
           height: 48,
           borderRadius: 12,
           child: const AppText(
@@ -121,10 +125,12 @@ class EditEmploymentView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    NavigationService navigationService = di<NavigationService>();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const VerticalSpace(size: 60),
+        // const VerticalSpace(size: 60),
 
         const VerticalSpace(size: 30),
 
@@ -135,8 +141,7 @@ class EditEmploymentView extends StatelessWidget {
           infoTitle: 'Employer’s Information',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children:  [
-              
+            children: [
               const VerticalSpace(size: 20),
 
               // company name
@@ -190,7 +195,7 @@ class EditEmploymentView extends StatelessWidget {
         const VerticalSpace(size: 30),
 
         GeneralButton(
-          onPressed: () {},
+          onPressed: () => navigationService.pop(),
           height: 48,
           borderRadius: 12,
           child: const AppText(
@@ -213,10 +218,12 @@ class EditNextOfKinView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    NavigationService navigationService = di<NavigationService>();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const VerticalSpace(size: 60),
+        // const VerticalSpace(size: 60),
 
         const VerticalSpace(size: 30),
 
@@ -228,7 +235,7 @@ class EditNextOfKinView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 
+              //
               const VerticalSpace(size: 20),
 
               // relationship
@@ -268,7 +275,7 @@ class EditNextOfKinView extends StatelessWidget {
               // const VerticalSpace(size: 10),
 
               // email address
-             Text(
+              Text(
                 'Email Address',
                 style: TextStyles.smallTextDark14Px,
               ).paddingOnly(bottom: 8),
@@ -287,8 +294,8 @@ class EditNextOfKinView extends StatelessWidget {
           infoTitle: 'Next of Kin Address',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children:  [
-             const VerticalSpace(size: 20),
+            children: [
+              const VerticalSpace(size: 20),
 
               // country
               Text(
@@ -332,7 +339,7 @@ class EditNextOfKinView extends StatelessWidget {
         const VerticalSpace(size: 30),
 
         GeneralButton(
-          onPressed: () {},
+          onPressed: () => navigationService.pop(),
           height: 48,
           borderRadius: 12,
           child: const AppText(
@@ -357,6 +364,8 @@ class EditProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    NavigationService navigationService = di<NavigationService>();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -445,7 +454,7 @@ class EditProfileView extends StatelessWidget {
         const VerticalSpace(size: 40),
 
         GeneralButton(
-          onPressed: () {},
+          onPressed: () => navigationService.pop(),
           height: 48,
           child: const AppText(
             text: 'SAVE CHANGES',
