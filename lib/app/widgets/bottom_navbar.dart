@@ -1,6 +1,7 @@
-
+import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/utils/app_colors.dart';
 import '../features/dashboard/view/dashboard_screen.dart';
@@ -18,9 +19,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   @override
   Widget build(BuildContext context) {
-
     Widget getViewForIndex(int index) {
-      
       switch (index) {
         case 0:
           return const DashboardScreen();
@@ -42,107 +41,111 @@ class _BottomNavigationState extends State<BottomNavigation> {
     }
 
     return Scaffold(
-      // backgroundColor: ImpactlyAppColors.backgroundColor,
-      body: getViewForIndex(currentTabIndex),
-      // extendBodyBehindAppBar: true,
-      // extendBody: true,
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(
-          // sets the background color of the `BottomNavigationBar`
-          canvasColor: Colors.white,
-          // sets the active color of the `BottomNavigationBar` if `Brightness` is light
-          // primaryColor: AppColors.white,
-          // backgroundColor: Colors.transparent,
-        ),
-        child:  BottomNavigationBar(
-            selectedFontSize: 0,
-            unselectedFontSize: 0,
-            unselectedItemColor: Colors.white,
-            selectedLabelStyle: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w400,
+        // backgroundColor: ImpactlyAppColors.backgroundColor,
+        body: getViewForIndex(currentTabIndex),
+        // extendBodyBehindAppBar: true,
+        // extendBody: true,
+        bottomNavigationBar: Theme(
+            data: Theme.of(context).copyWith(
+              // sets the background color of the `BottomNavigationBar`
+              canvasColor: Colors.white,
+              // sets the active color of the `BottomNavigationBar` if `Brightness` is light
+              // primaryColor: AppColors.white,
+              // backgroundColor: Colors.transparent,
             ),
-            unselectedLabelStyle: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w400,
-            ),
-            // iconSize: 15,
-            type: BottomNavigationBarType.fixed,
-            onTap: (newTab) {
-              // print(newTab);
-             setCurrentTabTo(newTabIndex: newTab);
-                 
-            },
-            currentIndex: currentTabIndex,
-            items: <BottomNavigationBarItem>[
-              // dashboard
-              BottomNavigationBarItem(
-                icon: BottomItemIcon(
-                  color:
-                      currentTabIndex == 0 ? AppColors.primaryColor : AppColors.grey,
-                  assetName: 'assets/icons/outline/home.svg',
-                  height: 24,
-                ),
-                label: '',
-              ),
+            child: Consumer<AuthenticationProvider>(
+              builder: (context, provider, _) {
+                return BottomNavigationBar(
+                  selectedFontSize: 0,
+                  unselectedFontSize: 0,
+                  unselectedItemColor: Colors.white,
+                  selectedLabelStyle: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  unselectedLabelStyle: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  // iconSize: 15,
+                  type: BottomNavigationBarType.fixed,
+                  onTap: (newTab) {
+                    // print(newTab);
+                    provider.tempCompletionStatus == false ||
+                            provider.tempCompletionStatus == null
+                        ? null
+                        : setCurrentTabTo(newTabIndex: newTab);
+                  },
+                  currentIndex: currentTabIndex,
+                  items: <BottomNavigationBarItem>[
+                    // dashboard
+                    BottomNavigationBarItem(
+                      icon: BottomItemIcon(
+                        color: currentTabIndex == 0
+                            ? AppColors.primaryColor
+                            : AppColors.grey,
+                        assetName: 'assets/icons/outline/home.svg',
+                        height: 24,
+                      ),
+                      label: '',
+                    ),
 
-              // leaderboard
-              BottomNavigationBarItem(
-                icon: BottomItemIcon(
-                  color:
-                      currentTabIndex == 1 ? AppColors.primaryColor : AppColors.grey,
-                  assetName: 'assets/icons/outline/wallet-nav.svg',
-                  height: 24,
-                ),
-                label: '',
-              ),
+                    // leaderboard
+                    BottomNavigationBarItem(
+                      icon: BottomItemIcon(
+                        color: currentTabIndex == 1
+                            ? AppColors.primaryColor
+                            : AppColors.grey,
+                        assetName: 'assets/icons/outline/wallet-nav.svg',
+                        height: 24,
+                      ),
+                      label: '',
+                    ),
 
-              // contest
-              BottomNavigationBarItem(
-                icon: BottomItemIcon(
-                  color:
-                      currentTabIndex == 2 ? AppColors.primaryColor : AppColors.grey,
-                  assetName: 'assets/icons/outline/card-nav.svg',
-                  height: 24,
-                ),
-                label: '',
-              ),
+                    // contest
+                    BottomNavigationBarItem(
+                      icon: BottomItemIcon(
+                        color: currentTabIndex == 2
+                            ? AppColors.primaryColor
+                            : AppColors.grey,
+                        assetName: 'assets/icons/outline/card-nav.svg',
+                        height: 24,
+                      ),
+                      label: '',
+                    ),
 
-              // // wallet
-              // BottomNavigationBarItem(
-              //   icon: BottomItemIcon(
-              //     color:
-              //         currentTabIndex == 3 ? AppColors.gold : AppColors.white,
-              //     assetName: SvgAppIcons.icWallet,
-              //   ),
-              //   label: 'Wallet',
-              // ),
+                    // // wallet
+                    // BottomNavigationBarItem(
+                    //   icon: BottomItemIcon(
+                    //     color:
+                    //         currentTabIndex == 3 ? AppColors.gold : AppColors.white,
+                    //     assetName: SvgAppIcons.icWallet,
+                    //   ),
+                    //   label: 'Wallet',
+                    // ),
 
-              // profile
-              BottomNavigationBarItem(
-                icon: BottomItemIcon(
-                  color:
-                      currentTabIndex == 3 ? null : Colors.grey,
-                  assetName: currentTabIndex == 3 ? 'assets/icons/outline/user-nav.svg' : 'assets/icons/outline/user-nav.svg',
-                  height: 24,
-                ),
-                label: '',
-              ),
-            ],
-            selectedItemColor: Colors.red,
-          )));
-        }
-      
-    
+                    // profile
+                    BottomNavigationBarItem(
+                      icon: BottomItemIcon(
+                        color: currentTabIndex == 3 ? null : Colors.grey,
+                        assetName: currentTabIndex == 3
+                            ? 'assets/icons/outline/user-nav.svg'
+                            : 'assets/icons/outline/user-nav.svg',
+                        height: 24,
+                      ),
+                      label: '',
+                    ),
+                  ],
+                  selectedItemColor: Colors.red,
+                );
+              },
+            )));
   }
-
+}
 
 class BottomItemIcon extends StatelessWidget {
   const BottomItemIcon(
-      {Key? key,
-       this.color,
-      required this.assetName,
-      this.height = 18})
+      {Key? key, this.color, required this.assetName, this.height = 18})
       : super(key: key);
 
   final Color? color;

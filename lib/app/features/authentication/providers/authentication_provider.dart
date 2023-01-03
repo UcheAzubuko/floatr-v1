@@ -44,6 +44,10 @@ class AuthenticationProvider extends BaseProvider {
 
   File? get imagefile => _imagefile;
 
+  bool? _tempCompletionStatus;
+
+  bool? get tempCompletionStatus => _tempCompletionStatus;
+
   updateLoginParams(LoginParams params) {
     _loginParams = params;
     notifyListeners();
@@ -71,6 +75,11 @@ class AuthenticationProvider extends BaseProvider {
 
   updateUser(UserResponse userResponse) {
     _user = userResponse;
+    notifyListeners();
+  }
+
+  updateTempCompletion(bool tempCompletionStatus) {
+    _tempCompletionStatus = tempCompletionStatus;
     notifyListeners();
   }
 

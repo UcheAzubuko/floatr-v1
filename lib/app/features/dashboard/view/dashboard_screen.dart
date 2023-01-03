@@ -51,6 +51,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   @override
+  void initState() {
+    // context.read<AuthenticationProvider>().updateTempCompletion(false);
+    // super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Consumer<AuthenticationProvider>(
@@ -81,8 +87,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               const HorizontalSpace(
                                 size: 10,
                               ),
-                              Text('GOOD MORNING',
-                                  style: TextStyles.smallTextPrimary),
+                              Text(_periodOfDay,
+                                  style: TextStyles.smallTextPrimary)
                             ],
                           ),
 
@@ -93,8 +99,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             '${user!.firstName} ${user.lastName}',
                             style: TextStyles.largeTextDark,
                           ),
-                          Text(_periodOfDay,
-                              style: TextStyles.smallTextPrimary),
                         ],
                       ),
 
@@ -132,55 +136,67 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 // card with progress or card with offers
                 // const DebtCard(),
 
-                // const DataCompletionWidget(),
+                (provider.tempCompletionStatus == false ||
+                        provider.tempCompletionStatus == null)
+                    ? const DataCompletionWidget().paddingOnly(bottom: 30)
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const HighlightsCard(),
+                          const VerticalSpace(size: 40),
 
-                const HighlightsCard(),
+                          // dashboard options
+                          SizedBox(
+                            width: context.widthPx,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const [
+                                OptionsCard(
+                                  itemName: 'Banks',
+                                  assetPath: 'assets/icons/fill/bank-icon.svg',
+                                ),
+                                OptionsCard(
+                                  itemName: 'Cards',
+                                  assetPath:
+                                      'assets/icons/fill/credit-card.svg',
+                                ),
+                                OptionsCard(
+                                  itemName: 'Schedule',
+                                  assetPath:
+                                      'assets/icons/fill/time-schedule.svg',
+                                ),
+                                OptionsCard(
+                                  itemName: 'More',
+                                  assetPath: 'assets/icons/fill/more-icon.svg',
+                                ),
+                              ],
+                            ),
+                          ),
 
-                const VerticalSpace(size: 40),
+                          const VerticalSpace(size: 40),
 
-                // dashboard options
-                // SizedBox(
-                //   width: context.widthPx,
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //     children: const [
-                //       OptionsCard(
-                //         itemName: 'Banks',
-                //         assetPath: 'assets/icons/fill/bank-icon.svg',
-                //       ),
-                //       OptionsCard(
-                //         itemName: 'Cards',
-                //         assetPath: 'assets/icons/fill/credit-card.svg',
-                //       ),
-                //       OptionsCard(
-                //         itemName: 'Schedule',
-                //         assetPath: 'assets/icons/fill/time-schedule.svg',
-                //       ),
-                //       OptionsCard(
-                //         itemName: 'More',
-                //         assetPath: 'assets/icons/fill/more-icon.svg',
-                //       ),
-                //     ],
-                //   ),
-                // ),
+                          // recent activities
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Recent Activities',
+                              style: TextStyles.normalTextDarkF800,
+                            ),
+                          ),
 
-                // const VerticalSpace(size: 40),
+                          const VerticalSpace(
+                            size: 22,
+                          ),
 
-                // recent activities
-                // Text(
-                //   'Recent Activities',
-                //   style: TextStyles.normalTextDarkF800,
-                // ),
+                          SizedBox(
+                            height: 256,
+                            width: context.widthPx,
+                            child: const ActivitiesList(),
+                          ),
+                        ],
+                      ),
 
-                // const VerticalSpace(
-                //   size: 22,
-                // ),
-
-                // SizedBox(
-                //   height: 256,
-                //   width: context.widthPx,
-                //   child: const ActivitiesList(),
-                // ),
+                // const HighlightsCard(),
               ],
             ).paddingOnly(
               left: 10,
@@ -339,17 +355,21 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                 ),
 
                 // button
-                GeneralButton(
-                    height: 48,
-                    width: context.widthPx,
-                    borderRadius: 12,
-                    onPressed: () => null,
-                    child: const AppText(
-                      text: 'LET\'S GO!',
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      size: 14,
-                    ))
+                Consumer<AuthenticationProvider>(
+                  builder: (context, provider, _) {
+                    return GeneralButton(
+                        height: 48,
+                        width: context.widthPx,
+                        borderRadius: 12,
+                        onPressed: () => provider.updateTempCompletion(true),
+                        child: const AppText(
+                          text: 'LET\'S GO!',
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          size: 14,
+                        ));
+                  },
+                )
               ],
             ),
           ),
