@@ -126,6 +126,20 @@ class AuthenticationProvider extends BaseProvider {
     });
   }
 
+  Future<void> resendOTP(BuildContext context) async {
+    updateLoadingState(LoadingState.busy);
+    var response = await authenticationRepository.beginPhoneVerification();
+
+    response.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? 'Resend otp failed');
+      AppSnackBar.showErrorSnackBar(context, errorMsg);
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
+      
+    });
+  }
+
   Future<void> uploadimage(BuildContext context) async {
     updateLoadingState(LoadingState.busy);
     var response = await authenticationRepository.uploadPicture(_imagefile!);

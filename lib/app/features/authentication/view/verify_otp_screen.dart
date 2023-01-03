@@ -2,11 +2,13 @@ import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/data/model/params/verify_phone_params.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
+import 'package:floatr/app/widgets/app_snackbar.dart';
 import 'package:floatr/app/widgets/general_button.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_countdown_timer/index.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:otp_text_field/otp_text_field.dart';
 import 'package:otp_text_field/style.dart';
@@ -33,10 +35,37 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
   // bool _hasInputtedOTP = false;
   late VerifyPhoneParams _verifyPhoneParams;
 
+  late CountdownTimerController controller;
+  int endTime = DateTime.now().millisecondsSinceEpoch + 1000 * 120; // 2 mins
+
   @override
   void initState() {
     _verifyPhoneParams = VerifyPhoneParams(token: null);
+    controller = CountdownTimerController(
+      endTime: endTime,
+    );
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  void onEnd() {
+    print('onEnd');
+  }
+
+  void restart() {
+    context.read<AuthenticationProvider>().resendOTP(context).then((value) {
+      setState(() {
+        endTime = DateTime.now().millisecondsSinceEpoch + 1000 * 120;
+      });
+    }, onError: (error) {
+      print('error');
+      AppSnackBar.showErrorSnackBar(context, error);
+    });
   }
 
   @override
@@ -138,24 +167,53 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                 SizedBox(
                   width: context.widthPx * 0.009,
                 ),
-                Container(
-                  padding: EdgeInsets.only(
-                    bottom: context.heightPx * 0.0006,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: AppColors.primaryColor,
-                        width: context.widthPx * 0.001,
-                      ),
-                    ),
-                  ),
-                  child: AppText(
-                    text: 'Resend Code',
-                    color: AppColors.primaryColor,
-                    fontWeight: FontWeight.w600,
-                    size: context.widthPx * 0.031,
-                  ),
+
+//
+                Consumer<AuthenticationProvider>(
+                  builder: (context, provider, __) {
+                    bool isLoading = provider.loadingState == LoadingState.busy;
+                    return CountdownTimer(
+                      endTime: endTime,
+                      widgetBuilder: (_, CurrentRemainingTime? time) {
+                        if (time == null) {
+                          return InkWell(
+                            onTap: () => restart(),
+                            child: Container(
+                              padding: EdgeInsets.only(
+                                bottom: context.heightPx * 0.0006,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: AppColors.primaryColor,
+                                    width: context.widthPx * 0.001,
+                                  ),
+                                ),
+                              ),
+                              child: 
+                                  isLoading ? const SizedBox(
+                                      height: 10,
+                                      width: 10,
+                                      child: CircularProgressIndicator(strokeWidth: 1.5,)).paddingOnly(left: 5)
+                                  : AppText(
+                                      text: 'Resend Code',
+                                      color: AppColors.primaryColor,
+                                      fontWeight: FontWeight.w600,
+                                      size: context.widthPx * 0.031,
+                                    ),
+                            ),
+                          );
+                        }
+                        return AppText(
+                          text:
+                              '${time.min ?? 00}:${time.sec! < 10 ? '0${time.sec}' : time.sec}',
+                          color: AppColors.primaryColor,
+                          fontWeight: FontWeight.w600,
+                          size: context.widthPx * 0.031,
+                        );
+                      },
+                    );
+                  },
                 ),
               ],
             ),

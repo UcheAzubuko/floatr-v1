@@ -70,7 +70,7 @@ class AuthenticationRepository {
       final accessToken = body["access_token"];
 
       /// begin phone verification
-      await beginPhoneVerification(accessToken);
+      await beginPhoneVerification();
 
       // store token
       await prefs.setString(
@@ -81,13 +81,14 @@ class AuthenticationRepository {
     }
   }
 
-  Future<void> beginPhoneVerification(String accessToken) async {
+  Future<Either<Failure, bool>> beginPhoneVerification() async {
     final url = Uri.https(
       APIConfigs.baseUrl,
       APIConfigs.beginPhoneVerificationPath,
     );
 
     final reqBody = {"mode": "sms"};
+    final accessToken = prefs.getString(StorageKeys.accessTokenKey);
 
     try {
       await apiService.post(
@@ -95,8 +96,9 @@ class AuthenticationRepository {
         body: reqBody,
         headers: _authHeaders..addAll({"Authorization": "Bearer $accessToken"}),
       );
+      return const Right(true);
     } on ServerException catch (_) {
-      throw const ServerFailure();
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }
   }
 

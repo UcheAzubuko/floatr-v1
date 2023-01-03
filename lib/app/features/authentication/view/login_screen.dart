@@ -1,5 +1,6 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/extensions/validator_extension.dart';
 import 'package:floatr/app/features/authentication/data/model/params/login_params.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:floatr/app/widgets/app_text.dart';
@@ -11,6 +12,7 @@ import 'package:floatr/core/utils/app_colors.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:form_validator/form_validator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -35,6 +37,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
+  final _emailValidator = ValidationBuilder().email().maxLength(50).build();
+  final _passwordValidator = ValidationBuilder().password().build();
+
   @override
   void initState() {
     _loginParams = LoginParams(email: null, password: null);
@@ -47,9 +52,9 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: CustomAppBar(),
       body: SafeArea(
         child: Form(
-          // TODO: Add validation for login
-          // autovalidateMode: AutovalidateMode.onUserInteraction,
+
           key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // phone number text and textfield
                 AppText(
-                  text: 'Phone number',
+                  text: 'Email',
                   color: AppColors.black,
                   fontWeight: FontWeight.w600,
                   size: context.widthPx * 0.035,
@@ -110,11 +115,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  hintText: '+234 813 123 4567',
+                  hintText: 'jen@floatr.com',
                   controller: emailController,
                   textInputType: TextInputType.phone,
                   textInputAction: TextInputAction.unspecified,
                   onSaved: (String? email) => _loginParams.email = email!,
+                  validator: _emailValidator,
                 ),
 
                 const VerticalSpace(size: 10),
@@ -136,6 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   textInputAction: TextInputAction.unspecified,
                   onSaved: (String? password) =>
                       _loginParams.password = password!,
+                  validator: _passwordValidator,
                 ),
 
                 const VerticalSpace(size: 10),
@@ -198,8 +205,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _handleLogin(AuthenticationProvider authProvider) async {
-    _formKey.currentState!.save();
-    authProvider.updateLoginParams(_loginParams);
-    await authProvider.initiateLogin(context);
+    final bool isValid = _formKey.currentState!.validate();
+    if (isValid) {
+      _formKey.currentState!.save();
+      authProvider.updateLoginParams(_loginParams);
+      await authProvider.initiateLogin(context);
+    }
   }
 }
