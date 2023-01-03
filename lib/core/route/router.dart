@@ -10,6 +10,7 @@ import 'package:floatr/app/features/authentication/view/take_selfie_screen.dart'
 import 'package:floatr/app/features/authentication/view/verify_bvn_screen.dart';
 import 'package:floatr/app/features/authentication/view/verify_otp_screen.dart';
 import 'package:floatr/app/features/dashboard/view/dashboard_screen.dart';
+import 'package:floatr/app/features/loan/view/screens/loan_info_screen.dart';
 import 'package:floatr/app/features/onboarding/post_onboarding.dart';
 import 'package:floatr/app/features/onboarding/splash_screen.dart';
 import 'package:floatr/app/features/profile/view/screens/profile_screen.dart';
@@ -57,6 +58,8 @@ class Router {
         return MaterialPageRoute(builder: (_) => const SnapDocumentScreen());
       case RouteName.navbar:
         return MaterialPageRoute(builder: (_) => const BottomNavigation());
+      case RouteName.cards:
+        return MaterialPageRoute(builder: (_) => const AddNewBankScreen());
       default:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }

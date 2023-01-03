@@ -70,8 +70,8 @@ class PostOnboarding extends StatelessWidget {
                     EdgeInsets.symmetric(horizontal: context.widthPx * 0.037),
                 child: GeneralButton(
                   onPressed: () =>
-                      navigationService.navigateTo(RouteName.dashboard),
-                  // navigationService.navigateTo(RouteName.signup),
+                      // navigationService.navigateTo(RouteName.dashboard),
+                      navigationService.navigateTo(RouteName.signup),
                   child: const Text('Create Account'),
                 ),
               ),

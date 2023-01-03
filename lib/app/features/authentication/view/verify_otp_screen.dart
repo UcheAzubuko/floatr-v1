@@ -88,22 +88,22 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
             ),
 
             AppText(
-              text: 'Please enter the code that was sent to:',
+              text: 'Please enter the code that was sent to you',
               color: AppColors.grey,
               fontWeight: FontWeight.w600,
               size: context.widthPx * 0.035,
             ),
 
-            SizedBox(
-              height: context.heightPx * 0.009,
-            ),
+            // SizedBox(
+            //   height: context.heightPx * 0.009,
+            // ),
 
-            AppText(
-              text: '+2348147990002',
-              color: AppColors.grey,
-              fontWeight: FontWeight.w600,
-              size: context.widthPx * 0.035,
-            ),
+            // AppText(
+            //   text: '+2348147990002',
+            //   color: AppColors.grey,
+            //   fontWeight: FontWeight.w600,
+            //   size: context.widthPx * 0.035,
+            // ),
 
             const VerticalSpace(
               size: 60,

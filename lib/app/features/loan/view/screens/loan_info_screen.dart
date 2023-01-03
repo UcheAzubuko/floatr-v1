@@ -348,7 +348,9 @@ class SelectCardScreen extends StatelessWidget {
             child: ListView(
               children: [
                 const DebitCard(),
-                const VerticalSpace(size: 35,),
+                const VerticalSpace(
+                  size: 35,
+                ),
                 InkWell(
                   onTap: () => navigationService
                       .navigateToRoute(const AddNewCardScreen()),
@@ -1050,6 +1052,146 @@ class LoanApplicationSuccessfulScreen extends StatelessWidget {
               ),
             ).paddingOnly(bottom: 30),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class NavBarCardScreen extends StatelessWidget {
+  const NavBarCardScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    NavigationService navigationService = di<NavigationService>();
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const VerticalSpace(
+                size: 43,
+              ),
+
+              // title
+              Text(
+                'Add New Card',
+                style: TextStyles.largeTextDark,
+              ),
+
+              const VerticalSpace(
+                size: 9,
+              ),
+
+              Text(
+                'Please note that a one-time tokenization fee of \n₦100 will be charged to your card.',
+                style: TextStyles.smallTextGrey14Px,
+              ),
+
+              const VerticalSpace(
+                size: 20,
+              ),
+
+              SizedBox(
+                height: 186,
+                width: context.widthPx,
+                child: Image.asset(
+                  AppImages.defaultWallet,
+                  fit: BoxFit.fitWidth,
+                ),
+              ),
+
+              const VerticalSpace(
+                size: 20,
+              ),
+
+              Text(
+                'Cardholder Name',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(
+                controller: TextEditingController(),
+                hintText: 'Enter Cardholder Name',
+              ),
+
+              const VerticalSpace(
+                size: 10,
+              ),
+
+              //
+              Text(
+                'Card Number',
+                style: TextStyles.smallTextDark14Px,
+              ).paddingOnly(bottom: 8),
+              AppTextField(
+                controller: TextEditingController(),
+                hintText: 'Enter Card Number',
+              ),
+
+              const VerticalSpace(
+                size: 10,
+              ),
+
+              //
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: 154,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Expiry Date',
+                          style: TextStyles.smallTextDark14Px,
+                        ).paddingOnly(bottom: 8),
+                        AppTextField(
+                          controller: TextEditingController(),
+                          hintText: 'MM/YY',
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  //
+                  SizedBox(
+                    width: 154,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '3-Digit CVV',
+                          style: TextStyles.smallTextDark14Px,
+                        ).paddingOnly(bottom: 8),
+                        AppTextField(
+                          controller: TextEditingController(),
+                          hintText: 'Enter CVV',
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              const VerticalSpace(
+                size: 30,
+              ),
+
+              GeneralButton(
+                height: 42,
+                onPressed: () =>
+                    navigationService.navigateToRoute(const SelectBankScreen()),
+                borderRadius: 8,
+                child: const AppText(
+                  text: 'CONTINUE',
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ).paddingOnly(bottom: 30)
+            ],
+          ),
         ),
       ),
     );

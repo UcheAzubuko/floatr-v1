@@ -16,19 +16,14 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../../../../core/misc/dependency_injectors.dart';
 import '../../../../../core/route/navigation_service.dart';
-import '../../../../widgets/custom_appbar.dart';
 import '../../../../widgets/prompt_widget.dart';
 
-class LoanApplicationScreen extends StatelessWidget {
-  const LoanApplicationScreen({super.key});
+class NavLoanApplicationScreen extends StatelessWidget {
+  const NavLoanApplicationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title: '',
-        useInAppArrow: true,
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: SizedBox(

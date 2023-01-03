@@ -52,7 +52,6 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: CustomAppBar(),
       body: SafeArea(
         child: Form(
-
           key: _formKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: SingleChildScrollView(
@@ -137,6 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 AppTextField(
                   hintText: 'Password',
+                  obscureText: true,
                   controller: passwordController,
                   textInputType: TextInputType.visiblePassword,
                   textInputAction: TextInputAction.unspecified,

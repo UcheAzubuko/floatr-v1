@@ -17,6 +17,7 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
+import '../../../../core/route/route_names.dart';
 import '../../../widgets/dialogs.dart';
 import '../../../widgets/prompt_widget.dart';
 import '../../profile/view/screens/edit_profile.dart';
@@ -58,6 +59,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final NavigationService navigationService = di<NavigationService>();
+
     return Scaffold(
       body: Consumer<AuthenticationProvider>(
         builder: (context, provider, _) {
@@ -103,9 +106,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
 
                       // profile pic
-                      CircleAvatar(
-                        radius: 23,
-                        backgroundImage: NetworkImage(user.photo['url']),
+                      InkWell(
+                        onTap: () =>
+                            navigationService.navigateTo(RouteName.profile),
+                        child: CircleAvatar(
+                          radius: 23,
+                          backgroundImage: NetworkImage(user.photo['url']),
+                        ),
                       ),
                     ],
                   ).paddingSymmetric(horizontal: 10),

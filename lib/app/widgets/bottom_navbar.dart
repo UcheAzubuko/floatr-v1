@@ -1,4 +1,6 @@
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
+import 'package:floatr/app/features/loan/view/screens/loan_info_screen.dart';
+import 'package:floatr/app/features/loan/view/screens/nav_loan_application_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -24,11 +26,12 @@ class _BottomNavigationState extends State<BottomNavigation> {
         case 0:
           return const DashboardScreen();
         case 1:
-          return const ProfileScreen();
+          return const NavLoanApplicationScreen();
         case 2:
-          return const ProfileScreen();
+          return const NavBarCardScreen();
         case 3:
           return const ProfileScreen();
+
         default:
           return const DashboardScreen();
       }

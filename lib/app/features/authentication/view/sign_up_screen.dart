@@ -42,7 +42,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   TextEditingController dateController = TextEditingController();
 
-  final _fullnameValidator = ValidationBuilder().fullname().maxLength(20).build();
+  final _fullnameValidator =
+      ValidationBuilder().fullname().maxLength(20).build();
   final _emailValidator = ValidationBuilder().email().maxLength(50).build();
   final _passwordValidator = ValidationBuilder().password().build();
   final _phoneValidator = ValidationBuilder().phone().build();
@@ -210,6 +211,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   hintText: 'Password',
                   controller: passwordController,
                   textInputType: TextInputType.emailAddress,
+                  obscureText: true,
                   textInputAction: TextInputAction.unspecified,
                   onSaved: (String? password) =>
                       _registerParams.password = password,
@@ -231,6 +233,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 AppTextField(
                   hintText: 'Passwords must match',
                   controller: confirmPasswordController,
+                  obscureText: true,
                   textInputType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.unspecified,
                   // onSaved: (String? password) => _registerParams.password = password,

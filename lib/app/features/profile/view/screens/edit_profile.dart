@@ -7,10 +7,14 @@ import 'package:floatr/app/widgets/general_button.dart';
 import 'package:floatr/app/widgets/text_field.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../../core/misc/dependency_injectors.dart';
 import '../../../../../core/route/navigation_service.dart';
+import '../../../../../core/utils/app_colors.dart';
 import '../../../../../core/utils/app_style.dart';
+import '../../../authentication/providers/authentication_provider.dart';
 
 class EditProfileScreen extends StatelessWidget {
   const EditProfileScreen({Key? key, required this.editProfileView})
@@ -36,12 +40,61 @@ class EditProfileScreen extends StatelessWidget {
   }
 }
 
-class EditResidentialAddressView extends StatelessWidget {
+class EditResidentialAddressView extends StatefulWidget {
   const EditResidentialAddressView({super.key});
 
   @override
+  State<EditResidentialAddressView> createState() =>
+      _EditResidentialAddressViewState();
+}
+
+class _EditResidentialAddressViewState
+    extends State<EditResidentialAddressView> {
+  @override
   Widget build(BuildContext context) {
     NavigationService navigationService = di<NavigationService>();
+
+    List<String> states = [
+      'Select State',
+      'Abia',
+      'Adamawa',
+      'Akwa Ibom',
+      'Anambra',
+      'Bauchi',
+      'Bayelsa',
+      'Benue',
+      'Borno',
+      'Cross River',
+      'Delta',
+      'Ebonyi',
+      'Edo',
+      'Ekiti',
+      'Enugu',
+      'Gombe',
+      'Imo',
+      'Jigawa',
+      'Kaduna',
+      'Kano',
+      'Katsina',
+      'Kebbi',
+      'Kogi',
+      'Kwara',
+      'Lagos',
+      'Nasarawa',
+      'Niger',
+      'Ogun',
+      'Ondo',
+      'Osun',
+      'Oyo',
+      'Plateau',
+      'Rivers',
+      'Sokoto',
+      'Taraba',
+      'Yobe',
+      'Zamfara'
+    ];
+
+    String? selectedState = 'Select State';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -74,7 +127,42 @@ class EditResidentialAddressView extends StatelessWidget {
                 'State',
                 style: TextStyles.smallTextDark14Px,
               ).paddingOnly(bottom: 8),
-              AppTextField(controller: TextEditingController(text: 'Lagos')),
+              // AppTextField(controller: TextEditingController(text: 'Lagos')),
+              Container(
+                height: 42,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 1.0, horizontal: 20.0),
+                decoration: BoxDecoration(
+                    color: AppColors.grey.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10)),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: DropdownButtonFormField<String>(
+                    decoration:
+                        const InputDecoration.collapsed(hintText: 'Select'),
+                    // value: ,
+                    focusColor: AppColors.black,
+
+                    borderRadius: BorderRadius.circular(12),
+                    icon: Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: AppColors.grey.withOpacity(0.3),
+                    ),
+                    isExpanded: true,
+                    items: states
+                        .map((state) => DropdownMenuItem<String>(
+                            value: state,
+                            child: AppText(
+                              text: state,
+                              fontWeight: FontWeight.w500,
+                              size: 12,
+                            )))
+                        .toList(),
+                    onChanged: (state) => setState(() => selectedState = state),
+                    value: selectedState,
+                  ),
+                ),
+              ),
 
               const VerticalSpace(size: 10),
 
@@ -364,7 +452,10 @@ class EditProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.read<AuthenticationProvider>().user;
     NavigationService navigationService = di<NavigationService>();
+
+    DateFormat dateFormat = DateFormat('yyyy-MMM-dd');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -372,44 +463,49 @@ class EditProfileView extends StatelessWidget {
         const VerticalSpace(size: 60),
 
         // user image
-        const CircleAvatar(radius: 44),
+        CircleAvatar(
+            radius: 44, backgroundImage: NetworkImage(user!.photo['url'])),
 
         const VerticalSpace(size: 30),
 
         // primary info
+        // Consumer<AuthenticationProvider>(builder: (context, provider, _) {
+        //   final user = provider.user;
+
         AccountInfoCard(
           height: 290,
           width: context.widthPx,
           infoTitle: 'Primary Information',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               // fullname
               PrimaryInfoItem(
                 text: 'Full Name',
-                subText: 'Adanna Erica',
+                subText: '${user.firstName} ${user.lastName}',
               ),
 
               // phone number
               PrimaryInfoItem(
                 text: 'Phone Number',
-                subText: '+234 813 456 0322',
+                subText: user.phoneNumber,
               ),
 
               // bvn
               PrimaryInfoItem(
                 text: 'BVN',
-                subText: '22300912356',
+                subText: user.bvn,
               ),
 
               // dob
               PrimaryInfoItem(
                 text: 'Date of Birth',
-                subText: '15-09-3030',
+                subText: dateFormat.format(user.dateOfBirth),
               ),
             ],
           ),
         ),
+        // }),
 
         const VerticalSpace(size: 15),
 

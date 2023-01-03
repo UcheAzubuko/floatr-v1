@@ -41,7 +41,7 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen>
     // });
 
     availableCameras().then((value) {
-      controller = CameraController(value[0], ResolutionPreset.high);
+      controller = CameraController(value[1], ResolutionPreset.high);
 
       controller!.initialize().then((_) {
         if (!mounted) {
@@ -52,16 +52,18 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen>
         if (e is CameraException) {
           switch (e.code) {
             case 'CameraAccessDenied':
-          AppSnackBar.showSnackBar(context, 'You have denied camera access.');
-          break;
-        case 'CameraAccessDeniedWithoutPrompt':
-          // iOS only
-          AppSnackBar.showSnackBar(context, 'Please go to Settings app to enable camera access.');
-          break;
-        case 'CameraAccessRestricted':
-          // iOS only
-          AppSnackBar.showSnackBar(context, 'Camera access is restricted.');
-          break;
+              AppSnackBar.showSnackBar(
+                  context, 'You have denied camera access.');
+              break;
+            case 'CameraAccessDeniedWithoutPrompt':
+              // iOS only
+              AppSnackBar.showSnackBar(context,
+                  'Please go to Settings app to enable camera access.');
+              break;
+            case 'CameraAccessRestricted':
+              // iOS only
+              AppSnackBar.showSnackBar(context, 'Camera access is restricted.');
+              break;
           }
         }
       });
@@ -235,7 +237,9 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen>
 
                   if (!mounted) return;
 
-                  await navigationService.navigateToRoute(DisplayPictureScreen(image: image,));
+                  await navigationService.navigateToRoute(DisplayPictureScreen(
+                    image: image,
+                  ));
                 },
                 width: 56,
                 height: 56,

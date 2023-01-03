@@ -17,4 +17,5 @@ class RouteName {
   static const String editProfile = 'editProfile';
   static const String snapDocument = 'snapDocument';
   static const String navbar = 'navbar';
+  static const String cards = 'cards';
 }
