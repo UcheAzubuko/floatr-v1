@@ -7,6 +7,7 @@ import 'package:floatr/app/features/authentication/data/model/params/login_param
 import 'package:floatr/app/features/authentication/data/model/params/register_params.dart';
 import 'package:floatr/app/features/authentication/data/model/params/verify_bvn_params.dart';
 import 'package:floatr/app/features/authentication/data/model/params/verify_phone_params.dart';
+import 'package:floatr/app/features/authentication/data/model/response/user_repsonse.dart';
 import 'package:floatr/core/data/data_source/remote/api_configs.dart';
 import 'package:floatr/core/data/services/api_service.dart';
 import 'package:floatr/core/errors/exception.dart';
@@ -112,7 +113,7 @@ class AuthenticationRepository {
     final verifyPhoneBody = params.toMap();
 
     try {
-      final accessToken = prefs.getString(StorageKeys.accessTokenKey);
+      String? accessToken = prefs.getString(StorageKeys.accessTokenKey);
       final response = await apiService.post(
         url: url,
         body: verifyPhoneBody,
@@ -122,7 +123,10 @@ class AuthenticationRepository {
           }), // add access token authorization to header
       );
       final body = jsonDecode(response.body); // grab access_token
-      return Right(body["access_token"]);
+      accessToken = body["access_token"]; // update token
+      await prefs.setString(
+          StorageKeys.accessTokenKey, accessToken!); // store new token
+      return Right(accessToken);
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }
@@ -138,7 +142,7 @@ class AuthenticationRepository {
     final verifyBvnBody = params.toMap();
 
     try {
-      final accessToken = prefs.getString(StorageKeys.accessTokenKey);
+      String? accessToken = prefs.getString(StorageKeys.accessTokenKey);
       final response = await apiService.post(
         url: url,
         body: verifyBvnBody,
@@ -148,7 +152,24 @@ class AuthenticationRepository {
           }), // add access token authorization to header
       );
       final body = jsonDecode(response.body);
+      accessToken = body["access_token"]; // update token
+      await prefs.setString(
+          StorageKeys.accessTokenKey, accessToken!); // store new token
       return Right(body["access_token"]);
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    }
+  }
+
+  Future<Either<Failure, UserResponse>> user() async {
+    final url = Uri.https(APIConfigs.baseUrl, APIConfigs.user);
+    try {
+      String? accessToken = prefs.getString(StorageKeys.accessTokenKey);
+      final response = await apiService.get(
+          url: url,
+          headers: _authHeaders
+            ..addAll({"Authorization": "Bearer ${accessToken!}"}));
+      return Right(UserResponse.fromRawJson(response.body));
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }

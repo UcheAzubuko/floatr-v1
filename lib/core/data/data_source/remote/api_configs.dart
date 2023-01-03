@@ -5,6 +5,7 @@ class APIConfigs {
   static const filesUploadPath = '/v1/files/upload';
   static const beginPhoneVerificationPath = '/v1/users/me/begin-phone-verification';
   static const saveSelfiePath = '/v1/users/me/save-selfie';
+  static const user = '/v1/users/me';
   static const verifyPhone = 'v1/users/me/verify-phone';
   static const verifyBVN = '/v1/users/me/verify-bvn';
 }
