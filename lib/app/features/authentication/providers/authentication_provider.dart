@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:floatr/app/features/authentication/data/model/params/login_params.dart';
 import 'package:floatr/app/features/authentication/data/model/params/verify_bvn_params.dart';
 import 'package:floatr/app/features/authentication/data/model/params/verify_phone_params.dart';
+import 'package:floatr/app/features/authentication/data/model/response/user_repsonse.dart';
 import 'package:floatr/app/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:floatr/app/widgets/app_snackbar.dart';
 import 'package:floatr/core/misc/dependency_injectors.dart';
@@ -35,6 +36,10 @@ class AuthenticationProvider extends BaseProvider {
 
   VerifyBVNParams? get verifyBVNParams => _verifyBVNParams;
 
+  UserResponse? _user;
+
+  UserResponse? get user => _user;
+
   File? _imagefile;
 
   File? get imagefile => _imagefile;
@@ -61,6 +66,11 @@ class AuthenticationProvider extends BaseProvider {
 
   updateImage(File file) {
     _imagefile = file;
+    notifyListeners();
+  }
+
+  updateUser(UserResponse userResponse) {
+    _user = userResponse;
     notifyListeners();
   }
 
@@ -136,7 +146,20 @@ class AuthenticationProvider extends BaseProvider {
       AppSnackBar.showErrorSnackBar(context, errorMsg);
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
-      
+    });
+  }
+
+  Future<void> getUser() async {
+    updateLoadingState(LoadingState.busy);
+    var response = await authenticationRepository.getUser();
+    response.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? 'Failed to get user');
+      // AppSnackBar.showErrorSnackBar(context, errorMsg);
+      // trigger error on ui
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
+      updateUser(onSuccess);
     });
   }
 

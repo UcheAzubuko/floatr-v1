@@ -161,7 +161,7 @@ class AuthenticationRepository {
     }
   }
 
-  Future<Either<Failure, UserResponse>> user() async {
+  Future<Either<Failure, UserResponse>> getUser() async {
     final url = Uri.https(APIConfigs.baseUrl, APIConfigs.user);
     try {
       String? accessToken = prefs.getString(StorageKeys.accessTokenKey);
