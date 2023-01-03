@@ -15,10 +15,38 @@ import 'package:flutter_svg/svg.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
+import '../../../widgets/dialogs.dart';
 import '../../../widgets/prompt_widget.dart';
+import '../../profile/view/screens/edit_profile.dart';
+import '../../profile/view/screens/profile_screen.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  final _dateTime = DateTime.now();
+
+  String get _periodOfDay {
+    if (_dateTime.hour > 16) {
+      if (_dateTime.minute > 59) {
+        if (_dateTime.second > 59) {
+          return 'GOOD EVENING';
+        }
+      }
+    }
+    if (_dateTime.hour > 11) {
+      if (_dateTime.minute > 59) {
+        if (_dateTime.second > 59) {
+          return 'GOOD AFTERNOON';
+        }
+      }
+    }
+    return 'GOOD MORNING';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +75,7 @@ class DashboardScreen extends StatelessWidget {
                           const HorizontalSpace(
                             size: 10,
                           ),
-                          Text('GOOD MORNING',
+                          Text(_periodOfDay,
                               style: TextStyles.smallTextPrimary),
                         ],
                       ),
@@ -70,7 +98,7 @@ class DashboardScreen extends StatelessWidget {
               ).paddingSymmetric(horizontal: 10),
             ),
 
-            const VerticalSpace(size: 20),
+            const VerticalSpace(size: 15),
 
             PromptWidget(
               row: Row(
@@ -90,60 +118,60 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
 
-            const VerticalSpace(size: 31),
+            const VerticalSpace(size: 15),
 
             // card with progress or card with offers
             // const DebtCard(),
 
-            // const DataCompletionWidget(),
+            const DataCompletionWidget(),
 
-            const HighlightsCard(),
+            // const HighlightsCard(),
 
             const VerticalSpace(size: 40),
 
             // dashboard options
-            SizedBox(
-              width: context.widthPx,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  OptionsCard(
-                    itemName: 'Banks',
-                    assetPath: 'assets/icons/fill/bank-icon.svg',
-                  ),
-                  OptionsCard(
-                    itemName: 'Cards',
-                    assetPath: 'assets/icons/fill/credit-card.svg',
-                  ),
-                  OptionsCard(
-                    itemName: 'Schedule',
-                    assetPath: 'assets/icons/fill/time-schedule.svg',
-                  ),
-                  OptionsCard(
-                    itemName: 'More',
-                    assetPath: 'assets/icons/fill/more-icon.svg',
-                  ),
-                ],
-              ),
-            ),
+            // SizedBox(
+            //   width: context.widthPx,
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: const [
+            //       OptionsCard(
+            //         itemName: 'Banks',
+            //         assetPath: 'assets/icons/fill/bank-icon.svg',
+            //       ),
+            //       OptionsCard(
+            //         itemName: 'Cards',
+            //         assetPath: 'assets/icons/fill/credit-card.svg',
+            //       ),
+            //       OptionsCard(
+            //         itemName: 'Schedule',
+            //         assetPath: 'assets/icons/fill/time-schedule.svg',
+            //       ),
+            //       OptionsCard(
+            //         itemName: 'More',
+            //         assetPath: 'assets/icons/fill/more-icon.svg',
+            //       ),
+            //     ],
+            //   ),
+            // ),
 
-            const VerticalSpace(size: 40),
+            // const VerticalSpace(size: 40),
 
-            // recent activities
-            Text(
-              'Recent Activities',
-              style: TextStyles.normalTextDarkF800,
-            ),
+            // // recent activities
+            // Text(
+            //   'Recent Activities',
+            //   style: TextStyles.normalTextDarkF800,
+            // ),
 
-            const VerticalSpace(
-              size: 22,
-            ),
+            // const VerticalSpace(
+            //   size: 22,
+            // ),
 
-            SizedBox(
-              height: 256,
-              width: context.widthPx,
-              child: const ActivitiesList(),
-            ),
+            // SizedBox(
+            //   height: 256,
+            //   width: context.widthPx,
+            //   child: const ActivitiesList(),
+            // ),
           ],
         ).paddingOnly(
           left: 10,
@@ -155,13 +183,20 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
-class DataCompletionWidget extends StatelessWidget {
+class DataCompletionWidget extends StatefulWidget {
   const DataCompletionWidget({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<DataCompletionWidget> createState() => _DataCompletionWidgetState();
+}
+
+class _DataCompletionWidgetState extends State<DataCompletionWidget> {
+  @override
   Widget build(BuildContext context) {
+    final NavigationService navigationService = di<NavigationService>();
+
     return Container(
       height: 576,
       width: context.widthPx,
@@ -219,9 +254,14 @@ class DataCompletionWidget extends StatelessWidget {
                 ),
 
                 // personal
-                const CriteriaWidget(
-                  criteriaTitle: 'Personal Details',
-                  criteriaState: CriteriaState.done,
+                InkWell(
+                  onTap: () => navigationService.navigateToRoute(
+                      const EditProfileScreen(
+                          editProfileView: EditProfile.personalDetails)),
+                  child: const CriteriaWidget(
+                    criteriaTitle: 'Personal Details',
+                    criteriaState: CriteriaState.done,
+                  ),
                 ),
 
                 const VerticalSpace(
@@ -229,9 +269,13 @@ class DataCompletionWidget extends StatelessWidget {
                 ),
 
                 // gov
-                const CriteriaWidget(
-                  criteriaTitle: 'Government Issued ID',
-                  criteriaState: CriteriaState.pending,
+                InkWell(
+                  onTap: () => AppDialog.showAppModal(
+                      context, const GovIDModalView(), Colors.transparent),
+                  child: const CriteriaWidget(
+                    criteriaTitle: 'Government Issued ID',
+                    criteriaState: CriteriaState.pending,
+                  ),
                 ),
 
                 const VerticalSpace(
@@ -239,9 +283,14 @@ class DataCompletionWidget extends StatelessWidget {
                 ),
 
                 // res addy
-                const CriteriaWidget(
-                  criteriaTitle: 'Residential Address',
-                  criteriaState: CriteriaState.notDone,
+                InkWell(
+                  onTap: () => navigationService.navigateToRoute(
+                      const EditProfileScreen(
+                          editProfileView: EditProfile.residentialAddress)),
+                  child: const CriteriaWidget(
+                    criteriaTitle: 'Residential Address',
+                    criteriaState: CriteriaState.notDone,
+                  ),
                 ),
 
                 const VerticalSpace(
@@ -249,9 +298,14 @@ class DataCompletionWidget extends StatelessWidget {
                 ),
 
                 // employment details
-                const CriteriaWidget(
-                  criteriaTitle: 'Employment Details',
-                  criteriaState: CriteriaState.notDone,
+                InkWell(
+                  onTap: () => navigationService.navigateToRoute(
+                      const EditProfileScreen(
+                          editProfileView: EditProfile.employmentDetails)),
+                  child: const CriteriaWidget(
+                    criteriaTitle: 'Employment Details',
+                    criteriaState: CriteriaState.notDone,
+                  ),
                 ),
 
                 const VerticalSpace(
@@ -259,9 +313,14 @@ class DataCompletionWidget extends StatelessWidget {
                 ),
 
                 // next of kin
-                const CriteriaWidget(
-                  criteriaTitle: 'Next of Kin',
-                  criteriaState: CriteriaState.notDone,
+                InkWell(
+                  onTap: () => navigationService.navigateToRoute(
+                      const EditProfileScreen(
+                          editProfileView: EditProfile.nextOfKin)),
+                  child: const CriteriaWidget(
+                    criteriaTitle: 'Next of Kin',
+                    criteriaState: CriteriaState.notDone,
+                  ),
                 ),
 
                 const VerticalSpace(
@@ -273,10 +332,11 @@ class DataCompletionWidget extends StatelessWidget {
                     height: 48,
                     width: context.widthPx,
                     borderRadius: 12,
-                    onPressed: () {},
+                    onPressed: () => null,
                     child: const AppText(
                       text: 'LET\'S GO!',
                       color: Colors.white,
+                      fontWeight: FontWeight.w700,
                       size: 14,
                     ))
               ],
