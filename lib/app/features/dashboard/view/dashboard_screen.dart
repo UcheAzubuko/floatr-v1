@@ -1,6 +1,7 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:floatr/app/features/loan/view/screens/loan_application_screen.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/general_button.dart';
@@ -13,6 +14,7 @@ import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../widgets/prompt_widget.dart';
@@ -23,133 +25,140 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // greet and profile  pic
-            SizedBox(
-              width: context.widthPx,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      body: Consumer<AuthenticationProvider>(
+        builder: (context, provider, _) {
+          final user = provider.user;
+          
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // greet and profile  pic
+                SizedBox(
+                  width: context.widthPx,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const VerticalSpace(
-                        size: 20,
-                      ),
-                      // greet
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SvgPicture.asset(SvgAppIcons.icMorningSun),
-                          const HorizontalSpace(
-                            size: 10,
+                          const VerticalSpace(
+                            size: 20,
                           ),
-                          Text('GOOD MORNING',
-                              style: TextStyles.smallTextPrimary),
+                          // greet
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SvgPicture.asset(SvgAppIcons.icMorningSun),
+                              const HorizontalSpace(
+                                size: 10,
+                              ),
+                              Text('GOOD MORNING',
+                                  style: TextStyles.smallTextPrimary),
+                            ],
+                          ),
+
+                          const VerticalSpace(size: 4),
+
+                          // name
+                          Text(
+                            '${user!.firstName} ${user.lastName}',
+                            style: TextStyles.largeTextDark,
+                          ),
                         ],
                       ),
 
-                      const VerticalSpace(size: 4),
+                      // profile pic
+                      CircleAvatar(
+                        radius: 23,
+                        backgroundImage: NetworkImage(user.photo['url']),
+                      ),
+                    ],
+                  ).paddingSymmetric(horizontal: 10),
+                ),
 
-                      // name
-                      Text(
-                        'Adanna Erica',
-                        style: TextStyles.largeTextDark,
+                const VerticalSpace(size: 20),
+
+                PromptWidget(
+                  row: Row(
+                    children: [
+                      SvgPicture.asset(SvgAppIcons.icCaution),
+                      const HorizontalSpace(
+                        size: 8,
+                      ),
+                      const Text(
+                        'Update your profile to unlock all features!.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.primaryColor,
+                        ),
                       ),
                     ],
                   ),
+                ),
 
-                  // profile pic
-                  const CircleAvatar(
-                    radius: 23,
+                const VerticalSpace(size: 31),
+
+                // card with progress or card with offers
+                // const DebtCard(),
+
+                // const DataCompletionWidget(),
+
+                const HighlightsCard(),
+
+                const VerticalSpace(size: 40),
+
+                // dashboard options
+                SizedBox(
+                  width: context.widthPx,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      OptionsCard(
+                        itemName: 'Banks',
+                        assetPath: 'assets/icons/fill/bank-icon.svg',
+                      ),
+                      OptionsCard(
+                        itemName: 'Cards',
+                        assetPath: 'assets/icons/fill/credit-card.svg',
+                      ),
+                      OptionsCard(
+                        itemName: 'Schedule',
+                        assetPath: 'assets/icons/fill/time-schedule.svg',
+                      ),
+                      OptionsCard(
+                        itemName: 'More',
+                        assetPath: 'assets/icons/fill/more-icon.svg',
+                      ),
+                    ],
                   ),
-                ],
-              ).paddingSymmetric(horizontal: 10),
+                ),
+
+                const VerticalSpace(size: 40),
+
+                // recent activities
+                Text(
+                  'Recent Activities',
+                  style: TextStyles.normalTextDarkF800,
+                ),
+
+                const VerticalSpace(
+                  size: 22,
+                ),
+
+                SizedBox(
+                  height: 256,
+                  width: context.widthPx,
+                  child: const ActivitiesList(),
+                ),
+              ],
+            ).paddingOnly(
+              left: 10,
+              right: 10,
+              top: 40,
             ),
-
-            const VerticalSpace(size: 20),
-
-            PromptWidget(
-              row: Row(
-                children: [
-                  SvgPicture.asset(SvgAppIcons.icCaution),
-                  const HorizontalSpace(
-                    size: 8,
-                  ),
-                  const Text(
-                    'Update your profile to unlock all features!.',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.primaryColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const VerticalSpace(size: 31),
-
-            // card with progress or card with offers
-            // const DebtCard(),
-
-            // const DataCompletionWidget(),
-
-            const HighlightsCard(),
-
-            const VerticalSpace(size: 40),
-
-            // dashboard options
-            SizedBox(
-              width: context.widthPx,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  OptionsCard(
-                    itemName: 'Banks',
-                    assetPath: 'assets/icons/fill/bank-icon.svg',
-                  ),
-                  OptionsCard(
-                    itemName: 'Cards',
-                    assetPath: 'assets/icons/fill/credit-card.svg',
-                  ),
-                  OptionsCard(
-                    itemName: 'Schedule',
-                    assetPath: 'assets/icons/fill/time-schedule.svg',
-                  ),
-                  OptionsCard(
-                    itemName: 'More',
-                    assetPath: 'assets/icons/fill/more-icon.svg',
-                  ),
-                ],
-              ),
-            ),
-
-            const VerticalSpace(size: 40),
-
-            // recent activities
-            Text(
-              'Recent Activities',
-              style: TextStyles.normalTextDarkF800,
-            ),
-
-            const VerticalSpace(
-              size: 22,
-            ),
-
-            SizedBox(
-              height: 256,
-              width: context.widthPx,
-              child: const ActivitiesList(),
-            ),
-          ],
-        ).paddingOnly(
-          left: 10,
-          right: 10,
-          top: 40,
-        ),
+          );
+        },
       ),
     );
   }
