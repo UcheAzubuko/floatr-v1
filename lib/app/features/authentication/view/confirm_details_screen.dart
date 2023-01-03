@@ -361,7 +361,7 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
 
                       GeneralButton(
                         onPressed: () =>
-                            navigationService.navigateTo(RouteName.dashboard),
+                            navigationService.navigateTo(RouteName.navbar),
                         buttonTextColor: Colors.white,
                         child: const Text(
                           'Confirm',
