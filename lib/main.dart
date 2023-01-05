@@ -6,10 +6,11 @@ import 'package:provider/provider.dart';
 
 import 'core/misc/dependency_injectors.dart';
 import 'core/route/router.dart';
+import 'core/utils/app_style.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  setupLocator();
+  await setupLocator();
   runApp(const MyApp());
 }
 
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           scaffoldBackgroundColor: AppColors.backgroundColor,
           useMaterial3: false,
+          textTheme: TextThemes.plusJakartaSansTextTheme,
           // primarySwatch: Colors.white,
           visualDensity: VisualDensity.adaptivePlatformDensity,
           colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),

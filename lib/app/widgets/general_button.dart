@@ -1,5 +1,6 @@
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/widgets/app_text.dart';
+import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -70,6 +71,9 @@ class GeneralButton extends StatelessWidget {
                         color: loadingColor,
                         strokeWidth: 1,
                       ),
+                    ),
+                    const HorizontalSpace(
+                      size: 15,
                     ),
                     AppText(
                         text: 'Please wait...', color: loadingColor, size: 15),

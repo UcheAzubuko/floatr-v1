@@ -14,9 +14,11 @@ import '../../core/route/route_names.dart';
 
 class AppDialog {
   // modal
-  static showAppModal(BuildContext context, Widget widget) {
+  static showAppModal(BuildContext context, Widget widget,
+      [Color? backgroundColor]) {
     showModalBottomSheet(
         context: context,
+        backgroundColor: backgroundColor,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(10),
@@ -34,13 +36,13 @@ class AppDialog {
       barrierDismissible: false,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        // insetPadding: EdgeInsets.symmetric(horizontal: context.widthPx * 0.30),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16),
         child: Container(
-          // padding: const EdgeInsets.symmetric(vertical: 30),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
               color: Colors.transparent,
-              borderRadius: BorderRadius.circular(10)),
-          height: context.heightPx * 0.36,
+              borderRadius: BorderRadius.circular(16)),
+          height: 387,
           width: context.widthPx,
           child: widget,
         ),

@@ -12,4 +12,10 @@ class RouteName {
   static const String forgotPassword = 'forgotPassword';
   static const String forgotPasswordOtp = 'forgotPasswordOtp';
   static const String resetPassword = 'resetPassword';
+  static const String dashboard = 'dashboard';
+  static const String profile = 'profile';
+  static const String editProfile = 'editProfile';
+  static const String snapDocument = 'snapDocument';
+  static const String navbar = 'navbar';
+  static const String cards = 'cards';
 }
