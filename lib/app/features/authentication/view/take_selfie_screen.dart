@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:camera/camera.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:floatr/app/extensions/padding.dart';
@@ -41,7 +43,7 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen>
     // });
 
     availableCameras().then((value) {
-      controller = CameraController(value[1], ResolutionPreset.high);
+      controller = CameraController(value[0], ResolutionPreset.high);
 
       controller!.initialize().then((_) {
         if (!mounted) {
@@ -89,6 +91,8 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen>
       cameraController.dispose();
     } else if (state == AppLifecycleState.resumed) {
       onNewCameraSelected(cameraController.description);
+    } else if (state == AppLifecycleState.detached) {
+      log('Detached Camera!');
     }
   }
 
@@ -108,6 +112,15 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen>
       setState(() {});
     }
   }
+
+  // Before initializing the main camera controller, push this first
+  // to avoid a null camera controller error
+  final _defaultController = CameraController(
+      const CameraDescription(
+          name: '',
+          lensDirection: CameraLensDirection.front,
+          sensorOrientation: 0),
+      ResolutionPreset.high);
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +153,7 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen>
                       Radius.circular(400),
                     ),
                   ),
-                  child: CameraPreview(controller!),
+                  child: CameraPreview(controller ?? _defaultController),
                 ),
               ),
 
