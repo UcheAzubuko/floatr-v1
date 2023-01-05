@@ -70,12 +70,12 @@ class AuthenticationRepository {
       final body = jsonDecode(response.body); // grab access_token
       final accessToken = body["access_token"];
 
+      // store token
+      await prefs.setString(StorageKeys.accessTokenKey, accessToken);
+
       /// begin phone verification
       await beginPhoneVerification();
 
-      // store token
-      await prefs.setString(
-          StorageKeys.accessTokenKey, accessToken); // store token
       return Right(accessToken);
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));

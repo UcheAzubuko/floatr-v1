@@ -54,7 +54,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     // context.read<AuthenticationProvider>().updateTempCompletion(false);
-    // super.initState();
+    super.initState();
   }
 
   @override
