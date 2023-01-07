@@ -4,7 +4,6 @@ import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/dialogs.dart';
 import 'package:floatr/app/widgets/general_button.dart';
 import 'package:floatr/core/route/navigation_service.dart';
-import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
