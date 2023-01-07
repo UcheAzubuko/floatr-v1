@@ -28,6 +28,7 @@ dependencies:
   flutter_svg: ^1.1.6
   form_validator: ^1.0.4
   google_fonts: ^3.0.1
+  google_mlkit_face_detection: ^0.5.0
   get_it: ^7.2.0
   otp_text_field:
     git:

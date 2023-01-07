@@ -8,6 +8,7 @@ import 'package:floatr/app/features/authentication/providers/authentication_prov
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/general_button.dart';
 import 'package:floatr/core/route/navigation_service.dart';
+import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +28,6 @@ class DisplayPictureScreen extends StatefulWidget {
 }
 
 class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
-
   @override
   Widget build(BuildContext context) {
     NavigationService navigationService = di<NavigationService>();
@@ -76,7 +76,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
               ),
 
               InkWell(
-                onTap: () => navigationService.pop(),
+                onTap: () => navigationService.navigateReplacementTo(RouteName.takeSelfie),
                 child: Column(
                   children: [
                     AppText(
@@ -126,4 +126,9 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
       ..uploadimage(context);
     // await authProvider.uploadimage();
   }
+}
+
+class DisplayImageArguments {
+  final XFile file;
+  DisplayImageArguments({required this.file});
 }

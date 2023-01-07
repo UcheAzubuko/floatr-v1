@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:floatr/core/misc/provider_registry.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/utils/app_colors.dart';
@@ -8,8 +9,13 @@ import 'core/misc/dependency_injectors.dart';
 import 'core/route/router.dart';
 import 'core/utils/app_style.dart';
 
+List<CameraDescription> cameras = [];
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  cameras = await availableCameras();
+  
   await setupLocator();
   runApp(const MyApp());
 }

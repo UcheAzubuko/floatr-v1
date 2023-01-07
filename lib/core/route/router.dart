@@ -1,6 +1,7 @@
 import 'package:floatr/app/features/authentication/view/biometrics_screen.dart';
 import 'package:floatr/app/features/authentication/view/confirm_details_screen.dart';
 import 'package:floatr/app/features/authentication/view/create_pin_screen.dart';
+import 'package:floatr/app/features/authentication/view/display_picture_screen.dart';
 import 'package:floatr/app/features/authentication/view/forgot_password_screen.dart';
 import 'package:floatr/app/features/authentication/view/forgot_password_otp_screen.dart';
 import 'package:floatr/app/features/authentication/view/login_screen.dart';
@@ -41,6 +42,9 @@ class Router {
         return MaterialPageRoute(builder: (_) => const ConfirmDetailsScreen());
       case RouteName.createPin:
         return MaterialPageRoute(builder: (_) => const CreatePinScreen());
+      case RouteName.displayPicture:
+      final args = settings.arguments as DisplayImageArguments;
+        return MaterialPageRoute(builder: (_) => DisplayPictureScreen(image: args.file,), );
       case RouteName.biometrics:
         return MaterialPageRoute(builder: (_) => const BiometricsScreen());
       case RouteName.forgotPassword:
