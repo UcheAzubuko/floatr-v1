@@ -161,8 +161,10 @@ class AuthenticationRepository {
     }
   }
 
-  Future<Either<Failure, UserResponse>> getUser() async {
-    final url = Uri.https(APIConfigs.baseUrl, APIConfigs.user);
+  Future<Either<Failure, UserResponse>> getUser(
+      {shouldMaskUser}) async {
+    // final queryParams = {"mask": shouldMaskUser ?? false};
+    final url = Uri.https(APIConfigs.baseUrl, APIConfigs.user,);
     try {
       String? accessToken = prefs.getString(StorageKeys.accessTokenKey);
       final response = await apiService.get(

@@ -90,7 +90,7 @@ class ProfileScreen extends StatelessWidget {
                           circularStrokeCap: CircularStrokeCap.round,
                           center: CircleAvatar(
                             radius: 44,
-                            backgroundImage: NetworkImage(user!.photo['url']),
+                            backgroundImage: NetworkImage(user!.photo!.url!),
                           ),
                         ),
                       ),
@@ -109,7 +109,7 @@ class ProfileScreen extends StatelessWidget {
 
                 // email
                 Text(
-                  user.email,
+                  user.email!,
                   style: TextStyles.smallTextGrey,
                 ),
 
@@ -134,7 +134,7 @@ class ProfileScreen extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                user.phoneNumber,
+                                user.phoneNumber!,
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: false,
                                 style: TextStyles.smallTextDark,
@@ -154,7 +154,7 @@ class ProfileScreen extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                '${user.uniqueId.substring(0, 10)}...',
+                                '${user.uniqueId!.substring(0, 10)}...',
                                 style: TextStyles.smallTextDark,
                               ).paddingOnly(right: 5),
                               SvgPicture.asset('assets/icons/outline/copy.svg'),

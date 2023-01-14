@@ -96,14 +96,12 @@ class AuthenticationProvider extends BaseProvider {
     }, (onSuccess) async {
       await getUser();
       
-      if (!_user!.isPhoneVerified) {
+      if (!_user!.isPhoneVerified!) {
         _navigationService.navigateTo(RouteName.verifyOTP);
-      } else if (!_user!.isBvnVerified) {
+      } else if (!_user!.isBvnVerified!) {
         _navigationService.navigateTo(RouteName.verifyBVN);
-      } else if (!user!.isPhotoVerified) {
+      } else if (!user!.isPhotoVerified!) {
         _navigationService.navigateTo(RouteName.takeSelfie);
-      } else if (user!.canLogin) {
-        _navigationService.navigateTo(RouteName.navbar);
       } else {
         _navigationService.navigateTo(RouteName.navbar);
       }
@@ -169,9 +167,9 @@ class AuthenticationProvider extends BaseProvider {
     });
   }
 
-  Future<void> getUser() async {
+  Future<void> getUser({bool? shouldMaskUser}) async {
     updateLoadingState(LoadingState.busy);
-    var response = await authenticationRepository.getUser();
+    var response = await authenticationRepository.getUser(shouldMaskUser: shouldMaskUser ?? false);
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'Failed to get user');

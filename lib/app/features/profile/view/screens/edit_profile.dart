@@ -464,7 +464,7 @@ class EditProfileView extends StatelessWidget {
 
         // user image
         CircleAvatar(
-            radius: 44, backgroundImage: NetworkImage(user!.photo['url'])),
+            radius: 44, backgroundImage: NetworkImage(user!.photo!.url!)),
 
         const VerticalSpace(size: 30),
 
@@ -488,19 +488,19 @@ class EditProfileView extends StatelessWidget {
               // phone number
               PrimaryInfoItem(
                 text: 'Phone Number',
-                subText: user.phoneNumber,
+                subText: user.phoneNumber!,
               ),
 
               // bvn
               PrimaryInfoItem(
                 text: 'BVN',
-                subText: user.bvn,
+                subText: user.bvn!,
               ),
 
               // dob
               PrimaryInfoItem(
                 text: 'Date of Birth',
-                subText: dateFormat.format(user.dateOfBirth),
+                subText: dateFormat.format(user.dateOfBirth!),
               ),
             ],
           ),

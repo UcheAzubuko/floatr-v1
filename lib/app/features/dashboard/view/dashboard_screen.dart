@@ -3,6 +3,7 @@ import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:floatr/app/features/loan/view/screens/loan_application_screen.dart';
+import 'package:floatr/app/features/profile/data/model/user_helper.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/general_button.dart';
 import 'package:floatr/core/route/navigation_service.dart';
@@ -111,7 +112,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             navigationService.navigateTo(RouteName.profile),
                         child: CircleAvatar(
                           radius: 23,
-                          backgroundImage: NetworkImage(user.photo['url']),
+                          backgroundImage: NetworkImage(user.photo!.url!),
                         ),
                       ),
                     ],
@@ -231,157 +232,163 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
   Widget build(BuildContext context) {
     final NavigationService navigationService = di<NavigationService>();
 
-    return Container(
-      height: 576,
-      width: context.widthPx,
-      // color: AppColors.primaryColor,
-      // padding: const EdgeInsets.all(26),
-      decoration: BoxDecoration(
-        color: AppColors.primaryColorLight,
-        borderRadius: BorderRadius.circular(16),
-      ),
-
-      child: Stack(
-        children: [
-          // bg overlay
-          SvgPicture.asset(
-            width: context.widthPx,
-            SvgImages.dashboardUnAuthBackground,
-            fit: BoxFit.fitWidth,
-            clipBehavior: Clip.hardEdge,
+    return Consumer<AuthenticationProvider>(
+      builder: (context, authProvider, _) {
+        UserHelper userHelper = UserHelper(user: authProvider.user!);
+        return Container(
+          height: 576,
+          width: context.widthPx,
+          // color: AppColors.primaryColor,
+          // padding: const EdgeInsets.all(26),
+          decoration: BoxDecoration(
+            color: AppColors.primaryColorLight,
+            borderRadius: BorderRadius.circular(16),
           ),
 
-          Padding(
-            padding: const EdgeInsets.all(26),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // floatr logo
-                SvgPicture.asset(
-                  "assets/images/main-logo.svg",
-                  height: 24,
-                  // fit: BoxFit.cover,
-                ),
+          child: Stack(
+            children: [
+              // bg overlay
+              SvgPicture.asset(
+                width: context.widthPx,
+                SvgImages.dashboardUnAuthBackground,
+                fit: BoxFit.fitWidth,
+                clipBehavior: Clip.hardEdge,
+              ),
 
-                const VerticalSpace(
-                  size: 10,
-                ),
+              Padding(
+                padding: const EdgeInsets.all(26),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // floatr logo
+                    SvgPicture.asset(
+                      "assets/images/main-logo.svg",
+                      height: 24,
+                      // fit: BoxFit.cover,
+                    ),
 
-                // ready.. set
-                Text(
-                  'Ready... Set...',
-                  style: TextStyles.largeTextDarkPoppins600,
-                ),
+                    const VerticalSpace(
+                      size: 10,
+                    ),
 
-                const VerticalSpace(
-                  size: 10,
-                ),
+                    // ready.. set
+                    Text(
+                      'Ready... Set...',
+                      style: TextStyles.largeTextDarkPoppins600,
+                    ),
 
-                // all cap
-                Text(
-                  '''Your Floatr journey starts now. Complete your \nprofile to gain access to loan offers just for you.''',
-                  style: TextStyles.smallTextDark,
-                ),
+                    const VerticalSpace(
+                      size: 10,
+                    ),
 
-                const VerticalSpace(
-                  size: 34,
-                ),
+                    // all cap
+                    Text(
+                      '''Your Floatr journey starts now. Complete your \nprofile to gain access to loan offers just for you.''',
+                      style: TextStyles.smallTextDark,
+                    ),
 
-                // personal
-                InkWell(
-                  onTap: () => navigationService.navigateToRoute(
-                      const EditProfileScreen(
-                          editProfileView: EditProfile.personalDetails)),
-                  child: const CriteriaWidget(
-                    criteriaTitle: 'Personal Details',
-                    criteriaState: CriteriaState.done,
-                  ),
-                ),
+                    const VerticalSpace(
+                      size: 34,
+                    ),
 
-                const VerticalSpace(
-                  size: 20,
-                ),
+                    // personal
+                    InkWell(
+                      onTap: () => navigationService.navigateToRoute(
+                          const EditProfileScreen(
+                              editProfileView: EditProfile.personalDetails)),
+                      child: CriteriaWidget(
+                        criteriaTitle: 'Personal Details',
+                        criteriaState: userHelper.isPersonalDetailsComplete() ? CriteriaState.done : CriteriaState.notDone,
+                      ),
+                    ),
 
-                // gov
-                InkWell(
-                  onTap: () => AppDialog.showAppModal(
-                      context, const GovIDModalView(), Colors.transparent),
-                  child: const CriteriaWidget(
-                    criteriaTitle: 'Government Issued ID',
-                    criteriaState: CriteriaState.pending,
-                  ),
-                ),
+                    const VerticalSpace(
+                      size: 20,
+                    ),
 
-                const VerticalSpace(
-                  size: 20,
-                ),
+                    // gov
+                    InkWell(
+                      onTap: () => AppDialog.showAppModal(
+                          context, const GovIDModalView(), Colors.transparent),
+                      child: const CriteriaWidget(
+                        criteriaTitle: 'Government Issued ID',
+                        criteriaState: CriteriaState.pending,
+                      ),
+                    ),
 
-                // res addy
-                InkWell(
-                  onTap: () => navigationService.navigateToRoute(
-                      const EditProfileScreen(
-                          editProfileView: EditProfile.residentialAddress)),
-                  child: const CriteriaWidget(
-                    criteriaTitle: 'Residential Address',
-                    criteriaState: CriteriaState.notDone,
-                  ),
-                ),
+                    const VerticalSpace(
+                      size: 20,
+                    ),
 
-                const VerticalSpace(
-                  size: 20,
-                ),
+                    // res addy
+                    InkWell(
+                      onTap: () => navigationService.navigateToRoute(
+                          const EditProfileScreen(
+                              editProfileView: EditProfile.residentialAddress)),
+                      child: const CriteriaWidget(
+                        criteriaTitle: 'Residential Address',
+                        criteriaState: CriteriaState.notDone,
+                      ),
+                    ),
 
-                // employment details
-                InkWell(
-                  onTap: () => navigationService.navigateToRoute(
-                      const EditProfileScreen(
-                          editProfileView: EditProfile.employmentDetails)),
-                  child: const CriteriaWidget(
-                    criteriaTitle: 'Employment Details',
-                    criteriaState: CriteriaState.notDone,
-                  ),
-                ),
+                    const VerticalSpace(
+                      size: 20,
+                    ),
 
-                const VerticalSpace(
-                  size: 20,
-                ),
+                    // employment details
+                    InkWell(
+                      onTap: () => navigationService.navigateToRoute(
+                          const EditProfileScreen(
+                              editProfileView: EditProfile.employmentDetails)),
+                      child: const CriteriaWidget(
+                        criteriaTitle: 'Employment Details',
+                        criteriaState: CriteriaState.notDone,
+                      ),
+                    ),
 
-                // next of kin
-                InkWell(
-                  onTap: () => navigationService.navigateToRoute(
-                      const EditProfileScreen(
-                          editProfileView: EditProfile.nextOfKin)),
-                  child: const CriteriaWidget(
-                    criteriaTitle: 'Next of Kin',
-                    criteriaState: CriteriaState.notDone,
-                  ),
-                ),
+                    const VerticalSpace(
+                      size: 20,
+                    ),
 
-                const VerticalSpace(
-                  size: 34,
-                ),
+                    // next of kin
+                    InkWell(
+                      onTap: () => navigationService.navigateToRoute(
+                          const EditProfileScreen(
+                              editProfileView: EditProfile.nextOfKin)),
+                      child: const CriteriaWidget(
+                        criteriaTitle: 'Next of Kin',
+                        criteriaState: CriteriaState.notDone,
+                      ),
+                    ),
 
-                // button
-                Consumer<AuthenticationProvider>(
-                  builder: (context, provider, _) {
-                    return GeneralButton(
-                        height: 48,
-                        width: context.widthPx,
-                        borderRadius: 12,
-                        onPressed: () => provider.updateTempCompletion(true),
-                        child: const AppText(
-                          text: 'LET\'S GO!',
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          size: 14,
-                        ));
-                  },
-                )
-              ],
-            ),
+                    const VerticalSpace(
+                      size: 34,
+                    ),
+
+                    // button
+                    Consumer<AuthenticationProvider>(
+                      builder: (context, provider, _) {
+                        return GeneralButton(
+                            height: 48,
+                            width: context.widthPx,
+                            borderRadius: 12,
+                            onPressed: () =>
+                                provider.updateTempCompletion(true),
+                            child: const AppText(
+                              text: 'LET\'S GO!',
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              size: 14,
+                            ));
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
