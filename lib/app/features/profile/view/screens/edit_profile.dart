@@ -1,14 +1,18 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/profile/data/model/params/residential_address_params.dart';
 import 'package:floatr/app/features/profile/data/model/responses/country_repsonse.dart';
 import 'package:floatr/app/features/profile/data/model/responses/state_repsonse.dart'
     as state;
+import 'package:floatr/app/features/profile/providers/user_profile_provider.dart';
 import 'package:floatr/app/features/profile/providers/user_resources_provider.dart';
 import 'package:floatr/app/features/profile/view/widgets/account_info_card.dart';
+import 'package:floatr/app/widgets/app_snackbar.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/custom_appbar.dart';
 import 'package:floatr/app/widgets/general_button.dart';
 import 'package:floatr/app/widgets/text_field.dart';
+import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:form_validator/form_validator.dart';
@@ -59,17 +63,21 @@ class _EditResidentialAddressViewState
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => context.read<UserResourcesProvider>().getCountries());
+
+    _residentialAddressParams = ResidentialAddressParams(
+        countryId: null, stateId: null, city: null, address: null);
     super.initState();
   }
 
   TextEditingController cityController = TextEditingController();
   TextEditingController streetController = TextEditingController();
 
-  final _cityValidator =
-      ValidationBuilder().minLength(10).maxLength(20).build();
+  final _cityValidator = ValidationBuilder().minLength(5).maxLength(20).build();
   final _streetValidator =
       ValidationBuilder().minLength(10).maxLength(50).build();
   final _formKey = GlobalKey<FormState>();
+
+  late ResidentialAddressParams _residentialAddressParams;
 
   @override
   Widget build(BuildContext context) {
@@ -118,280 +126,259 @@ class _EditResidentialAddressViewState
     Country? selectedCountry;
     state.State? selectedState;
 
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // const VerticalSpace(size: 60),
+    return Consumer<AuthenticationProvider>(
+      builder: (context, authProvider, __) {
+        return Form(
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // const VerticalSpace(size: 60),
 
-          const VerticalSpace(size: 30),
+              const VerticalSpace(size: 30),
 
-          // primary info
-          AccountInfoCard(
-            height: 433,
-            width: context.widthPx,
-            infoTitle: 'Residential Address',
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const VerticalSpace(size: 20),
+              // primary info
+              AccountInfoCard(
+                height: 448,
+                width: context.widthPx,
+                infoTitle: 'Residential Address',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const VerticalSpace(size: 20),
 
-                // country
-                Text(
-                  'Country',
-                  style: TextStyles.smallTextDark14Px,
-                ).paddingOnly(bottom: 8),
-                // AppTextField(controller: TextEditingController(text: 'Lagos')),
-                Container(
-                  height: 42,
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 1.0, horizontal: 20.0),
-                  decoration: BoxDecoration(
-                      color: AppColors.grey.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Selector<UserResourcesProvider, CountryResponse>(
-                        selector: (_, provider) =>
-                            provider.countryRepsonse ??
-                            CountryResponse(
-                              countries: [
-                                const Country(id: '0', name: 'Loading...'),
-                              ],
-                            ),
-                        builder: (context, _, __) {
-                          return DropdownButtonFormField<Country>(
-                            decoration: const InputDecoration.collapsed(
-                                hintText: 'Select',
-                                hintStyle: TextStyle(
-                                    color: AppColors.black,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500)),
-                            // value: ,
-                            focusColor: AppColors.black,
+                    // country
+                    Text(
+                      'Country',
+                      style: TextStyles.smallTextDark14Px,
+                    ).paddingOnly(bottom: 8),
+                    // AppTextField(controller: TextEditingController(text: 'Lagos')),
+                    Container(
+                      height: 42,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 1.0, horizontal: 20.0),
+                      decoration: BoxDecoration(
+                          color: AppColors.grey.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Selector<UserResourcesProvider, CountryResponse>(
+                            selector: (_, provider) =>
+                                provider.countryRepsonse ??
+                                CountryResponse(
+                                  countries: [
+                                    const Country(id: '0', name: 'Loading...'),
+                                  ],
+                                ),
+                            builder: (context, _, __) {
+                              return DropdownButtonFormField<Country>(
+                                decoration: InputDecoration.collapsed(
+                                    hintText:
+                                        authProvider.user!.country!.name ??
+                                            'Select',
+                                    hintStyle: const TextStyle(
+                                        color: AppColors.black,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500)),
+                                // value: ,
+                                focusColor: AppColors.black,
 
-                            borderRadius: BorderRadius.circular(12),
-                            icon: Icon(
-                              Icons.keyboard_arrow_down_rounded,
-                              color: AppColors.grey.withOpacity(0.3),
-                            ),
-                            isExpanded: true,
-                            items: _.countries
-                                .map(
-                                  (Country country) =>
-                                      DropdownMenuItem<Country>(
-                                    value: country,
-                                    child: AppText(
-                                      text: country.name!,
-                                      fontWeight: FontWeight.w500,
-                                      size: 12,
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (Country? country) async {
-                              setState(() => selectedCountry = country);
+                                borderRadius: BorderRadius.circular(12),
+                                icon: Icon(
+                                  Icons.keyboard_arrow_down_rounded,
+                                  color: AppColors.grey.withOpacity(0.3),
+                                ),
+                                isExpanded: true,
+                                items: _.countries
+                                    .map(
+                                      (Country country) =>
+                                          DropdownMenuItem<Country>(
+                                        value: country,
+                                        child: AppText(
+                                          text: country.name!,
+                                          fontWeight: FontWeight.w500,
+                                          size: 12,
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: (Country? country) async {
+                                  setState(() {
+                                    selectedCountry = country;
+                                    _residentialAddressParams.countryId =
+                                        country!.id;
+                                  });
 
-                              await context
-                                  .read<UserResourcesProvider>()
-                                  .getStates(selectedCountry!.id!);
-                            },
-                            value: selectedCountry,
-                          );
-                        }),
-                    // Consumer<UserResourcesProvider>(
-                    //   builder: (context, provider, _) {
-                    //     switch (provider.loadingState) {
-                    //       case LoadingState.busy:
-                    //         return Container(
-                    //           width: context.widthPx,
-                    //           height: 41,
-                    //           decoration: BoxDecoration(
-                    //             borderRadius: BorderRadius.circular(12),
-                    //           ),
-                    //           child: Align(
-                    //               alignment: Alignment.centerLeft,
-                    //               child: Text(
-                    //                 'Loading countries...',
-                    //                 style: TextStyle(
-                    //                     color: AppColors.grey.withOpacity(0.5),
-                    //                     fontSize: 12,
-                    //                     fontWeight: FontWeight.w500),
-                    //               )),
-                    //         );
-                    //       case LoadingState.loaded:
-                    //         return DropdownButtonFormField<Country>(
-                    //           decoration: const InputDecoration.collapsed(
-                    //               hintText: 'Select',
-                    //               hintStyle: TextStyle(
-                    //                   color: AppColors.black,
-                    //                   fontSize: 12,
-                    //                   fontWeight: FontWeight.w500)),
-                    //           // value: ,
-                    //           focusColor: AppColors.black,
+                                  await context
+                                      .read<UserResourcesProvider>()
+                                      .getStates(selectedCountry!.id!);
+                                },
+                                value: selectedCountry,
+                                onSaved: (Country? country) {
+                                  _residentialAddressParams.countryId =
+                                      country!.id;
+                                },
+                              );
+                            }),
+                      ),
+                    ),
 
-                    //           borderRadius: BorderRadius.circular(12),
-                    //           icon: Icon(
-                    //             Icons.keyboard_arrow_down_rounded,
-                    //             color: AppColors.grey.withOpacity(0.3),
-                    //           ),
-                    //           isExpanded: true,
-                    //           items: provider.countryRepsonse!.countries
-                    //               .map(
-                    //                 (Country country) =>
-                    //                     DropdownMenuItem<Country>(
-                    //                   value: country,
-                    //                   child: AppText(
-                    //                     text: country.name!,
-                    //                     fontWeight: FontWeight.w500,
-                    //                     size: 12,
-                    //                   ),
-                    //                 ),
-                    //               )
-                    //               .toList(),
-                    //           onChanged: (Country? country) {
-                    //             setState(() => selcetedCountry = country);
+                    const VerticalSpace(size: 10),
 
-                    //             context
-                    //                 .read<UserResourcesProvider>()
-                    //                 .getStates(selcetedCountry!.id!);
-                    //           },
-                    //           value: selcetedCountry,
-                    //         );
-                    //       default:
-                    //         return Container(
-                    //           width: context.widthPx,
-                    //           height: 41,
-                    //           decoration: BoxDecoration(
-                    //             borderRadius: BorderRadius.circular(12),
-                    //           ),
-                    //           child: const Text('Loading Countries...'),
-                    //         );
-                    //     }
-                    //   },
-                    // ),
-                  ),
+                    // state
+                    Text(
+                      'State',
+                      style: TextStyles.smallTextDark14Px,
+                    ).paddingOnly(bottom: 8),
+                    Container(
+                      height: 42,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 1.0, horizontal: 20.0),
+                      decoration: BoxDecoration(
+                          color: AppColors.grey.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Selector<UserResourcesProvider,
+                                state.StateResponse>(
+                            selector: (_, provider) =>
+                                provider.stateResponse ??
+                                state.StateResponse(stateResponses: [
+                                  state.State(
+                                      id: '0',
+                                      name: selectedCountry == null
+                                          ? 'Please select country'
+                                          : 'Loading..')
+                                ]),
+                            builder: (context, _, __) {
+                              return DropdownButtonFormField<state.State>(
+                                decoration: InputDecoration.collapsed(
+                                    hintText:
+                                        authProvider.user!.state!.name ??
+                                            'Select',
+                                    hintStyle: const TextStyle(
+                                        color: AppColors.black,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500)),
+                                // value: ,
+                                focusColor: AppColors.black,
+
+                                borderRadius: BorderRadius.circular(12),
+                                icon: Icon(
+                                  Icons.keyboard_arrow_down_rounded,
+                                  color: AppColors.grey.withOpacity(0.3),
+                                ),
+                                isExpanded: true,
+                                items: _.stateResponses
+                                    .map(
+                                      (state.State _) =>
+                                          DropdownMenuItem<state.State>(
+                                        value: _,
+                                        child: AppText(
+                                          text: _.name!,
+                                          fontWeight: FontWeight.w500,
+                                          size: 12,
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: (state.State? state) {
+                                  setState(() {
+                                    selectedState = state;
+                                    _residentialAddressParams.stateId =
+                                        state!.id;
+                                  });
+
+                                  // context
+                                  //     .read<UserResourcesProvider>()
+                                  //     .getStates(selcetedCountry!.id!);
+                                },
+                                onSaved: (state.State? state) {
+                                  _residentialAddressParams.stateId = state!.id;
+                                },
+                                value: selectedState,
+                              );
+                            }),
+                      ),
+                    ),
+
+                    const VerticalSpace(size: 10),
+
+                    // city
+                    Text(
+                      'City',
+                      style: TextStyles.smallTextDark14Px,
+                    ).paddingOnly(bottom: 8),
+                    AppTextField(
+                      controller: cityController
+                        ..text = authProvider.user!.city ?? '',
+                      validator: _cityValidator,
+                      hintText: 'Ikeja',
+                      onSaved: (String? city) =>
+                          _residentialAddressParams.city = city,
+                    ),
+
+                    const VerticalSpace(size: 10),
+
+                    // street add
+                    Text(
+                      'Street Address',
+                      style: TextStyles.smallTextDark14Px,
+                    ).paddingOnly(bottom: 8),
+                    AppTextField(
+                      controller: streetController
+                        ..text = authProvider.user!.address ?? '',
+                      validator: _streetValidator,
+                      hintText: '18 first street, town',
+                      onSaved: (String? address) =>
+                          _residentialAddressParams.address = address,
+                    ),
+
+                    const VerticalSpace(size: 10),
+                  ],
                 ),
+              ),
 
-                const VerticalSpace(size: 10),
+              const VerticalSpace(size: 30),
 
-                // state
-                Text(
-                  'State',
-                  style: TextStyles.smallTextDark14Px,
-                ).paddingOnly(bottom: 8),
-                Container(
-                  height: 42,
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 1.0, horizontal: 20.0),
-                  decoration: BoxDecoration(
-                      color: AppColors.grey.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Selector<UserResourcesProvider, state.StateResponse>(
-                        selector: (_, provider) =>
-                            provider.stateResponse ??
-                            state.StateResponse(stateResponses: [
-                              state.State(
-                                  id: '0',
-                                  name: selectedCountry == null
-                                      ? 'Please select country'
-                                      : 'Loading..')
-                            ]),
-                        builder: (context, _, __) {
-                          return DropdownButtonFormField<state.State>(
-                            decoration: const InputDecoration.collapsed(
-                                hintText: 'Select',
-                                hintStyle: TextStyle(
-                                    color: AppColors.black,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500)),
-                            // value: ,
-                            focusColor: AppColors.black,
-
-                            borderRadius: BorderRadius.circular(12),
-                            icon: Icon(
-                              Icons.keyboard_arrow_down_rounded,
-                              color: AppColors.grey.withOpacity(0.3),
-                            ),
-                            isExpanded: true,
-                            items: _.stateResponses
-                                .map(
-                                  (state.State _) =>
-                                      DropdownMenuItem<state.State>(
-                                    value: _,
-                                    child: AppText(
-                                      text: _.name!,
-                                      fontWeight: FontWeight.w500,
-                                      size: 12,
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (state.State? state) {
-                              setState(() => selectedState = state);
-
-                              // context
-                              //     .read<UserResourcesProvider>()
-                              //     .getStates(selcetedCountry!.id!);
-                            },
-                            value: selectedState,
-                          );
-                        }),
+              Consumer<UserProfileProvider>(builder: (context, provider, __) {
+                return GeneralButton(
+                  onPressed: () => _handleUpdateResidentialAddress(provider),
+                  height: 48,
+                  borderRadius: 12,
+                  isLoading: provider.loadingState == LoadingState.busy,
+                  child: const AppText(
+                    text: 'UPDATE',
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    size: 16,
+                    letterSpacing: 1.5,
                   ),
-                ),
+                );
+              }),
 
-                const VerticalSpace(size: 10),
-
-                // city
-                Text(
-                  'City',
-                  style: TextStyles.smallTextDark14Px,
-                ).paddingOnly(bottom: 8),
-                AppTextField(controller: cityController),
-
-                const VerticalSpace(size: 10),
-
-                // street add
-                Text(
-                  'Street Address',
-                  style: TextStyles.smallTextDark14Px,
-                ).paddingOnly(bottom: 8),
-                AppTextField(controller: streetController),
-
-                const VerticalSpace(size: 10),
-              ],
-            ),
+              const VerticalSpace(size: 40),
+            ],
           ),
-
-          const VerticalSpace(size: 30),
-
-          GeneralButton(
-            onPressed: () => navigationService.pop(),
-            height: 48,
-            borderRadius: 12,
-            child: const AppText(
-              text: 'UPDATE',
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-              size: 16,
-              letterSpacing: 1.5,
-            ),
-          ),
-
-          const VerticalSpace(size: 40),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  _handleUpdateResidentialAddress() async {
+  _handleUpdateResidentialAddress(UserProfileProvider provider) async {
     final bool isValid = _formKey.currentState!.validate();
 
-    if (isValid) {
+    if (!isValid) {
+      if (_residentialAddressParams.countryId == null ||
+          _residentialAddressParams.stateId == null) {
+        AppSnackBar.showErrorSnackBar(
+            context, 'Please check your selected country and state.');
+      }
+    } else {
       _formKey.currentState!.save();
+      provider.updateResidentialParams(_residentialAddressParams);
+      provider.updateResidentialAddress();
     }
   }
 }

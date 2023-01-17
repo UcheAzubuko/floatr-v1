@@ -51,22 +51,27 @@ class UserProfileProvider extends BaseProvider {
 
   Future<void> updateResidentialAddress() async {
     updateLoadingState(LoadingState.busy);
-    var response = await _profileRepository.updateResidentialAddress(_residentialAddressParams!);
+    var response = await _profileRepository
+        .updateResidentialAddress(_residentialAddressParams!);
 
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
-      updateErrorMsgState(onError.message ?? 'Update residential address failed!');
+      updateErrorMsgState(
+          onError.message ?? 'Update residential address failed!');
+      print(onError.message);
       // trigger error on ui
       // AppSnackBar.showErrorSnackBar(context, errorMsg);
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
+      print(onSuccess);
       // _navigationService.navigateTo(RouteName.verifyOTP);
     });
   }
 
   Future<void> updateUserProfiile() async {
     updateLoadingState(LoadingState.busy);
-    var response = await _profileRepository.updateUserProfile(_userProfileParams!);
+    var response =
+        await _profileRepository.updateUserProfile(_userProfileParams!);
 
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
@@ -96,11 +101,13 @@ class UserProfileProvider extends BaseProvider {
 
   Future<void> updateEmploymentInformation() async {
     updateLoadingState(LoadingState.busy);
-    var response = await _profileRepository.updateEmployerInformation(employerInformationParams!);
+    var response = await _profileRepository
+        .updateEmployerInformation(employerInformationParams!);
 
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
-      updateErrorMsgState(onError.message ?? 'Update employment information failed!');
+      updateErrorMsgState(
+          onError.message ?? 'Update employment information failed!');
       // trigger error on ui
       // AppSnackBar.showErrorSnackBar(context, errorMsg);
     }, (onSuccess) {
