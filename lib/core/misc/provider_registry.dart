@@ -1,6 +1,5 @@
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:floatr/app/features/camera/camera_provider.dart';
-import 'package:floatr/app/features/profile/data/repositories/user_resources_repository.dart';
 import 'package:floatr/app/features/profile/providers/user_profile_provider.dart';
 import 'package:floatr/app/features/profile/providers/user_resources_provider.dart';
 import 'package:floatr/app/widgets/custom_keyboard.dart';

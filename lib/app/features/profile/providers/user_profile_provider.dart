@@ -58,12 +58,10 @@ class UserProfileProvider extends BaseProvider {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(
           onError.message ?? 'Update residential address failed!');
-      print(onError.message);
       // trigger error on ui
       // AppSnackBar.showErrorSnackBar(context, errorMsg);
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
-      print(onSuccess);
       // _navigationService.navigateTo(RouteName.verifyOTP);
     });
   }
