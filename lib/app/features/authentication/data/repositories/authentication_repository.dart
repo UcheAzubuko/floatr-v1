@@ -107,7 +107,7 @@ class AuthenticationRepository {
   Future<Either<Failure, String>> verifyPhone(VerifyPhoneParams params) async {
     final url = Uri.https(
       APIConfigs.baseUrl,
-      APIConfigs.verifyPhone,
+      APIConfigs.verifyPhonePath,
     );
 
     final verifyPhoneBody = params.toMap();
@@ -136,7 +136,7 @@ class AuthenticationRepository {
   Future<Either<Failure, String>> verifyBVN(VerifyBVNParams params) async {
     final url = Uri.https(
       APIConfigs.baseUrl,
-      APIConfigs.verifyBVN,
+      APIConfigs.verifyBVNPath,
     );
 
     final verifyBvnBody = params.toMap();
@@ -161,10 +161,8 @@ class AuthenticationRepository {
     }
   }
 
-  Future<Either<Failure, UserResponse>> getUser(
-      {shouldMaskUser}) async {
-    // final queryParams = {"mask": shouldMaskUser ?? false};
-    final url = Uri.https(APIConfigs.baseUrl, APIConfigs.user,);
+  Future<Either<Failure, UserResponse>> getUser() async {
+    final url = Uri.parse(APIConfigs.userFullPath);
     try {
       String? accessToken = prefs.getString(StorageKeys.accessTokenKey);
       final response = await apiService.get(

@@ -167,9 +167,9 @@ class AuthenticationProvider extends BaseProvider {
     });
   }
 
-  Future<void> getUser({bool? shouldMaskUser}) async {
+  Future<void> getUser() async {
     updateLoadingState(LoadingState.busy);
-    var response = await authenticationRepository.getUser(shouldMaskUser: shouldMaskUser ?? false);
+    var response = await authenticationRepository.getUser();
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'Failed to get user');

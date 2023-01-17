@@ -235,6 +235,7 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
     return Consumer<AuthenticationProvider>(
       builder: (context, authProvider, _) {
         UserHelper userHelper = UserHelper(user: authProvider.user!);
+
         return Container(
           height: 576,
           width: context.widthPx,
@@ -298,7 +299,9 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                               editProfileView: EditProfile.personalDetails)),
                       child: CriteriaWidget(
                         criteriaTitle: 'Personal Details',
-                        criteriaState: userHelper.isPersonalDetailsComplete() ? CriteriaState.done : CriteriaState.notDone,
+                        criteriaState: userHelper.isPersonalDetailsComplete()
+                            ? CriteriaState.done
+                            : CriteriaState.pending,
                       ),
                     ),
 
@@ -310,9 +313,11 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                     InkWell(
                       onTap: () => AppDialog.showAppModal(
                           context, const GovIDModalView(), Colors.transparent),
-                      child: const CriteriaWidget(
+                      child: CriteriaWidget(
                         criteriaTitle: 'Government Issued ID',
-                        criteriaState: CriteriaState.pending,
+                        criteriaState: userHelper.isIdDataComplete()
+                            ? CriteriaState.pending
+                            : CriteriaState.notDone,
                       ),
                     ),
 
@@ -325,9 +330,11 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                       onTap: () => navigationService.navigateToRoute(
                           const EditProfileScreen(
                               editProfileView: EditProfile.residentialAddress)),
-                      child: const CriteriaWidget(
+                      child: CriteriaWidget(
                         criteriaTitle: 'Residential Address',
-                        criteriaState: CriteriaState.notDone,
+                        criteriaState: userHelper.isAddressComplete()
+                            ? CriteriaState.done
+                            : CriteriaState.notDone,
                       ),
                     ),
 
@@ -340,9 +347,11 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                       onTap: () => navigationService.navigateToRoute(
                           const EditProfileScreen(
                               editProfileView: EditProfile.employmentDetails)),
-                      child: const CriteriaWidget(
+                      child: CriteriaWidget(
                         criteriaTitle: 'Employment Details',
-                        criteriaState: CriteriaState.notDone,
+                        criteriaState: userHelper.isEmployerDetailsComplete()
+                            ? CriteriaState.done
+                            : CriteriaState.notDone,
                       ),
                     ),
 
@@ -355,9 +364,11 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                       onTap: () => navigationService.navigateToRoute(
                           const EditProfileScreen(
                               editProfileView: EditProfile.nextOfKin)),
-                      child: const CriteriaWidget(
+                      child: CriteriaWidget(
                         criteriaTitle: 'Next of Kin',
-                        criteriaState: CriteriaState.notDone,
+                        criteriaState: authProvider.user!.nextOfKin != null
+                            ? CriteriaState.done
+                            : CriteriaState.notDone,
                       ),
                     ),
 
