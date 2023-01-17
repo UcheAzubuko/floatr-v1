@@ -1,7 +1,10 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/profile/data/model/params/residential_address_params.dart';
+import 'package:floatr/app/features/profile/data/model/params/user_profile_params.dart';
 import 'package:floatr/app/features/profile/data/model/responses/country_repsonse.dart';
+import 'package:floatr/app/features/profile/data/model/responses/gender_response.dart';
+import 'package:floatr/app/features/profile/data/model/responses/marital_status_response.dart';
 import 'package:floatr/app/features/profile/data/model/responses/state_repsonse.dart'
     as state;
 import 'package:floatr/app/features/profile/providers/user_profile_provider.dart';
@@ -254,9 +257,8 @@ class _EditResidentialAddressViewState
                             builder: (context, _, __) {
                               return DropdownButtonFormField<state.State>(
                                 decoration: InputDecoration.collapsed(
-                                    hintText:
-                                        authProvider.user!.state!.name ??
-                                            'Select',
+                                    hintText: authProvider.user!.state!.name ??
+                                        'Select',
                                     hintStyle: const TextStyle(
                                         color: AppColors.black,
                                         fontSize: 12,
@@ -620,10 +622,35 @@ class EditNextOfKinView extends StatelessWidget {
   }
 }
 
-class EditProfileView extends StatelessWidget {
+class EditProfileView extends StatefulWidget {
   const EditProfileView({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<EditProfileView> createState() => _EditProfileViewState();
+}
+
+class _EditProfileViewState extends State<EditProfileView> {
+  @override
+  void initState() {
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => context.read<UserResourcesProvider>()
+          ..getMaritalStatuses()
+          ..getGenders()
+          ..getStates('1275'));
+
+    _userProfileParams = UserProfileParams(
+        email: null,
+        genderId: null,
+        maritalStatusId: null,
+        stateOfOriginId: null);
+
+    super.initState();
+  }
+
+  late UserProfileParams _userProfileParams;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -631,6 +658,10 @@ class EditProfileView extends StatelessWidget {
     NavigationService navigationService = di<NavigationService>();
 
     DateFormat dateFormat = DateFormat('yyyy-MMM-dd');
+
+    Gender? selectedGender;
+    MaritalStatus? selectedMaritalStatus;
+    state.State? selectedState;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -685,60 +716,273 @@ class EditProfileView extends StatelessWidget {
         const VerticalSpace(size: 15),
 
         // others
-        AccountInfoCard(
-          infoTitle: 'Others',
-          height: 320,
-          width: context.widthPx,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const VerticalSpace(size: 10),
+        Form(
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: AccountInfoCard(
+            infoTitle: 'Others',
+            height: 320,
+            width: context.widthPx,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const VerticalSpace(size: 10),
 
-              // marital status
-              Text(
-                'Marital Status',
-                style: TextStyles.smallTextDark14Px,
-              ).paddingOnly(bottom: 8),
-              AppTextField(controller: TextEditingController(text: 'Single')),
+                // marital status
+                Text(
+                  'Marital Status',
+                  style: TextStyles.smallTextDark14Px,
+                ).paddingOnly(bottom: 8),
+                Container(
+                  height: 42,
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 1.0, horizontal: 20.0),
+                  decoration: BoxDecoration(
+                      color: AppColors.grey.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child:
+                        Selector<UserResourcesProvider, MaritalStatusResponse>(
+                            selector: (_, provider) =>
+                                provider.maritalStatusResponse ??
+                                MaritalStatusResponse(maritalStatuses: [
+                                  MaritalStatus(id: '0', name: 'Loading...'),
+                                ]),
+                            builder: (context, _, __) {
+                              return DropdownButtonFormField<MaritalStatus>(
+                                decoration: InputDecoration.collapsed(
+                                    hintText:
+                                        user.maritalStatus!.name ?? 'Select',
+                                    hintStyle: const TextStyle(
+                                        color: AppColors.black,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500)),
+                                // value: ,
+                                focusColor: AppColors.black,
 
-              const VerticalSpace(size: 10),
+                                borderRadius: BorderRadius.circular(12),
+                                icon: Icon(
+                                  Icons.keyboard_arrow_down_rounded,
+                                  color: AppColors.grey.withOpacity(0.3),
+                                ),
+                                isExpanded: true,
+                                items: _.maritalStatuses
+                                    .map(
+                                      (MaritalStatus _) =>
+                                          DropdownMenuItem<MaritalStatus>(
+                                        value: _,
+                                        child: AppText(
+                                          text: _.name!,
+                                          fontWeight: FontWeight.w500,
+                                          size: 12,
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: (MaritalStatus? maritalStatus) {
+                                  setState(() {
+                                    selectedMaritalStatus = maritalStatus;
+                                    _userProfileParams.maritalStatusId =
+                                        maritalStatus!.id;
+                                  });
 
-              // Gender
-              Text(
-                'Gender',
-                style: TextStyles.smallTextDark14Px,
-              ).paddingOnly(bottom: 8),
-              AppTextField(controller: TextEditingController(text: 'Female')),
+                                  // context
+                                  //     .read<UserResourcesProvider>()
+                                  //     .getStates(selcetedCountry!.id!);
+                                },
+                                // onSaved: (MaritalStatus? maritalStatus) {
+                                //   _userProfileParams.maritalStatusId =
+                                //       maritalStatus!.id;
+                                // },
+                                value: selectedMaritalStatus,
+                              );
+                            }),
+                  ),
+                ),
 
-              const VerticalSpace(size: 10),
+                const VerticalSpace(size: 10),
 
-              Text(
-                'State of Origin',
-                style: TextStyles.smallTextDark14Px,
-              ).paddingOnly(bottom: 8),
-              AppTextField(
-                  controller: TextEditingController(text: 'Imo state')),
-            ],
+                // Gender
+                Text(
+                  'Gender',
+                  style: TextStyles.smallTextDark14Px,
+                ).paddingOnly(bottom: 8),
+
+                Container(
+                  height: 42,
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 1.0, horizontal: 20.0),
+                  decoration: BoxDecoration(
+                      color: AppColors.grey.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Selector<UserResourcesProvider, GenderResponse>(
+                        selector: (_, provider) =>
+                            provider.genderResponse ??
+                            GenderResponse(genders: [
+                              Gender(id: '0', name: 'Loading...'),
+                            ]),
+                        builder: (context, _, __) {
+                          return DropdownButtonFormField<Gender>(
+                            decoration: InputDecoration.collapsed(
+                                hintText: user.gender!.name ?? 'Select',
+                                hintStyle: const TextStyle(
+                                    color: AppColors.black,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500)),
+                            // value: ,
+                            focusColor: AppColors.black,
+
+                            borderRadius: BorderRadius.circular(12),
+                            icon: Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              color: AppColors.grey.withOpacity(0.3),
+                            ),
+                            isExpanded: true,
+                            items: _.genders
+                                .map(
+                                  (Gender _) => DropdownMenuItem<Gender>(
+                                    value: _,
+                                    child: AppText(
+                                      text: _.name!,
+                                      fontWeight: FontWeight.w500,
+                                      size: 12,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (Gender? gender) {
+                              setState(() {
+                                selectedGender = gender;
+                                 _userProfileParams.genderId = gender!.id;
+                              });
+
+                              // context
+                              //     .read<UserResourcesProvider>()
+                              //     .getStates(selcetedCountry!.id!);
+                            },
+                            // onSaved: (Gender? gender) {
+                            //   _userProfileParams.genderId = gender!.id;
+                            // },
+                            value: selectedGender,
+                          );
+                        }),
+                  ),
+                ),
+
+                const VerticalSpace(size: 10),
+
+                Text(
+                  'State of Origin',
+                  style: TextStyles.smallTextDark14Px,
+                ).paddingOnly(bottom: 8),
+                Container(
+                  height: 42,
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 1.0, horizontal: 20.0),
+                  decoration: BoxDecoration(
+                      color: AppColors.grey.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Selector<UserResourcesProvider, state.StateResponse>(
+                        selector: (_, provider) =>
+                            provider.stateResponse ??
+                            state.StateResponse(stateResponses: [
+                              const state.State(id: '0', name: 'Loading..')
+                            ]),
+                        builder: (context, _, __) {
+                          return DropdownButtonFormField<state.State>(
+                            decoration: InputDecoration.collapsed(
+                                hintText: user.state!.name ?? 'Select',
+                                hintStyle: const TextStyle(
+                                    color: AppColors.black,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500)),
+                            // value: ,
+                            focusColor: AppColors.black,
+
+                            borderRadius: BorderRadius.circular(12),
+                            icon: Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              color: AppColors.grey.withOpacity(0.3),
+                            ),
+                            isExpanded: true,
+                            items: _.stateResponses
+                                .map(
+                                  (state.State _) =>
+                                      DropdownMenuItem<state.State>(
+                                    value: _,
+                                    child: AppText(
+                                      text: _.name!,
+                                      fontWeight: FontWeight.w500,
+                                      size: 12,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (state.State? state) {
+                              setState(() {
+                                selectedState = state;
+                                _userProfileParams.stateOfOriginId = state!.id;
+                              });
+
+                              // context
+                              //     .read<UserResourcesProvider>()
+                              //     .getStates(selcetedCountry!.id!);
+                            },
+                            // onSaved: (state.State? state) {
+                            //   _userProfileParams.stateOfOriginId = state!.id;
+                            // },
+                            value: selectedState,
+                          );
+                        }),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
 
         const VerticalSpace(size: 40),
 
-        GeneralButton(
-          onPressed: () => navigationService.pop(),
-          height: 48,
-          child: const AppText(
-            text: 'SAVE CHANGES',
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            size: 16,
-            letterSpacing: 1.5,
-          ),
-        ),
+        Consumer<UserProfileProvider>(builder: (context, provider, __) {
+          return GeneralButton(
+            onPressed: () => _handleUserProfileInfo(provider),
+            height: 48,
+            isLoading: provider.loadingState == LoadingState.busy,
+            child: const AppText(
+              text: 'SAVE CHANGES',
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+              size: 16,
+              letterSpacing: 1.5,
+            ),
+          );
+        }),
 
         const VerticalSpace(size: 40),
       ],
     );
+  }
+
+  _handleUserProfileInfo(UserProfileProvider provider) async {
+    // final bool isValid = _formKey.currentState!.validate();
+
+    if (_userProfileParams.maritalStatusId == null) {
+      AppSnackBar.showErrorSnackBar(
+          context, 'Please select your marital status.');
+    } else if (_userProfileParams.genderId == null) {
+      AppSnackBar.showErrorSnackBar(context, 'Please select your gender.');
+    } else if (_userProfileParams.stateOfOriginId == null) {
+      AppSnackBar.showErrorSnackBar(context, 'Please select your state.');
+    } else {
+      _formKey.currentState!.save();
+      provider.updateUserProfileParams(_userProfileParams);
+      provider.updateUserProfiile();
+    }
   }
 }
 
