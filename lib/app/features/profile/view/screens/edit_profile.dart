@@ -1,6 +1,7 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/profile/data/model/params/employer_information_params.dart';
+import 'package:floatr/app/features/profile/data/model/params/next_of_kin_params.dart';
 import 'package:floatr/app/features/profile/data/model/params/residential_address_params.dart';
 import 'package:floatr/app/features/profile/data/model/params/user_profile_params.dart';
 import 'package:floatr/app/features/profile/data/model/responses/country_repsonse.dart';
@@ -65,11 +66,24 @@ class _EditResidentialAddressViewState
     extends State<EditResidentialAddressView> {
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback(
-        (_) => context.read<UserResourcesProvider>().getCountries());
+    final user = context.read<AuthenticationProvider>().user;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserResourcesProvider>().getCountries();
+
+      // only perform this call if user
+      // already has a country selected, so that states are available to be selected in the dropdown
+      if (user!.country != null) {
+        context.read<UserResourcesProvider>().getStates(user.country!.id!);
+      }
+    });
 
     _residentialAddressParams = ResidentialAddressParams(
-        countryId: null, stateId: null, city: null, address: null);
+        countryId: user!.country!.id,
+        stateId: user.state!.id,
+        city: user.city,
+        address: user.address);
+
     super.initState();
   }
 
@@ -220,8 +234,15 @@ class _EditResidentialAddressViewState
                                 },
                                 value: selectedCountry,
                                 onSaved: (Country? country) {
-                                  _residentialAddressParams.countryId =
-                                      country!.id;
+                                  // this checks are being done just incase if the user already has
+                                  // those details filled, he doesn't have to reselect them to proceed
+                                  if (country != null) {
+                                    _residentialAddressParams.countryId =
+                                        country.id;
+                                  } else {
+                                    _residentialAddressParams.countryId =
+                                        _residentialAddressParams.countryId;
+                                  }
                                 },
                               );
                             }),
@@ -298,7 +319,15 @@ class _EditResidentialAddressViewState
                                   //     .getStates(selcetedCountry!.id!);
                                 },
                                 onSaved: (state.State? state) {
-                                  _residentialAddressParams.stateId = state!.id;
+                                  // this checks are being done just incase if the user already has
+                                  // those details filled, he doesn't have to reselect them to proceed
+                                  if (state != null) {
+                                    _residentialAddressParams.stateId =
+                                        state.id;
+                                  } else {
+                                    _residentialAddressParams.stateId =
+                                        _residentialAddressParams.stateId;
+                                  }
                                 },
                                 value: selectedState,
                               );
@@ -567,13 +596,26 @@ class _EditEmploymentViewState extends State<EditEmploymentView> {
     if (isValid) {
       _formKey.currentState!.save();
       provider.updateEmployerInformationParams(_employerInformationParams);
-        provider.updateEmploymentInformation();
+      provider.updateEmploymentInformation();
     }
   }
 }
 
-class EditNextOfKinView extends StatelessWidget {
+class EditNextOfKinView extends StatefulWidget {
   const EditNextOfKinView({super.key});
+
+  @override
+  State<EditNextOfKinView> createState() => _EditNextOfKinViewState();
+}
+
+class _EditNextOfKinViewState extends State<EditNextOfKinView> {
+  late NextOfKinParams _nextOfKinParams;
+
+  @override
+  void initState() {
+    // _nextOfKinParams = NextOfKinParams(firstName: null, lastName: null, relationship: null, email: null, phoneNumber: null, countryId: null, stateId: null, city: null, address: address)
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -728,6 +770,7 @@ class EditProfileView extends StatefulWidget {
 class _EditProfileViewState extends State<EditProfileView> {
   @override
   void initState() {
+    final user = context.read<AuthenticationProvider>().user;
     WidgetsBinding.instance
         .addPostFrameCallback((_) => context.read<UserResourcesProvider>()
           ..getMaritalStatuses()
@@ -735,10 +778,10 @@ class _EditProfileViewState extends State<EditProfileView> {
           ..getStates('1275'));
 
     _userProfileParams = UserProfileParams(
-        email: null,
-        genderId: null,
-        maritalStatusId: null,
-        stateOfOriginId: null);
+        email: user!.email,
+        genderId: user.gender!.id,
+        maritalStatusId: user.maritalStatus!.id,
+        stateOfOriginId: user.stateOfOrigin!.id);
 
     super.initState();
   }
@@ -885,10 +928,15 @@ class _EditProfileViewState extends State<EditProfileView> {
                                   //     .read<UserResourcesProvider>()
                                   //     .getStates(selcetedCountry!.id!);
                                 },
-                                // onSaved: (MaritalStatus? maritalStatus) {
-                                //   _userProfileParams.maritalStatusId =
-                                //       maritalStatus!.id;
-                                // },
+                                onSaved: (MaritalStatus? maritalStatus) {
+                                  if (maritalStatus != null) {
+                                    _userProfileParams.maritalStatusId =
+                                        maritalStatus.id;
+                                  } else {
+                                    _userProfileParams.maritalStatusId =
+                                        _userProfileParams.maritalStatusId;
+                                  }
+                                },
                                 value: selectedMaritalStatus,
                               );
                             }),
