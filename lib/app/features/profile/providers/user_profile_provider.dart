@@ -29,7 +29,7 @@ class UserProfileProvider extends BaseProvider {
   ResidentialAddressParams? get residentialAddressParams =>
       _residentialAddressParams;
 
-  updateEmployerInformation(EmployerInformationParams params) {
+  updateEmployerInformationParams(EmployerInformationParams params) {
     _employerInformationParams = params;
     notifyListeners();
   }
@@ -102,14 +102,18 @@ class UserProfileProvider extends BaseProvider {
     var response = await _profileRepository
         .updateEmployerInformation(employerInformationParams!);
 
+    print(employerInformationParams!.toMap());
+
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(
           onError.message ?? 'Update employment information failed!');
+      print(onError.message);
       // trigger error on ui
       // AppSnackBar.showErrorSnackBar(context, errorMsg);
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
+      print(onSuccess);
       // _navigationService.navigateTo(RouteName.verifyOTP);
     });
   }

@@ -1,5 +1,6 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/profile/data/model/params/employer_information_params.dart';
 import 'package:floatr/app/features/profile/data/model/params/residential_address_params.dart';
 import 'package:floatr/app/features/profile/data/model/params/user_profile_params.dart';
 import 'package:floatr/app/features/profile/data/model/responses/country_repsonse.dart';
@@ -385,96 +386,189 @@ class _EditResidentialAddressViewState
   }
 }
 
-class EditEmploymentView extends StatelessWidget {
+class EditEmploymentView extends StatefulWidget {
   const EditEmploymentView({super.key});
+
+  @override
+  State<EditEmploymentView> createState() => _EditEmploymentViewState();
+}
+
+class _EditEmploymentViewState extends State<EditEmploymentView> {
+  TextEditingController companyNameController = TextEditingController();
+  TextEditingController employerAddressController = TextEditingController();
+  TextEditingController employmentTypeController = TextEditingController();
+  TextEditingController positionController = TextEditingController();
+  TextEditingController monthlyIncomeController = TextEditingController();
+
+  final _companyNameValidator =
+      ValidationBuilder().minLength(5).maxLength(20).build();
+  final _employerAddressValidator =
+      ValidationBuilder().minLength(10).maxLength(50).build();
+  final _employmentTypeValidator =
+      ValidationBuilder().minLength(5).maxLength(20).build();
+  final _positionTypeValidator =
+      ValidationBuilder().minLength(5).maxLength(20).build();
+  final _monthlyIncomeValidator = ValidationBuilder().minLength(5).build();
+  final _formKey = GlobalKey<FormState>();
+
+  late EmployerInformationParams _employerInformationParams;
+
+  @override
+  void initState() {
+    _employerInformationParams = EmployerInformationParams(
+        employerName: null,
+        type: null,
+        minMonthlyIncome: null,
+        maxMonthlyIncome: null,
+        position: null,
+        employerAddress: null);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     NavigationService navigationService = di<NavigationService>();
+    final user = context.read<AuthenticationProvider>().user;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        // const VerticalSpace(size: 60),
+    return Form(
+      key: _formKey,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // const VerticalSpace(size: 60),
 
-        const VerticalSpace(size: 30),
+          const VerticalSpace(size: 30),
 
-        // primary info
-        AccountInfoCard(
-          width: context.widthPx,
-          height: 520,
-          infoTitle: 'Employer’s Information',
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const VerticalSpace(size: 20),
+          // primary info
+          AccountInfoCard(
+            width: context.widthPx,
+            height: 620,
+            infoTitle: 'Employer’s Information',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const VerticalSpace(size: 20),
 
-              // company name
-              Text(
-                'Company Name',
-                style: TextStyles.smallTextDark14Px,
-              ).paddingOnly(bottom: 8),
-              AppTextField(controller: TextEditingController(text: '')),
+                // company name
+                Text(
+                  'Company Name',
+                  style: TextStyles.smallTextDark14Px,
+                ).paddingOnly(bottom: 8),
+                AppTextField(
+                  controller: companyNameController
+                    ..text = user!.employment!.employerName ?? '',
+                  hintText: 'Xone tech',
+                  validator: _companyNameValidator,
+                  onSaved: (String? employerName) =>
+                      _employerInformationParams.employerName = employerName,
+                ),
 
-              const VerticalSpace(size: 10),
+                const VerticalSpace(size: 10),
 
-              // employers address
-              Text(
-                'Employer\'s address',
-                style: TextStyles.smallTextDark14Px,
-              ).paddingOnly(bottom: 8),
-              AppTextField(controller: TextEditingController(text: 'Lekki')),
+                // employers address
+                Text(
+                  'Employer\'s address',
+                  style: TextStyles.smallTextDark14Px,
+                ).paddingOnly(bottom: 8),
+                AppTextField(
+                  controller: employerAddressController
+                    ..text = user.employment!.employerAddress ?? '',
+                  validator: _employerAddressValidator,
+                  hintText: '18 Sing street, planning way',
+                  onSaved: (String? employerAddress) =>
+                      _employerInformationParams.employerAddress =
+                          employerAddress,
+                ),
 
-              const VerticalSpace(size: 10),
+                const VerticalSpace(size: 10),
 
-              // employment type
-              Text(
-                'Employment type',
-                style: TextStyles.smallTextDark14Px,
-              ).paddingOnly(bottom: 8),
-              AppTextField(controller: TextEditingController(text: 'Single')),
+                // employment type
+                Text(
+                  'Employment type',
+                  style: TextStyles.smallTextDark14Px,
+                ).paddingOnly(bottom: 8),
+                AppTextField(
+                  controller: employmentTypeController
+                    ..text = user.employment!.type ?? '',
+                  validator: _employmentTypeValidator,
+                  hintText: 'Part-Time',
+                  onSaved: (String? employmentType) =>
+                      _employerInformationParams.type = employmentType,
+                ),
 
-              const VerticalSpace(size: 10),
+                const VerticalSpace(size: 10),
 
-              // position
-              Text(
-                'Position (Title)',
-                style: TextStyles.smallTextDark14Px,
-              ).paddingOnly(bottom: 8),
-              AppTextField(controller: TextEditingController(text: 'Hokage')),
+                // position
+                Text(
+                  'Position (Title)',
+                  style: TextStyles.smallTextDark14Px,
+                ).paddingOnly(bottom: 8),
 
-              const VerticalSpace(size: 10),
+                AppTextField(
+                  controller: positionController
+                    ..text = user.employment!.position ?? '',
+                  validator: _positionTypeValidator,
+                  hintText: 'Head of Department',
+                  onSaved: (String? position) =>
+                      _employerInformationParams.position = position,
+                ),
 
-              // monthly income
-              Text(
-                'Monthly Income',
-                style: TextStyles.smallTextDark14Px,
-              ).paddingOnly(bottom: 8),
-              AppTextField(controller: TextEditingController(text: '120000')),
+                const VerticalSpace(size: 10),
 
-              const VerticalSpace(size: 10),
-            ],
+                // monthly income
+                Text(
+                  'Monthly Income',
+                  style: TextStyles.smallTextDark14Px,
+                ).paddingOnly(bottom: 8),
+
+                AppTextField(
+                  controller: monthlyIncomeController
+                    ..text = user.employment!.minMonthlyIncome ?? '',
+                  textInputType: const TextInputType.numberWithOptions(),
+                  validator: _monthlyIncomeValidator,
+                  hintText: '120000',
+                  onSaved: (String? income) =>
+                      _employerInformationParams.minMonthlyIncome = income,
+                ),
+
+                const VerticalSpace(size: 10),
+              ],
+            ),
           ),
-        ),
 
-        const VerticalSpace(size: 30),
+          const VerticalSpace(size: 30),
 
-        GeneralButton(
-          onPressed: () => navigationService.pop(),
-          height: 48,
-          borderRadius: 12,
-          child: const AppText(
-            text: 'UPDATE',
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            size: 16,
-            letterSpacing: 1.5,
-          ),
-        ),
+          Consumer<UserProfileProvider>(builder: (context, provider, __) {
+            return GeneralButton(
+              onPressed: () => _handleEmployerInfoUpdate(provider),
+              height: 48,
+              borderRadius: 12,
+              isLoading: provider.loadingState == LoadingState.busy,
+              child: const AppText(
+                text: 'UPDATE',
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                size: 16,
+                letterSpacing: 1.5,
+              ),
+            );
+          }),
 
-        const VerticalSpace(size: 40),
-      ],
+          const VerticalSpace(size: 40),
+        ],
+      ),
     );
+  }
+
+  _handleEmployerInfoUpdate(UserProfileProvider provider) {
+    final bool isValid = _formKey.currentState!.validate();
+
+    if (isValid) {
+      _formKey.currentState!.save();
+      provider.updateEmployerInformationParams(_employerInformationParams);
+        provider.updateEmploymentInformation();
+    }
   }
 }
 
@@ -856,7 +950,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                             onChanged: (Gender? gender) {
                               setState(() {
                                 selectedGender = gender;
-                                 _userProfileParams.genderId = gender!.id;
+                                _userProfileParams.genderId = gender!.id;
                               });
 
                               // context

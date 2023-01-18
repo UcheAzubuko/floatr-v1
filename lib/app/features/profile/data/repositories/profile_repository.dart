@@ -75,7 +75,7 @@ class ProfileRepository {
           _sharedPreferences.getString(StorageKeys.accessTokenKey);
       final response = await _apiService.post(
         url: url,
-        body: residentialAddress, 
+        body: residentialAddress,
         headers: _authHeaders
           ..addAll({
             "Authorization": "Bearer ${accessToken!}"
@@ -102,9 +102,10 @@ class ProfileRepository {
     try {
       String? accessToken =
           _sharedPreferences.getString(StorageKeys.accessTokenKey);
+
       final response = await _apiService.post(
         url: url,
-        body: employmentParams, 
+        body: employmentParams,
         headers: _authHeaders
           ..addAll({
             "Authorization": "Bearer ${accessToken!}"
@@ -133,7 +134,7 @@ class ProfileRepository {
           _sharedPreferences.getString(StorageKeys.accessTokenKey);
       final response = await _apiService.post(
         url: url,
-        body: nextOfKinParams, 
+        body: nextOfKinParams,
         headers: _authHeaders
           ..addAll({
             "Authorization": "Bearer ${accessToken!}"

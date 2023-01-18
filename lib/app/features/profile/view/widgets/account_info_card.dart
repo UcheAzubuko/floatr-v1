@@ -26,8 +26,10 @@ class AccountInfoCard extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        height: height,
-        width: width,
+       constraints:  BoxConstraints(
+      maxHeight: height,
+      minHeight: 200
+    ),
         decoration: BoxDecoration(
             border: Border.all(color: AppColors.lightGrey300, width: 2),
             borderRadius: BorderRadius.circular(16)),
@@ -46,9 +48,7 @@ class AccountInfoCard extends StatelessWidget {
                 color: AppColors.lightGrey300,
               ),
             ),
-            SizedBox(
-                height: height - 58,
-                child: child.paddingSymmetric(horizontal: 16)),
+            child.paddingSymmetric(horizontal: 16),
           ],
         ),
       ),
