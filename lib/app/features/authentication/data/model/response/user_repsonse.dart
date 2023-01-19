@@ -68,7 +68,7 @@ class UserResponse {
   final Country? country;
   final Country? state;
   final Country? stateOfOrigin;
-  final dynamic nextOfKin;
+  final NextOfKin? nextOfKin;
   final Employment? employment;
   final bool? hasSetPin;
   final bool? isPhotoVerified;
@@ -108,7 +108,20 @@ class UserResponse {
         country: Country.fromJson(json["country"] ?? {}),
         state: Country.fromJson(json["state"] ?? {}),
         stateOfOrigin: Country.fromJson(json["stateOfOrigin"] ?? {}),
-        nextOfKin: json["nextOfKin"],
+        nextOfKin: NextOfKin.fromMap(json["nextOfKin"] ??
+            NextOfKin(
+                    uniqueId: null,
+                    firstName: null,
+                    lastName: null,
+                    email: null,
+                    phoneNumber: null,
+                    relationship: null,
+                    city: null,
+                    address: null,
+                    country: null,
+                    state: null,
+                    gender: null)
+                .toMap()),
         employment: Employment.fromJson(json["employment"] ?? {}),
         hasSetPin: json["hasSetPin"],
         isPhotoVerified: json["isPhotoVerified"],
@@ -146,7 +159,7 @@ class UserResponse {
         "country": country!.toJson(),
         "state": state!.toJson(),
         "stateOfOrigin": stateOfOrigin!.toJson(),
-        "nextOfKin": nextOfKin,
+        "nextOfKin": nextOfKin!.toMap(),
         "employment": employment!.toJson(),
         "hasSetPin": hasSetPin,
         "isPhotoVerified": isPhotoVerified,
@@ -263,6 +276,66 @@ class Gender {
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
+      };
+}
+
+class NextOfKin {
+  NextOfKin({
+    required this.uniqueId,
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+    required this.phoneNumber,
+    required this.relationship,
+    required this.city,
+    required this.address,
+    required this.country,
+    required this.state,
+    required this.gender,
+  });
+
+  final String? uniqueId;
+  final String? firstName;
+  final String? lastName;
+  final String? email;
+  final String? phoneNumber;
+  final String? relationship;
+  final String? city;
+  final String? address;
+  final Country? country;
+  final Country? state;
+  final dynamic gender;
+
+  factory NextOfKin.fromJson(String str) => NextOfKin.fromMap(json.decode(str));
+
+  String toJson() => json.encode(toMap());
+
+  factory NextOfKin.fromMap(Map<String, dynamic> json) => NextOfKin(
+        uniqueId: json["uniqueId"],
+        firstName: json["firstName"],
+        lastName: json["lastName"],
+        email: json["email"],
+        phoneNumber: json["phoneNumber"],
+        relationship: json["relationship"],
+        city: json["city"],
+        address: json["address"],
+        country: Country.fromJson(json["country"] ?? {}),
+        state: Country.fromJson(json["state"] ?? {}),
+        gender: json["gender"],
+      );
+
+  Map<String, dynamic> toMap() => {
+        "uniqueId": uniqueId,
+        "firstName": firstName,
+        "lastName": lastName,
+        "email": email,
+        "phoneNumber": phoneNumber,
+        "relationship": relationship,
+        "city": city,
+        "address": address,
+        "country": country,
+        "state": state,
+        "gender": gender,
       };
 }
 

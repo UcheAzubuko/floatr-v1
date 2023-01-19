@@ -366,7 +366,7 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                               editProfileView: EditProfile.nextOfKin)),
                       child: CriteriaWidget(
                         criteriaTitle: 'Next of Kin',
-                        criteriaState: authProvider.user!.nextOfKin != null
+                        criteriaState: userHelper.isNextOfKinComplete()
                             ? CriteriaState.done
                             : CriteriaState.notDone,
                       ),

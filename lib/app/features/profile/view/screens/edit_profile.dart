@@ -1,6 +1,7 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/profile/data/model/params/employer_information_params.dart';
+import 'package:floatr/app/features/profile/data/model/params/employment_type.dart';
 import 'package:floatr/app/features/profile/data/model/params/next_of_kin_params.dart';
 import 'package:floatr/app/features/profile/data/model/params/residential_address_params.dart';
 import 'package:floatr/app/features/profile/data/model/params/user_profile_params.dart';
@@ -459,6 +460,8 @@ class _EditEmploymentViewState extends State<EditEmploymentView> {
     NavigationService navigationService = di<NavigationService>();
     final user = context.read<AuthenticationProvider>().user;
 
+    Employment_? selectedEmployment;
+
     return Form(
       key: _formKey,
       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -517,13 +520,60 @@ class _EditEmploymentViewState extends State<EditEmploymentView> {
                   'Employment type',
                   style: TextStyles.smallTextDark14Px,
                 ).paddingOnly(bottom: 8),
-                AppTextField(
-                  controller: employmentTypeController
-                    ..text = user.employment!.type ?? '',
-                  validator: _employmentTypeValidator,
-                  hintText: 'Part-Time',
-                  onSaved: (String? employmentType) =>
-                      _employerInformationParams.type = employmentType,
+                Container(
+                  height: 42,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 1.0, horizontal: 20.0),
+                      decoration: BoxDecoration(
+                          color: AppColors.grey.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(10)),
+                  child: Align(
+                    child: DropdownButtonFormField<Employment_>(
+                      decoration: InputDecoration.collapsed(
+                          hintText: user.employment?.type ?? 'Select',
+                          hintStyle: const TextStyle(
+                              color: AppColors.black,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500)),
+                      // value: ,
+                      focusColor: AppColors.black,
+                  
+                      borderRadius: BorderRadius.circular(12),
+                      icon: Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: AppColors.grey.withOpacity(0.3),
+                      ),
+                      isExpanded: true,
+                      items: EmploymentType.fromMap(EmploymentType.employmentBody).employmentTypes
+                          .map(
+                            (Employment_ employment_) => DropdownMenuItem<Employment_>(
+                              value: employment_,
+                              child: AppText(
+                                text: employment_.type,
+                                fontWeight: FontWeight.w500,
+                                size: 12,
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (Employment_? employment_) async {
+                        setState(() {
+                          selectedEmployment = employment_;
+                          _employerInformationParams.type = employment_!.id;
+                        });
+                      },
+                      value: selectedEmployment,
+                      onSaved: (Employment_? employment_) {
+                        // this checks are being done just incase if the user already has
+                        // those details filled, he doesn't have to reselect them to proceed
+                        if (employment_ != null) {
+                          _employerInformationParams.type = employment_.id;
+                        } else {
+                          _employerInformationParams.type = _employerInformationParams.type;
+                        }
+                      },
+                    ),
+                  ),
                 ),
 
                 const VerticalSpace(size: 10),
@@ -611,9 +661,63 @@ class EditNextOfKinView extends StatefulWidget {
 class _EditNextOfKinViewState extends State<EditNextOfKinView> {
   late NextOfKinParams _nextOfKinParams;
 
+  TextEditingController cityController = TextEditingController();
+  TextEditingController relationshipController = TextEditingController();
+  TextEditingController fullnameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController streetController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+
+  final _cityValidator = ValidationBuilder().minLength(5).maxLength(20).build();
+  final _streetValidator =
+      ValidationBuilder().minLength(10).maxLength(50).build();
+  final _relationshipValidator =
+      ValidationBuilder().minLength(5).maxLength(50).build();
+  final _fullnameValidator =
+      ValidationBuilder().minLength(10).maxLength(50).build();
+  final _emailValidator = ValidationBuilder().email().build();
+  final _phoneValidator = ValidationBuilder().phone().build();
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
-    // _nextOfKinParams = NextOfKinParams(firstName: null, lastName: null, relationship: null, email: null, phoneNumber: null, countryId: null, stateId: null, city: null, address: address)
+    final user = context.read<AuthenticationProvider>().user;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserResourcesProvider>().getCountries();
+
+      // only perform this call if user
+      // already has a country selected, so that states are available to be selected in the dropdown
+      if (user!.country != null) {
+        context.read<UserResourcesProvider>().getStates(user.country!.id!);
+      }
+    });
+
+    final nextOfKin = user!.nextOfKin!;
+
+    if (user.nextOfKin != null) {
+      _nextOfKinParams = NextOfKinParams(
+          firstName: nextOfKin.firstName,
+          lastName: nextOfKin.lastName,
+          relationship: nextOfKin.relationship,
+          email: nextOfKin.email,
+          phoneNumber: nextOfKin.phoneNumber,
+          countryId: nextOfKin.country?.id,
+          stateId: nextOfKin.state?.id,
+          city: nextOfKin.city,
+          address: nextOfKin.address);
+    }
+
+    // _nextOfKinParams = NextOfKinParams(
+    //     firstName: user!.nextOfKin!.firstName,
+    //     lastName: user.nextOfKin!.lastName,
+    //     relationship: user.nextOfKin!.relationship,
+    //     email: user.nextOfKin!.email,
+    //     phoneNumber: user.nextOfKin!.phoneNumber,
+    //     countryId: user.nextOfKin!.country!.id,
+    //     stateId: user.nextOfKin!.state!.id,
+    //     city: user.nextOfKin!.city,
+    //     address: user.nextOfKin!.address);
     super.initState();
   }
 
@@ -621,140 +725,367 @@ class _EditNextOfKinViewState extends State<EditNextOfKinView> {
   Widget build(BuildContext context) {
     NavigationService navigationService = di<NavigationService>();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        // const VerticalSpace(size: 60),
+    Country? selectedCountry;
+    state.State? selectedState;
 
-        const VerticalSpace(size: 30),
-
-        // primary info
-        AccountInfoCard(
-          height: 440,
-          width: context.widthPx,
-          infoTitle: 'Next of Kin (Personal Details)',
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return Form(
+      key: _formKey,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      child: Consumer<AuthenticationProvider>(
+        builder: (context, authProvider, _) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              //
-              const VerticalSpace(size: 20),
+              // const VerticalSpace(size: 60),
 
-              // relationship
-              Text(
-                'Relationship',
-                style: TextStyles.smallTextDark14Px,
-              ).paddingOnly(bottom: 8),
-              AppTextField(controller: TextEditingController(text: 'Nigeria')),
+              const VerticalSpace(size: 30),
 
-              const VerticalSpace(size: 10),
+              // primary info
+              AccountInfoCard(
+                height: 510,
+                width: context.widthPx,
+                infoTitle: 'Next of Kin (Personal Details)',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    //
+                    const VerticalSpace(size: 20),
 
-              // name
-              Text(
-                'Full Name (Surname first)',
-                style: TextStyles.smallTextDark14Px,
-              ).paddingOnly(bottom: 8),
-              AppTextField(controller: TextEditingController(text: 'Nigeria')),
+                    // relationship
+                    Text(
+                      'Relationship',
+                      style: TextStyles.smallTextDark14Px,
+                    ).paddingOnly(bottom: 8),
+                    AppTextField(
+                      controller: relationshipController
+                        ..text =
+                            authProvider.user!.nextOfKin!.relationship ?? '',
+                      validator: _relationshipValidator,
+                      hintText: 'Brother',
+                      onSaved: (String? relationship) =>
+                          _nextOfKinParams.relationship = relationship,
+                    ),
 
-              const VerticalSpace(size: 10),
+                    const VerticalSpace(size: 10),
 
-              // Phone Number
-              Text(
-                'Phone Number',
-                style: TextStyles.smallTextDark14Px,
-              ).paddingOnly(bottom: 8),
-              AppTextField(controller: TextEditingController(text: 'Nigeria')),
+                    // name
+                    Text(
+                      'Full Name (Surname first)',
+                      style: TextStyles.smallTextDark14Px,
+                    ).paddingOnly(bottom: 8),
 
-              const VerticalSpace(size: 10),
+                    AppTextField(
+                        controller: fullnameController
+                          ..text =
+                              '${authProvider.user!.nextOfKin!.firstName ?? ''}${authProvider.user!.nextOfKin!.lastName ?? ''}',
+                        validator: _fullnameValidator,
+                        hintText: 'Okeke Ali',
+                        onSaved: (String? fullname) {
+                          var separateNames = fullname!.split(' ');
+                          _nextOfKinParams.firstName = separateNames[0];
+                          _nextOfKinParams.lastName = separateNames[1];
+                        }),
 
-              // phone number
-              // Text(
-              //   'Email Address',
-              //   style: TextStyles.smallTextDark14Px,
-              // ).paddingOnly(bottom: 8),
-              // AppTextField(controller: TextEditingController(text: 'Nigeria')),
+                    const VerticalSpace(size: 10),
 
-              // const VerticalSpace(size: 10),
+                    // Phone Number
+                    Text(
+                      'Phone Number',
+                      style: TextStyles.smallTextDark14Px,
+                    ).paddingOnly(bottom: 8),
+                    AppTextField(
+                      controller: phoneController
+                        ..text =
+                            authProvider.user!.nextOfKin!.phoneNumber ?? '',
+                      validator: _phoneValidator,
+                      hintText: '+234908976543',
+                      onSaved: (String? phone) =>
+                          _nextOfKinParams.phoneNumber = phone,
+                    ),
 
-              // email address
-              Text(
-                'Email Address',
-                style: TextStyles.smallTextDark14Px,
-              ).paddingOnly(bottom: 8),
-              AppTextField(controller: TextEditingController(text: 'Nigeria')),
+                    const VerticalSpace(size: 10),
 
-              const VerticalSpace(size: 10),
+                    // phone number
+                    // Text(
+                    //   'Email Address',
+                    //   style: TextStyles.smallTextDark14Px,
+                    // ).paddingOnly(bottom: 8),
+                    // AppTextField(controller: TextEditingController(text: 'Nigeria')),
+
+                    // const VerticalSpace(size: 10),
+
+                    // email address
+                    Text(
+                      'Email Address',
+                      style: TextStyles.smallTextDark14Px,
+                    ).paddingOnly(bottom: 8),
+                    AppTextField(
+                      controller: emailController
+                        ..text = authProvider.user!.nextOfKin!.email ?? '',
+                      validator: _emailValidator,
+                      hintText: 'okeke@gmail.com',
+                      onSaved: (String? email) =>
+                          _nextOfKinParams.email = email,
+                    ),
+
+                    const VerticalSpace(size: 10),
+                  ],
+                ),
+              ),
+
+              const VerticalSpace(size: 30),
+
+              AccountInfoCard(
+                height: 448,
+                width: context.widthPx,
+                infoTitle: 'Next of Kin Address',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const VerticalSpace(size: 20),
+
+                    // country
+                    Text(
+                      'Country',
+                      style: TextStyles.smallTextDark14Px,
+                    ).paddingOnly(bottom: 8),
+                    // AppTextField(controller: TextEditingController(text: 'Lagos')),
+                    Container(
+                      height: 42,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 1.0, horizontal: 20.0),
+                      decoration: BoxDecoration(
+                          color: AppColors.grey.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Selector<UserResourcesProvider, CountryResponse>(
+                            selector: (_, provider) =>
+                                provider.countryRepsonse ??
+                                CountryResponse(
+                                  countries: [
+                                    const Country(id: '0', name: 'Loading...'),
+                                  ],
+                                ),
+                            builder: (context, _, __) {
+                              return DropdownButtonFormField<Country>(
+                                decoration: InputDecoration.collapsed(
+                                    hintText: authProvider
+                                            .user?.nextOfKin?.country?.name ??
+                                        'Select',
+                                    hintStyle: const TextStyle(
+                                        color: AppColors.black,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500)),
+                                // value: ,
+                                focusColor: AppColors.black,
+
+                                borderRadius: BorderRadius.circular(12),
+                                icon: Icon(
+                                  Icons.keyboard_arrow_down_rounded,
+                                  color: AppColors.grey.withOpacity(0.3),
+                                ),
+                                isExpanded: true,
+                                items: _.countries
+                                    .map(
+                                      (Country country) =>
+                                          DropdownMenuItem<Country>(
+                                        value: country,
+                                        child: AppText(
+                                          text: country.name!,
+                                          fontWeight: FontWeight.w500,
+                                          size: 12,
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: (Country? country) async {
+                                  setState(() {
+                                    selectedCountry = country;
+                                    _nextOfKinParams.countryId = country!.id;
+                                  });
+
+                                  await context
+                                      .read<UserResourcesProvider>()
+                                      .getStates(selectedCountry!.id!);
+                                },
+                                value: selectedCountry,
+                                onSaved: (Country? country) {
+                                  // this checks are being done just incase if the user already has
+                                  // those details filled, he doesn't have to reselect them to proceed
+                                  if (country != null) {
+                                    _nextOfKinParams.countryId = country.id;
+                                  } else {
+                                    _nextOfKinParams.countryId =
+                                        _nextOfKinParams.countryId;
+                                  }
+                                },
+                              );
+                            }),
+                      ),
+                    ),
+
+                    const VerticalSpace(size: 10),
+
+                    // state
+                    Text(
+                      'State',
+                      style: TextStyles.smallTextDark14Px,
+                    ).paddingOnly(bottom: 8),
+                    Container(
+                      height: 42,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 1.0, horizontal: 20.0),
+                      decoration: BoxDecoration(
+                          color: AppColors.grey.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Selector<UserResourcesProvider,
+                                state.StateResponse>(
+                            selector: (_, provider) =>
+                                provider.stateResponse ??
+                                state.StateResponse(stateResponses: [
+                                  state.State(
+                                      id: '0',
+                                      name: selectedCountry == null
+                                          ? 'Please select country'
+                                          : 'Loading..')
+                                ]),
+                            builder: (context, _, __) {
+                              return DropdownButtonFormField<state.State>(
+                                decoration: InputDecoration.collapsed(
+                                    hintText: authProvider
+                                            .user?.nextOfKin?.state?.name ??
+                                        'Select',
+                                    hintStyle: const TextStyle(
+                                        color: AppColors.black,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500)),
+                                // value: ,
+                                focusColor: AppColors.black,
+
+                                borderRadius: BorderRadius.circular(12),
+                                icon: Icon(
+                                  Icons.keyboard_arrow_down_rounded,
+                                  color: AppColors.grey.withOpacity(0.3),
+                                ),
+                                isExpanded: true,
+                                items: _.stateResponses
+                                    .map(
+                                      (state.State _) =>
+                                          DropdownMenuItem<state.State>(
+                                        value: _,
+                                        child: AppText(
+                                          text: _.name!,
+                                          fontWeight: FontWeight.w500,
+                                          size: 12,
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: (state.State? state) {
+                                  setState(() {
+                                    selectedState = state;
+                                    _nextOfKinParams.stateId = state!.id;
+                                  });
+
+                                  // context
+                                  //     .read<UserResourcesProvider>()
+                                  //     .getStates(selcetedCountry!.id!);
+                                },
+                                onSaved: (state.State? state) {
+                                  // this checks are being done just incase if the user already has
+                                  // those details filled, he doesn't have to reselect them to proceed
+                                  if (state != null) {
+                                    _nextOfKinParams.stateId = state.id;
+                                  } else {
+                                    _nextOfKinParams.stateId =
+                                        _nextOfKinParams.stateId;
+                                  }
+                                },
+                                value: selectedState,
+                              );
+                            }),
+                      ),
+                    ),
+
+                    const VerticalSpace(size: 10),
+
+                    // city
+                    Text(
+                      'City',
+                      style: TextStyles.smallTextDark14Px,
+                    ).paddingOnly(bottom: 8),
+                    AppTextField(
+                      controller: cityController
+                        ..text = authProvider.user!.nextOfKin!.city ?? '',
+                      validator: _cityValidator,
+                      hintText: 'Ikeja',
+                      onSaved: (String? city) => _nextOfKinParams.city = city,
+                    ),
+
+                    const VerticalSpace(size: 10),
+
+                    // street add
+                    Text(
+                      'Street Address',
+                      style: TextStyles.smallTextDark14Px,
+                    ).paddingOnly(bottom: 8),
+                    AppTextField(
+                      controller: streetController
+                        ..text = authProvider.user!.nextOfKin!.address ?? '',
+                      validator: _streetValidator,
+                      hintText: '18 first street, town',
+                      onSaved: (String? address) =>
+                          _nextOfKinParams.address = address,
+                    ),
+
+                    const VerticalSpace(size: 10),
+                  ],
+                ),
+              ),
+
+              const VerticalSpace(size: 30),
+
+              Consumer<UserProfileProvider>(builder: (context, provider, __) {
+                return GeneralButton(
+                  onPressed: () => _handleUpdateNextOfKin(provider),
+                  height: 48,
+                  borderRadius: 12,
+                  isLoading: provider.loadingState == LoadingState.busy,
+                  child: const AppText(
+                    text: 'UPDATE',
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    size: 16,
+                    letterSpacing: 1.5,
+                  ),
+                );
+              }),
+
+              const VerticalSpace(size: 40),
             ],
-          ),
-        ),
-
-        const VerticalSpace(size: 30),
-
-        AccountInfoCard(
-          height: 430,
-          width: context.widthPx,
-          infoTitle: 'Next of Kin Address',
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const VerticalSpace(size: 20),
-
-              // country
-              Text(
-                'Country',
-                style: TextStyles.smallTextDark14Px,
-              ).paddingOnly(bottom: 8),
-              AppTextField(controller: TextEditingController(text: 'Nigeria')),
-
-              const VerticalSpace(size: 10),
-
-              // state
-              Text(
-                'State',
-                style: TextStyles.smallTextDark14Px,
-              ).paddingOnly(bottom: 8),
-              AppTextField(controller: TextEditingController(text: 'Lagos')),
-
-              const VerticalSpace(size: 10),
-
-              // city
-              Text(
-                'City',
-                style: TextStyles.smallTextDark14Px,
-              ).paddingOnly(bottom: 8),
-              AppTextField(controller: TextEditingController(text: 'Lekki')),
-
-              const VerticalSpace(size: 10),
-
-              // street add
-              Text(
-                'Street Address',
-                style: TextStyles.smallTextDark14Px,
-              ).paddingOnly(bottom: 8),
-              AppTextField(controller: TextEditingController(text: 'qwertyi')),
-
-              const VerticalSpace(size: 10),
-            ],
-          ),
-        ),
-
-        const VerticalSpace(size: 30),
-
-        GeneralButton(
-          onPressed: () => navigationService.pop(),
-          height: 48,
-          borderRadius: 12,
-          child: const AppText(
-            text: 'UPDATE',
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            size: 16,
-            letterSpacing: 1.5,
-          ),
-        ),
-
-        const VerticalSpace(size: 40),
-      ],
+          );
+        },
+      ),
     );
+  }
+
+  _handleUpdateNextOfKin(UserProfileProvider provider) async {
+    final bool isValid = _formKey.currentState!.validate();
+
+    if (!isValid) {
+      if (_nextOfKinParams.countryId == null ||
+          _nextOfKinParams.stateId == null) {
+        AppSnackBar.showErrorSnackBar(
+            context, 'Please check your selected country and state.');
+      }
+    } else {
+      _formKey.currentState!.save();
+      provider.updateNextOfKinParams(_nextOfKinParams);
+      provider.updateNextOfKin();
+    }
   }
 }
 

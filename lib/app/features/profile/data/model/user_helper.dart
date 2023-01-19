@@ -17,10 +17,13 @@ class UserHelper {
 
   // bool isFullyInBoarded() => _user.is
 
-  bool isEmployerDetailsComplete() =>
-      _user.employment == null &&
-      !(isNull(_user.employment!.minMonthlyIncome) ||
-          isNull(_user.employment!.maxMonthlyIncome));
+  bool isEmployerDetailsComplete() => !(isNull(_user.employment) ||
+      isNull(_user.employment!.employerName) ||
+      isNull(_user.employment!.employerAddress));
+
+  bool isNextOfKinComplete() => !(isNull(_user.nextOfKin) ||
+      isNull(_user.nextOfKin!.address) ||
+      isNull(_user.nextOfKin!.firstName));
 
   bool isIdDataComplete() =>
       (isNull(_user.idTypes) ? 0 : _user.idTypes!.length) > 0;
@@ -30,7 +33,7 @@ class UserHelper {
       isIdDataComplete() &&
       isAddressComplete() &&
       isEmployerDetailsComplete() &&
-      _user.nextOfKin != null;
+      isNextOfKinComplete();
 
   isNull(dynamic object) => object == null;
 }
