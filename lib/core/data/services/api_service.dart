@@ -38,9 +38,8 @@ class APIService {
     dynamic body,
     Map<String, String>? headers,
   }) async {
-    final response = await http
-        .put(url, headers: headers ?? {}, body: body)
-        .catchError((_) {
+    final response =
+        await http.put(url, headers: headers ?? {}, body: body).catchError((_) {
       throw ServerException('Connection Error ${_.toString()}', 0);
     });
     return _handleResponse(response);
@@ -59,6 +58,7 @@ class APIService {
     } else {
       errorMessage = errorBody["message"];
     }
+    print('Handler $errorMessage');
     throw ServerException(errorMessage, response.statusCode);
   }
 }

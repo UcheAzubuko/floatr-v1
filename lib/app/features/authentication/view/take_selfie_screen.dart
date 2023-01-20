@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/route/navigation_service.dart';
 import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/enums.dart';
 import '../../../../core/utils/spacing.dart';
 import '../../../widgets/app_text.dart';
 import '../../../widgets/custom_appbar.dart';
@@ -200,7 +201,7 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen>
                       log('Picture taken ${value.path}');
                       navigationService.navigateReplacementTo(
                           RouteName.displayPicture,
-                          arguments: DisplayImageArguments(file: value));
+                          arguments: DisplayImageArguments(file: value, imageType: ImageType.selfie));
                     });
                   }
                 },

@@ -14,6 +14,7 @@ import 'package:floatr/app/features/dashboard/view/dashboard_screen.dart';
 import 'package:floatr/app/features/loan/view/screens/loan_info_screen.dart';
 import 'package:floatr/app/features/onboarding/post_onboarding.dart';
 import 'package:floatr/app/features/onboarding/splash_screen.dart';
+import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
 import 'package:floatr/app/features/profile/view/screens/profile_screen.dart';
 import 'package:floatr/app/features/profile/view/screens/snap_document_screen.dart';
 import 'package:floatr/core/route/route_names.dart';
@@ -44,9 +45,12 @@ class Router {
         return MaterialPageRoute(builder: (_) => const CreatePinScreen());
       case RouteName.displayPicture:
       final args = settings.arguments as DisplayImageArguments;
-        return MaterialPageRoute(builder: (_) => DisplayPictureScreen(image: args.file,), );
+        return MaterialPageRoute(builder: (_) => DisplayPictureScreen(image: args.file, imageType: args.imageType,), );
       case RouteName.biometrics:
         return MaterialPageRoute(builder: (_) => const BiometricsScreen());
+      case RouteName.editProfile:
+      final args = settings.arguments as EditProfileArguments;
+        return MaterialPageRoute(builder: (_) => EditProfileScreen(editProfileView: args.editProfileView,));
       case RouteName.forgotPassword:
         return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
       case RouteName.forgotPasswordOtp:

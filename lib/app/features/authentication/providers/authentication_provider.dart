@@ -9,6 +9,7 @@ import 'package:floatr/app/widgets/app_snackbar.dart';
 import 'package:floatr/core/misc/dependency_injectors.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/route_names.dart';
+import 'package:floatr/core/utils/enums.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/route/navigation_service.dart';
@@ -95,7 +96,7 @@ class AuthenticationProvider extends BaseProvider {
       AppSnackBar.showErrorSnackBar(context, errorMsg);
     }, (onSuccess) async {
       await getUser();
-      
+
       if (!_user!.isPhoneVerified!) {
         _navigationService.navigateTo(RouteName.verifyOTP);
       } else if (!_user!.isBvnVerified!) {
@@ -103,7 +104,7 @@ class AuthenticationProvider extends BaseProvider {
       } else if (!user!.isPhotoVerified!) {
         _navigationService.navigateTo(RouteName.takeSelfie);
       } else {
-        _navigationService.navigateTo(RouteName.navbar);
+        _navigationService.navigateReplacementTo(RouteName.navbar);
       }
     });
   }
@@ -181,9 +182,10 @@ class AuthenticationProvider extends BaseProvider {
     });
   }
 
-  Future<void> uploadimage(BuildContext context) async {
+  Future<void> uploadimage(BuildContext context, ImageType imageType) async {
     updateLoadingState(LoadingState.busy);
-    var response = await authenticationRepository.uploadPicture(_imagefile!);
+    var response =
+        await authenticationRepository.uploadPicture(_imagefile!, imageType);
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'File upload failed!');
@@ -191,7 +193,9 @@ class AuthenticationProvider extends BaseProvider {
       // trigger error on ui
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
-      _navigationService.pushAndRemoveUntil(RouteName.confirmDetails);
+      imageType == ImageType.selfie
+          ? _navigationService.pushAndRemoveUntil(RouteName.confirmDetails)
+          : _navigationService.pop();
     });
   }
 }

@@ -15,6 +15,8 @@ import 'package:floatr/core/errors/failure.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart';
 
+import '../../../../../core/utils/enums.dart';
+
 class AuthenticationRepository {
   final SharedPreferences prefs;
   final APIService apiService;
@@ -175,7 +177,9 @@ class AuthenticationRepository {
     }
   }
 
-  Future<Either<Failure, bool>> uploadPicture(File imageFile) async {
+  Future<Either<Failure, bool>> uploadPicture(
+      File imageFile, ImageType imageType,
+      [DocumentType documentType = DocumentType.driverLicense]) async {
     // final convertedImageFile =
     //     await PictureUploadService.convertToWebp(imageFile);
 
@@ -187,7 +191,9 @@ class AuthenticationRepository {
     final reqBody = {
       "ext": "jpg",
       "name": basename(imageFile.path),
-      "purpose": "user/profile/pictures",
+      "purpose": imageType == ImageType.selfie
+          ? "user/profile/pictures"
+          : chooseImagePath(documentType),
       "size": await imageFile.length(),
       "type": "image_jpg",
     };
@@ -265,5 +271,20 @@ class AuthenticationRepository {
     } catch (e) {
       throw Exception(e);
     }
+  }
+}
+
+String chooseImagePath(DocumentType documentType) {
+  switch (documentType) {
+    case DocumentType.driverLicense:
+      return "user/government/issued/driver-license/ids";
+    case DocumentType.internationalPassport:
+      return "user/government/issued/driver-license/ids";
+    case DocumentType.nationalIdentityCard:
+      return "user/government/issued/driver-license/ids";
+    case DocumentType.votersCard:
+      return "user/government/issued/driver-license/ids";
+    default:
+      return "user/government/issued/driver-license/ids";
   }
 }

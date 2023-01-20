@@ -125,7 +125,7 @@ class UserResponse {
         employment: Employment.fromJson(json["employment"] ?? {}),
         hasSetPin: json["hasSetPin"],
         isPhotoVerified: json["isPhotoVerified"],
-        photo: Photo.fromJson(json["photo"]),
+        photo: Photo.fromJson(json["photo"] ?? {}),
         isGovernmentIdVerified: json["isGovernmentIdVerified"],
         idTypes: json["idTypes"] == null
             ? []
@@ -375,8 +375,8 @@ class Photo {
         size: json["size"],
         purpose: json["purpose"],
         meta: json["meta"],
-        createdAt: DateTime.parse(json["createdAt"]),
-        updatedAt: DateTime.parse(json["updatedAt"]),
+        createdAt: DateTime.parse(json["createdAt"] ?? DateTime.now().toString()),
+        updatedAt: DateTime.parse(json["updatedAt"] ?? DateTime.now().toString()),
         deletedAt: json["deletedAt"],
         url: json["url"],
       );

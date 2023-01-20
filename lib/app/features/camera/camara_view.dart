@@ -39,7 +39,6 @@ class _CameraViewState extends State<CameraView> {
   int _cameraIndex = -1;
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
 
-
   @override
   void initState() {
     super.initState();
@@ -65,7 +64,7 @@ class _CameraViewState extends State<CameraView> {
 
     if (_cameraIndex != -1) {
       _startLiveFeed();
-    } 
+    }
     // else {
     //   _mode = ScreenMode.gallery;
     // }
@@ -108,16 +107,16 @@ class _CameraViewState extends State<CameraView> {
     var scale = size.aspectRatio * _controller!.value.aspectRatio;
 
     // to prevent scaling down, invert the value
-    if (scale < 1) scale = 1 / scale;
+    if (scale < 1) scale = 2 / scale;
 
-    return CameraPreview(_controller!);
+    return Transform.scale(scale: scale, child: Center(child: CameraPreview(_controller!)));
   }
 
   Future _startLiveFeed() async {
     final camera = cameras[_cameraIndex];
     _controller = CameraController(
       camera,
-      ResolutionPreset.low,
+      ResolutionPreset.medium,
       enableAudio: false,
     );
     _controller?.initialize().then((_) {
@@ -154,7 +153,6 @@ class _CameraViewState extends State<CameraView> {
   //   await _startLiveFeed();
   //   setState(() => _changingCameraLens = false);
   // }
-
 
   Future _processCameraImage(CameraImage image) async {
     final WriteBuffer allBytes = WriteBuffer();

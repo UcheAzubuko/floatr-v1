@@ -4,6 +4,9 @@ import 'package:floatr/app/features/profile/data/model/params/residential_addres
 import 'package:floatr/app/features/profile/data/model/params/user_profile_params.dart';
 import 'package:floatr/app/features/profile/data/repositories/profile_repository.dart';
 import 'package:floatr/core/providers/base_provider.dart';
+import 'package:flutter/material.dart';
+
+import '../../../widgets/app_snackbar.dart';
 
 class UserProfileProvider extends BaseProvider {
   final ProfileRepository _profileRepository;
@@ -82,15 +85,16 @@ class UserProfileProvider extends BaseProvider {
     });
   }
 
-  Future<void> updateNextOfKin() async {
+  Future<void> updateNextOfKin(BuildContext context) async {
     updateLoadingState(LoadingState.busy);
     var response = await _profileRepository.updateNextOfKin(_nextOfKinParams!);
 
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
+      print(onError.message);
       updateErrorMsgState(onError.message ?? 'Update next of kin failed!');
       // trigger error on ui
-      // AppSnackBar.showErrorSnackBar(context, errorMsg);
+      AppSnackBar.showErrorSnackBar(context, errorMsg);
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
       // _navigationService.navigateTo(RouteName.verifyOTP);

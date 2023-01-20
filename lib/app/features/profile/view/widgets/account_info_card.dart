@@ -28,7 +28,7 @@ class AccountInfoCard extends StatelessWidget {
       child: Container(
        constraints:  BoxConstraints(
       maxHeight: height,
-      minHeight: 200
+      minHeight: 100
     ),
         decoration: BoxDecoration(
             border: Border.all(color: AppColors.lightGrey300, width: 2),

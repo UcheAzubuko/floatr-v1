@@ -10,6 +10,7 @@ import 'package:floatr/app/features/profile/data/model/responses/gender_response
 import 'package:floatr/app/features/profile/data/model/responses/marital_status_response.dart';
 import 'package:floatr/app/features/profile/data/model/responses/state_repsonse.dart'
     as state;
+import 'package:floatr/app/features/profile/data/model/user_helper.dart';
 import 'package:floatr/app/features/profile/providers/user_profile_provider.dart';
 import 'package:floatr/app/features/profile/providers/user_resources_provider.dart';
 import 'package:floatr/app/features/profile/view/widgets/account_info_card.dart';
@@ -19,6 +20,7 @@ import 'package:floatr/app/widgets/custom_appbar.dart';
 import 'package:floatr/app/widgets/general_button.dart';
 import 'package:floatr/app/widgets/text_field.dart';
 import 'package:floatr/core/providers/base_provider.dart';
+import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:form_validator/form_validator.dart';
@@ -65,6 +67,7 @@ class EditResidentialAddressView extends StatefulWidget {
 
 class _EditResidentialAddressViewState
     extends State<EditResidentialAddressView> {
+  final NavigationService _navigationService = di<NavigationService>();
   @override
   void initState() {
     final user = context.read<AuthenticationProvider>().user;
@@ -401,6 +404,7 @@ class _EditResidentialAddressViewState
 
   _handleUpdateResidentialAddress(UserProfileProvider provider) async {
     final bool isValid = _formKey.currentState!.validate();
+    final authProvider = context.read<AuthenticationProvider>();
 
     if (!isValid) {
       if (_residentialAddressParams.countryId == null ||
@@ -411,7 +415,17 @@ class _EditResidentialAddressViewState
     } else {
       _formKey.currentState!.save();
       provider.updateResidentialParams(_residentialAddressParams);
-      provider.updateResidentialAddress();
+      await provider.updateResidentialAddress();
+      if (provider.loadingState == LoadingState.loaded) {
+        await authProvider.getUser(); // update user
+        if (!UserHelper(user: authProvider.user!).isEmployerDetailsComplete()) {
+          _navigationService.navigateReplacementTo(RouteName.editProfile,
+              arguments: EditProfileArguments(
+                  editProfileView: EditProfile.employmentDetails));
+        } else {
+          _navigationService.pop();
+        }
+      }
     }
   }
 }
@@ -455,9 +469,10 @@ class _EditEmploymentViewState extends State<EditEmploymentView> {
     super.initState();
   }
 
+  final NavigationService _navigationService = di<NavigationService>();
+
   @override
   Widget build(BuildContext context) {
-    NavigationService navigationService = di<NavigationService>();
     final user = context.read<AuthenticationProvider>().user;
 
     Employment_? selectedEmployment;
@@ -522,11 +537,11 @@ class _EditEmploymentViewState extends State<EditEmploymentView> {
                 ).paddingOnly(bottom: 8),
                 Container(
                   height: 42,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 1.0, horizontal: 20.0),
-                      decoration: BoxDecoration(
-                          color: AppColors.grey.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(10)),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 1.0, horizontal: 20.0),
+                  decoration: BoxDecoration(
+                      color: AppColors.grey.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(10)),
                   child: Align(
                     child: DropdownButtonFormField<Employment_>(
                       decoration: InputDecoration.collapsed(
@@ -537,30 +552,33 @@ class _EditEmploymentViewState extends State<EditEmploymentView> {
                               fontWeight: FontWeight.w500)),
                       // value: ,
                       focusColor: AppColors.black,
-                  
+
                       borderRadius: BorderRadius.circular(12),
                       icon: Icon(
                         Icons.keyboard_arrow_down_rounded,
                         color: AppColors.grey.withOpacity(0.3),
                       ),
                       isExpanded: true,
-                      items: EmploymentType.fromMap(EmploymentType.employmentBody).employmentTypes
-                          .map(
-                            (Employment_ employment_) => DropdownMenuItem<Employment_>(
-                              value: employment_,
-                              child: AppText(
-                                text: employment_.type,
-                                fontWeight: FontWeight.w500,
-                                size: 12,
-                              ),
-                            ),
-                          )
-                          .toList(),
+                      items:
+                          EmploymentType.fromMap(EmploymentType.employmentBody)
+                              .employmentTypes
+                              .map(
+                                (Employment_ employment_) =>
+                                    DropdownMenuItem<Employment_>(
+                                  value: employment_,
+                                  child: AppText(
+                                    text: employment_.type,
+                                    fontWeight: FontWeight.w500,
+                                    size: 12,
+                                  ),
+                                ),
+                              )
+                              .toList(),
                       onChanged: (Employment_? employment_) async {
-                        setState(() {
-                          selectedEmployment = employment_;
-                          _employerInformationParams.type = employment_!.id;
-                        });
+                        // setState(() {
+                        selectedEmployment = employment_;
+                        _employerInformationParams.type = employment_!.id;
+                        // });
                       },
                       value: selectedEmployment,
                       onSaved: (Employment_? employment_) {
@@ -569,7 +587,8 @@ class _EditEmploymentViewState extends State<EditEmploymentView> {
                         if (employment_ != null) {
                           _employerInformationParams.type = employment_.id;
                         } else {
-                          _employerInformationParams.type = _employerInformationParams.type;
+                          _employerInformationParams.type =
+                              _employerInformationParams.type;
                         }
                       },
                     ),
@@ -640,13 +659,25 @@ class _EditEmploymentViewState extends State<EditEmploymentView> {
     );
   }
 
-  _handleEmployerInfoUpdate(UserProfileProvider provider) {
+  _handleEmployerInfoUpdate(UserProfileProvider provider) async {
     final bool isValid = _formKey.currentState!.validate();
+    final authProvider = context.read<AuthenticationProvider>();
+    final user = authProvider.user;
 
     if (isValid) {
       _formKey.currentState!.save();
       provider.updateEmployerInformationParams(_employerInformationParams);
-      provider.updateEmploymentInformation();
+      await provider.updateEmploymentInformation();
+      if (provider.loadingState == LoadingState.loaded) {
+        await authProvider.getUser(); // update user
+        if (!UserHelper(user: user!).isNextOfKinComplete()) {
+          _navigationService.navigateReplacementTo(RouteName.editProfile,
+              arguments:
+                  EditProfileArguments(editProfileView: EditProfile.nextOfKin));
+        } else {
+          _navigationService.pop();
+        }
+      }
     }
   }
 }
@@ -682,14 +713,15 @@ class _EditNextOfKinViewState extends State<EditNextOfKinView> {
   @override
   void initState() {
     final user = context.read<AuthenticationProvider>().user;
+    final userResources = context.read<UserResourcesProvider>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<UserResourcesProvider>().getCountries();
+      userResources.getCountries();
 
       // only perform this call if user
       // already has a country selected, so that states are available to be selected in the dropdown
       if (user!.country != null) {
-        context.read<UserResourcesProvider>().getStates(user.country!.id!);
+        userResources.getStates(user.country!.id!);
       }
     });
 
@@ -721,10 +753,10 @@ class _EditNextOfKinViewState extends State<EditNextOfKinView> {
     super.initState();
   }
 
+  final NavigationService _navigationService = di<NavigationService>();
+
   @override
   Widget build(BuildContext context) {
-    NavigationService navigationService = di<NavigationService>();
-
     Country? selectedCountry;
     state.State? selectedState;
 
@@ -777,7 +809,7 @@ class _EditNextOfKinViewState extends State<EditNextOfKinView> {
                     AppTextField(
                         controller: fullnameController
                           ..text =
-                              '${authProvider.user!.nextOfKin!.firstName ?? ''}${authProvider.user!.nextOfKin!.lastName ?? ''}',
+                              '${authProvider.user!.nextOfKin!.firstName ?? ''} ${authProvider.user!.nextOfKin!.lastName ?? ''}',
                         validator: _fullnameValidator,
                         hintText: 'Okeke Ali',
                         onSaved: (String? fullname) {
@@ -900,10 +932,10 @@ class _EditNextOfKinViewState extends State<EditNextOfKinView> {
                                     )
                                     .toList(),
                                 onChanged: (Country? country) async {
-                                  setState(() {
-                                    selectedCountry = country;
-                                    _nextOfKinParams.countryId = country!.id;
-                                  });
+                                  // setState(() {
+                                  selectedCountry = country;
+                                  _nextOfKinParams.countryId = country!.id;
+                                  // });
 
                                   await context
                                       .read<UserResourcesProvider>()
@@ -985,10 +1017,10 @@ class _EditNextOfKinViewState extends State<EditNextOfKinView> {
                                     )
                                     .toList(),
                                 onChanged: (state.State? state) {
-                                  setState(() {
-                                    selectedState = state;
-                                    _nextOfKinParams.stateId = state!.id;
-                                  });
+                                  // setState(() {
+                                  selectedState = state;
+                                  _nextOfKinParams.stateId = state!.id;
+                                  // });
 
                                   // context
                                   //     .read<UserResourcesProvider>()
@@ -1072,8 +1104,9 @@ class _EditNextOfKinViewState extends State<EditNextOfKinView> {
     );
   }
 
-  _handleUpdateNextOfKin(UserProfileProvider provider) async {
+  _handleUpdateNextOfKin(UserProfileProvider provider,) async {
     final bool isValid = _formKey.currentState!.validate();
+    final authProvider = context.read<AuthenticationProvider>();
 
     if (!isValid) {
       if (_nextOfKinParams.countryId == null ||
@@ -1084,7 +1117,11 @@ class _EditNextOfKinViewState extends State<EditNextOfKinView> {
     } else {
       _formKey.currentState!.save();
       provider.updateNextOfKinParams(_nextOfKinParams);
-      provider.updateNextOfKin();
+      await provider.updateNextOfKin(context);
+      if (provider.loadingState == LoadingState.loaded) {
+        await authProvider.getUser();
+        _navigationService.pop();
+      }
     }
   }
 }
@@ -1099,6 +1136,7 @@ class EditProfileView extends StatefulWidget {
 }
 
 class _EditProfileViewState extends State<EditProfileView> {
+  final NavigationService _navigationService = di<NavigationService>();
   @override
   void initState() {
     final user = context.read<AuthenticationProvider>().user;
@@ -1123,7 +1161,6 @@ class _EditProfileViewState extends State<EditProfileView> {
   @override
   Widget build(BuildContext context) {
     final user = context.read<AuthenticationProvider>().user;
-    NavigationService navigationService = di<NavigationService>();
 
     DateFormat dateFormat = DateFormat('yyyy-MMM-dd');
 
@@ -1295,7 +1332,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                         selector: (_, provider) =>
                             provider.genderResponse ??
                             GenderResponse(genders: [
-                              Gender(id: '0', name: 'Loading...'),
+                              const Gender(id: '0', name: 'Loading...'),
                             ]),
                         builder: (context, _, __) {
                           return DropdownButtonFormField<Gender>(
@@ -1327,10 +1364,10 @@ class _EditProfileViewState extends State<EditProfileView> {
                                 )
                                 .toList(),
                             onChanged: (Gender? gender) {
-                              setState(() {
-                                selectedGender = gender;
-                                _userProfileParams.genderId = gender!.id;
-                              });
+                              // setState(() {
+                              selectedGender = gender;
+                              _userProfileParams.genderId = gender!.id;
+                              // });
 
                               // context
                               //     .read<UserResourcesProvider>()
@@ -1397,10 +1434,10 @@ class _EditProfileViewState extends State<EditProfileView> {
                                 )
                                 .toList(),
                             onChanged: (state.State? state) {
-                              setState(() {
-                                selectedState = state;
-                                _userProfileParams.stateOfOriginId = state!.id;
-                              });
+                              // setState(() {
+                              selectedState = state;
+                              _userProfileParams.stateOfOriginId = state!.id;
+                              // });
 
                               // context
                               //     .read<UserResourcesProvider>()
@@ -1442,7 +1479,7 @@ class _EditProfileViewState extends State<EditProfileView> {
   }
 
   _handleUserProfileInfo(UserProfileProvider provider) async {
-    // final bool isValid = _formKey.currentState!.validate();
+    final authProvider = context.read<AuthenticationProvider>();
 
     if (_userProfileParams.maritalStatusId == null) {
       AppSnackBar.showErrorSnackBar(
@@ -1454,7 +1491,11 @@ class _EditProfileViewState extends State<EditProfileView> {
     } else {
       _formKey.currentState!.save();
       provider.updateUserProfileParams(_userProfileParams);
-      provider.updateUserProfiile();
+      await provider.updateUserProfiile();
+      if (provider.loadingState == LoadingState.loaded) {
+        await authProvider.getUser(); // update user
+        _navigationService.pop();
+      }
     }
   }
 }

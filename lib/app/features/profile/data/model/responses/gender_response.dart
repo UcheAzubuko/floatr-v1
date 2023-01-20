@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:equatable/equatable.dart';
+
 class GenderResponse {
   List<Gender> genders;
 
@@ -17,8 +19,8 @@ class GenderResponse {
   String toString() => genders.toString();
 }
 
-class Gender {
-  Gender({
+class Gender extends Equatable{
+  const Gender({
     required this.id,
     required this.name,
   });
@@ -42,4 +44,7 @@ class Gender {
 
   @override
   String toString() => toJson().toString();
+  
+  @override
+  List<Object?> get props => [id, name];
 }

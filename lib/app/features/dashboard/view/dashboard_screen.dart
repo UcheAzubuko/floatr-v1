@@ -144,8 +144,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 // card with progress or card with offers
                 // const DebtCard(),
 
-                (provider.tempCompletionStatus == false ||
-                        provider.tempCompletionStatus == null)
+                !UserHelper(user: provider.user!).isFullyOnboarded()
                     ? const DataCompletionWidget().paddingOnly(bottom: 30)
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -383,8 +382,10 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                             height: 48,
                             width: context.widthPx,
                             borderRadius: 12,
-                            onPressed: () =>
-                                provider.updateTempCompletion(true),
+                            backgroundColor: userHelper.isFullyOnboarded() ? AppColors.primaryColor : AppColors.primaryColorLight.withOpacity(0.4),
+                            borderColor: userHelper.isFullyOnboarded() ? AppColors.primaryColor : AppColors.primaryColorLight.withOpacity(0.1),
+                            onPressed: () => userHelper.isFullyOnboarded() ?
+                                provider.updateTempCompletion(true) : null,
                             child: const AppText(
                               text: 'LET\'S GO!',
                               color: Colors.white,
