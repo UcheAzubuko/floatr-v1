@@ -7,6 +7,7 @@ import 'package:floatr/app/features/profile/data/model/user_helper.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/custom_keyboard.dart';
 import 'package:floatr/app/widgets/general_button.dart';
+import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:floatr/core/utils/app_icons.dart';
@@ -15,6 +16,7 @@ import 'package:floatr/core/utils/images.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 
@@ -55,7 +57,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   void initState() {
-    // context.read<AuthenticationProvider>().updateTempCompletion(false);
+    // final user = context.read<AuthenticationProvider>().user;
+    // WidgetsBinding.instance.addPostFrameCallback(
+    //   (_) => user!.hasSetPin! ? null : _proceed(TransactionPinState.initial),
+    // );
     super.initState();
   }
 
@@ -230,8 +235,6 @@ class DataCompletionWidget extends StatefulWidget {
 class _DataCompletionWidgetState extends State<DataCompletionWidget> {
   @override
   void initState() {
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => _proceed(TransactionPinState.initial));
     super.initState();
   }
 
@@ -396,8 +399,8 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                             borderColor: userHelper.isFullyOnboarded()
                                 ? AppColors.primaryColor
                                 : AppColors.primaryColorLight.withOpacity(0.1),
-                            onPressed: () =>
-                                _proceed(TransactionPinState.initial),
+                            onPressed: () {},
+                            // _proceed(TransactionPinState.initial),
                             // userHelper.isFullyOnboarded()
                             //     ? provider.updateTempCompletion(true)
                             //     : null,
@@ -416,120 +419,6 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
           ),
         );
       },
-    );
-  }
-
-  _proceed(TransactionPinState transPinState) {
-    final bool isInitial = transPinState == TransactionPinState.initial;
-    AppDialog.showAppDialog(
-        context,
-        ChangeNotifierProvider(
-          create: (context) => KeyboardProvider()
-            ..updateControllerActiveStatus(true)
-            ..updateRequiredLength(6),
-          child: Consumer<KeyboardProvider>(
-            builder: (context, keyboard, _) {
-              return Container(
-                // height: 741,
-                width: context.widthPx,
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(24)),
-                child: Column(
-                  children: [
-                    Container(
-                      width: 38,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: AppColors.grey.withOpacity(0.3),
-                      ),
-                    ),
-
-                    const VerticalSpace(size: 25),
-
-                    SizedBox(
-                      height: 75,
-                      child: Column(
-                        children: [
-                          Text(
-                            isInitial
-                                ? 'Create Your Transactional Pin'
-                                : 'Confirm Pin',
-                            style: TextStyles.normalTextDarkF800,
-                          ),
-                          const VerticalSpace(
-                            size: 20,
-                          ),
-                          SizedBox(
-                            width: 152,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                pinCircle(0, keyboard.inputs),
-                                pinCircle(1, keyboard.inputs),
-                                pinCircle(2, keyboard.inputs),
-                                pinCircle(3, keyboard.inputs),
-                                pinCircle(4, keyboard.inputs),
-                                pinCircle(5, keyboard.inputs),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    const Spacer(),
-
-                    const CustomKeyboard(),
-
-                    const Spacer(),
-
-                    // btn
-                    GeneralButton(
-                      height: 48,
-                      width: 335,
-                      borderColor: keyboard.isFilled
-                          ? AppColors.primaryColor
-                          : AppColors.primaryColorLight.withOpacity(0.1),
-                      backgroundColor: keyboard.isFilled
-                          ? AppColors.primaryColor
-                          : AppColors.primaryColorLight.withOpacity(0.1),
-                      borderRadius: 12,
-                      onPressed: 
-                        isInitial
-                            // switch to to confirm
-                            ? () {
-                                di<NavigationService>().pop(); // pop dialog
-                                _proceed(TransactionPinState.confirm); // show comfirm pin dialog
-                              }
-                            // confirm pin
-                            : () async {
-                              
-                            },
-                      
-                      child: const AppText(
-                        text: 'ENTER',
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        size: 14,
-                      ),
-                    ).paddingOnly(left: 14, right: 14, bottom: 43),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-        height: 541,
-        width: 335);
-  }
-
-  CircleAvatar pinCircle(int mappedNum, nums) {
-    // var nums = context.read<KeyboardProvider>().inputs;
-    return CircleAvatar(
-      radius: 5,
-      backgroundColor: nums.asMap().containsKey(mappedNum)
-          ? AppColors.primaryColor
-          : AppColors.grey.withOpacity(0.5),
     );
   }
 }
@@ -707,10 +596,177 @@ class NoActivityView extends StatelessWidget {
   }
 }
 
-class HighlightsCard extends StatelessWidget {
+class HighlightsCard extends StatefulWidget {
   const HighlightsCard({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<HighlightsCard> createState() => _HighlightsCardState();
+}
+
+class _HighlightsCardState extends State<HighlightsCard> {
+  @override
+  void initState() {
+    final user = context.read<AuthenticationProvider>().user;
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => user!.hasSetPin! ? null : _proceed(TransactionPinState.initial),
+    );
+    super.initState();
+  }
+
+  _proceed(TransactionPinState transPinState, {String? setInitialPin}) {
+    final bool isInitial = transPinState == TransactionPinState.initial;
+    String? tempPin = setInitialPin;
+    AppDialog.showAppDialog(
+        context,
+        ChangeNotifierProvider(
+          create: (context) => KeyboardProvider()
+            ..updateControllerActiveStatus(true)
+            ..updateRequiredLength(6),
+          child: Consumer<KeyboardProvider>(
+            builder: (context, keyboard, _) {
+              final authProvider = this.context.read<AuthenticationProvider>();
+              return Container(
+                // height: 741,
+                width: context.widthPx,
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(24)),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 38,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: AppColors.grey.withOpacity(0.3),
+                      ),
+                    ),
+
+                    const VerticalSpace(size: 25),
+
+                    SizedBox(
+                      height: 75,
+                      child: Column(
+                        children: [
+                          Text(
+                            isInitial
+                                ? 'Create Your Transactional Pin'
+                                : 'Confirm Pin',
+                            style: TextStyles.normalTextDarkF800,
+                          ),
+                          const VerticalSpace(
+                            size: 20,
+                          ),
+                          SizedBox(
+                            width: 152,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                pinCircle(0, keyboard.inputs),
+                                pinCircle(1, keyboard.inputs),
+                                pinCircle(2, keyboard.inputs),
+                                pinCircle(3, keyboard.inputs),
+                                pinCircle(4, keyboard.inputs),
+                                pinCircle(5, keyboard.inputs),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+
+                    const CustomKeyboard(),
+
+                    const Spacer(),
+
+                    // btn
+                    GeneralButton(
+                      height: 48,
+                      width: 335,
+                      borderColor: keyboard.isFilled
+                          ? AppColors.primaryColor
+                          : AppColors.primaryColorLight.withOpacity(0.1),
+                      backgroundColor: keyboard.isFilled
+                          ? AppColors.primaryColor
+                          : AppColors.primaryColorLight.withOpacity(0.1),
+                      borderRadius: 12,
+                      isLoading: authProvider.loadingState == LoadingState.busy,
+                      onPressed: isInitial
+                          // switch to to confirm
+                          ? () {
+                              if (keyboard.isFilled) {
+                                // list of keyboard inputs to string
+                                final pin = keyboard.inputs
+                                    .map((n) => n.toString())
+                                    .join();
+
+                                // check that Pin is not null
+                                if (tempPin != null) {
+                                  tempPin = pin;
+                                }
+
+                                di<NavigationService>().pop(); // pop dialog
+                                _proceed(TransactionPinState.confirm,
+                                    setInitialPin:
+                                        pin); // show comfirm pin dialog
+                              }
+                            }
+                          // confirm pin
+                          : () async {
+                              if (keyboard.isFilled) {
+                                final pin = keyboard.inputs
+                                    .map((n) => n.toString())
+                                    .join();
+
+                                if (tempPin != null) {
+                                  if (tempPin != pin) {
+                                    Fluttertoast.showToast(
+                                        msg: 'Both Pins do not match!',
+                                        backgroundColor: Colors.red);
+                                  } else {
+                                    authProvider.updateTransactionPin(pin);
+                                    await authProvider
+                                        .createPin()
+                                        .then((value) {
+                                      di<NavigationService>()
+                                          .pop(); // pop dialog
+                                      // show success confirmation
+                                      Fluttertoast.showToast(
+                                          msg: 'Transaction pin created',
+                                          backgroundColor: Colors.blue);
+                                    });
+                                  }
+                                }
+                              }
+                            },
+                      child: const AppText(
+                        text: 'ENTER',
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        size: 14,
+                      ),
+                    ).paddingOnly(left: 14, right: 14, bottom: 43),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+        height: 541,
+        width: 335);
+  }
+
+  CircleAvatar pinCircle(int mappedNum, nums) {
+    // var nums = context.read<KeyboardProvider>().inputs;
+    return CircleAvatar(
+      radius: 5,
+      backgroundColor: nums.asMap().containsKey(mappedNum)
+          ? AppColors.primaryColor
+          : AppColors.grey.withOpacity(0.5),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

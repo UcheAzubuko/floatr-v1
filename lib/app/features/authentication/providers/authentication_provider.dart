@@ -50,6 +50,10 @@ class AuthenticationProvider extends BaseProvider {
 
   bool? get tempCompletionStatus => _tempCompletionStatus;
 
+  String? _transactionPin;
+
+  String? get transactionPin => _transactionPin;
+
   updateLoginParams(LoginParams params) {
     _loginParams = params;
     notifyListeners();
@@ -82,6 +86,11 @@ class AuthenticationProvider extends BaseProvider {
 
   updateTempCompletion(bool tempCompletionStatus) {
     _tempCompletionStatus = tempCompletionStatus;
+    notifyListeners();
+  }
+
+  updateTransactionPin(String transactionPin) {
+    _transactionPin = transactionPin;
     notifyListeners();
   }
 
@@ -183,6 +192,20 @@ class AuthenticationProvider extends BaseProvider {
     });
   }
 
+  Future<void> createPin() async {
+    updateLoadingState(LoadingState.busy);
+    var response = await authenticationRepository.createPin(_transactionPin!);
+    response.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? 'Pin creation failed!');
+      // AppSnackBar.showErrorSnackBar(context, errorMsg);
+      // trigger error on ui
+    }, (onSuccess) {
+      getUser();
+      updateLoadingState(LoadingState.loaded);
+    });
+  }
+
   Future<void> uploadimage(BuildContext context, ImageType imageType,
       [DocumentType documentType = DocumentType.driverLicense]) async {
     updateLoadingState(LoadingState.busy);
@@ -197,7 +220,7 @@ class AuthenticationProvider extends BaseProvider {
       getUser();
       updateLoadingState(LoadingState.loaded);
       Fluttertoast.showToast(
-        backgroundColor: Colors.blue,
+          backgroundColor: Colors.blue,
           msg: imageType == ImageType.selfie
               ? 'Selfie upload successful'
               : 'Document upload successful');

@@ -177,6 +177,33 @@ class AuthenticationRepository {
     }
   }
 
+  Future<Either<Failure, String>> createPin(String transactionPin) async {
+    final url = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.user,
+    );
+
+    final createPinBody = {"pin": transactionPin};
+
+    try {
+      String? accessToken = prefs.getString(StorageKeys.accessTokenKey);
+      final response = await apiService.post(
+        url: url,
+        body: createPinBody,
+        headers: _authHeaders
+          ..addAll({
+            "Authorization": "Bearer ${accessToken!}"
+          }), // add access token authorization to header
+      );
+      final body = jsonDecode(response.body);
+      accessToken = body["access_token"];
+      await prefs.setString(StorageKeys.accessTokenKey, accessToken!);
+      return Right(body["access_token"]);
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    }
+  }
+
   Future<Either<Failure, bool>> uploadPicture(
       File imageFile, ImageType imageType,
       [DocumentType documentType = DocumentType.driverLicense]) async {
@@ -193,9 +220,8 @@ class AuthenticationRepository {
     final reqBody = {
       "ext": "jpg",
       "name": basename(imageFile.path),
-      "purpose": isSelfie
-          ? "user/profile/pictures"
-          : chooseImagePath(documentType),
+      "purpose":
+          isSelfie ? "user/profile/pictures" : chooseImagePath(documentType),
       "size": await imageFile.length(),
       "type": "image_jpg",
     };
@@ -262,7 +288,9 @@ class AuthenticationRepository {
             };
             // save selfie
             final saveFileResponse = await apiService.post(
-                url: isSelfie ? saveSelfieUrl : saveDocumentUrl, body: saveFileBody, headers: _authHeaders);
+                url: isSelfie ? saveSelfieUrl : saveDocumentUrl,
+                body: saveFileBody,
+                headers: _authHeaders);
             print(saveFileResponse.body);
           } on ServerException catch (_) {
             return Left(
