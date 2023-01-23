@@ -63,7 +63,8 @@ class Router {
       case RouteName.profile:
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
       case RouteName.snapDocument:
-        return MaterialPageRoute(builder: (_) => const SnapDocumentScreen());
+      final args = settings.arguments as SnapDocumentArguments;
+        return MaterialPageRoute(builder: (_) => SnapDocumentScreen(documentType: args.documentType,));
       case RouteName.navbar:
         return MaterialPageRoute(builder: (_) => const BottomNavigation());
       case RouteName.cards:

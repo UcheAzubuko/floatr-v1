@@ -23,10 +23,11 @@ import '../../../widgets/custom_appbar.dart';
 
 class DisplayPictureScreen extends StatefulWidget {
   const DisplayPictureScreen(
-      {super.key, required this.image, required this.imageType});
+      {super.key, required this.image, required this.imageType, this.documentType});
 
   final XFile image;
   final ImageType imageType;
+  final DocumentType? documentType;
 
   @override
   State<DisplayPictureScreen> createState() => _DisplayPictureScreenState();
@@ -155,7 +156,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
   }
 
   _handleImageUpload(
-      AuthenticationProvider authProvider, File imageFile) async {
+      AuthenticationProvider authProvider, File imageFile, [DocumentType documentType = DocumentType.driverLicense]) async {
     // authProvider.updateImage(imageFile);
     context.read<AuthenticationProvider>()
       ..updateImage(imageFile)
@@ -163,7 +164,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
           context,
           widget.imageType == ImageType.selfie
               ? ImageType.selfie
-              : ImageType.document);
+              : ImageType.document, documentType);
     // await authProvider.uploadimage();
   }
 }
@@ -171,5 +172,9 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
 class DisplayImageArguments {
   final XFile file;
   final ImageType imageType;
-  DisplayImageArguments({required this.file, required this.imageType});
+  final DocumentType? documentType;
+  DisplayImageArguments(
+      {required this.file,
+      required this.imageType,
+      this.documentType});
 }

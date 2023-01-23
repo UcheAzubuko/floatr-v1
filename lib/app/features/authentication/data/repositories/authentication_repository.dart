@@ -183,6 +183,8 @@ class AuthenticationRepository {
     // final convertedImageFile =
     //     await PictureUploadService.convertToWebp(imageFile);
 
+    final bool isSelfie = imageType == ImageType.selfie;
+
     final filesUploadUrl = Uri.https(
       APIConfigs.baseUrl,
       APIConfigs.filesUploadPath,
@@ -191,7 +193,7 @@ class AuthenticationRepository {
     final reqBody = {
       "ext": "jpg",
       "name": basename(imageFile.path),
-      "purpose": imageType == ImageType.selfie
+      "purpose": isSelfie
           ? "user/profile/pictures"
           : chooseImagePath(documentType),
       "size": await imageFile.length(),
@@ -225,6 +227,8 @@ class AuthenticationRepository {
             body: imageData,
             headers: imageUploadHeader);
 
+        print(body["url"]);
+
         final putBody = {
           "id": body["id"],
           "completedParts": [
@@ -246,13 +250,19 @@ class AuthenticationRepository {
             APIConfigs.baseUrl,
             APIConfigs.saveSelfiePath,
           );
+
+          final saveDocumentUrl = Uri.https(
+            APIConfigs.baseUrl,
+            APIConfigs.saveDocumentPath,
+          );
+
           try {
             final saveFileBody = {
               "fileId": body["id"],
             };
             // save selfie
             final saveFileResponse = await apiService.post(
-                url: saveSelfieUrl, body: saveFileBody, headers: _authHeaders);
+                url: isSelfie ? saveSelfieUrl : saveDocumentUrl, body: saveFileBody, headers: _authHeaders);
             print(saveFileResponse.body);
           } on ServerException catch (_) {
             return Left(
@@ -279,11 +289,11 @@ String chooseImagePath(DocumentType documentType) {
     case DocumentType.driverLicense:
       return "user/government/issued/driver-license/ids";
     case DocumentType.internationalPassport:
-      return "user/government/issued/driver-license/ids";
+      return "user/government/issued/international-passport/ids";
     case DocumentType.nationalIdentityCard:
-      return "user/government/issued/driver-license/ids";
+      return "user/government/issued/national/ids";
     case DocumentType.votersCard:
-      return "user/government/issued/driver-license/ids";
+      return "user/government/issued/voters-card/ids";
     default:
       return "user/government/issued/driver-license/ids";
   }

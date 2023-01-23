@@ -22,7 +22,7 @@ class _CustomKeyboardState extends State<CustomKeyboard> {
   // clear keyboardProvider state
   @override
   void deactivate() {
-    context.read<KeyboardProvider>().clearKeys();
+    context.read<KeyboardProvider>().inputs.clear();
     super.deactivate();
   }
 
@@ -127,9 +127,13 @@ class _CustomKeyboardState extends State<CustomKeyboard> {
               // clear
               KeyboardKey(
                 onTap: () {
-                  keyboardProvider
-                    ..clearController()
-                    ..clearKeys();
+                  if (keyboardProvider._isControllerDeactivated) {
+                    keyboardProvider.clearKeys();
+                  } else {
+                    keyboardProvider
+                      ..clearController()
+                      ..clearKeys();
+                  }
                 },
                 keyValue: '*',
                 customizeKey: true,
@@ -183,15 +187,43 @@ class KeyboardKey extends StatelessWidget {
 }
 
 class KeyboardProvider with ChangeNotifier {
+  // KeyboardProvider(
+  //     {required int requiredLength, bool isControllerDeactivated = false})
+  //     : _requiredLength = requiredLength,
+  //       _isControllerDeactivated = isControllerDeactivated;
+
   final List<String> _inputs = [];
+  int _requiredLength = 4;
+  bool _isControllerDeactivated = false;
 
   OtpFieldController _otpFieldController = OtpFieldController();
   OtpFieldController get controller => _otpFieldController;
+  bool _isFilled = false;
+  bool get isFilled => _isFilled;
 
-  // UnmodifiableListView<String> get inputs => UnmodifiableListView(_inputs);
+  List<String> get inputs {
+    print(_inputs.length);
+    return _inputs;
+  }
+
+  updateRequiredLength(int requiredLength) {
+    _requiredLength = requiredLength;
+    notifyListeners();
+  }
+
+  /// Pass a bool to activate/deactivate controller
+  updateControllerActiveStatus(bool deactivateController) {
+    _isControllerDeactivated = deactivateController;
+    notifyListeners();
+  }
 
   updateController(OtpFieldController otpFieldController) {
     _otpFieldController = otpFieldController;
+    notifyListeners();
+  }
+
+  updateFilled(bool isFilled) {
+    _isFilled = isFilled;
     notifyListeners();
   }
 
@@ -202,6 +234,8 @@ class KeyboardProvider with ChangeNotifier {
   // }
   void clearKeys() {
     _inputs.clear();
+    updateFilled(false);
+    notifyListeners();
     // _otpFieldController.clear();
   }
 
@@ -211,14 +245,23 @@ class KeyboardProvider with ChangeNotifier {
 
   /// construct keys
   void compose(String keyInput) {
-    _inputs.add(keyInput);
+    if (_inputs.length < _requiredLength) {
+      _inputs.add(keyInput);
+      _isControllerDeactivated
+          ? log('Controller is Deactivated: This is not warning, please ignore')
+          : updateController(_otpFieldController
+            ..setValue(keyInput, _inputs.length - 1)
+            ..setFocus(_inputs.length == _requiredLength
+                ? _requiredLength - 1
+                : _inputs.length));
 
-    updateController(_otpFieldController
-      ..setValue(keyInput, _inputs.length - 1)
-      ..setFocus(_inputs.length == 4 ? 3 : _inputs.length));
-
-    _inputs.length < 4
-        ? log('Fields not yet filled')
-        : _otpFieldController.set(_inputs);
+      _inputs.length < _requiredLength
+          ? log('Fields not yet filled')
+          : _isControllerDeactivated
+              ? updateFilled(_inputs.length == _requiredLength)
+              : _otpFieldController.set(_inputs);
+      print(_inputs);
+      notifyListeners();
+    }
   }
 }

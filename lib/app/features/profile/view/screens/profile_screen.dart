@@ -4,6 +4,7 @@ import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/data/model/response/user_repsonse.dart';
 import 'package:floatr/app/features/profile/data/model/user_helper.dart';
 import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
+import 'package:floatr/app/features/profile/view/screens/snap_document_screen.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/dialogs.dart';
 import 'package:floatr/app/widgets/general_button.dart';
@@ -11,6 +12,7 @@ import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/app_icons.dart';
 import 'package:floatr/core/utils/app_style.dart';
+import 'package:floatr/core/utils/enums.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -194,7 +196,7 @@ class ProfileScreen extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                '${user.uniqueId!.substring(0, 10)}...',
+                                '${user.uniqueId!.length > 10 ? user.uniqueId!.substring(0, 10) : user.uniqueId}...',
                                 style: TextStyles.smallTextDark,
                               ).paddingOnly(right: 5),
                               SvgPicture.asset('assets/icons/outline/copy.svg'),
@@ -216,7 +218,8 @@ class ProfileScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       CustomProfileRow(
-                        firstItem: _checkType(UserHelper(user: user).isPersonalDetailsComplete()),
+                        firstItem: _checkType(
+                            UserHelper(user: user).isPersonalDetailsComplete()),
                         secondItem: Text(
                           'Personal Details',
                           style: TextStyles.smallTextDark14Px,
@@ -235,7 +238,8 @@ class ProfileScreen extends StatelessWidget {
 
                       // gov-id
                       CustomProfileRow(
-                        firstItem: _checkType(UserHelper(user: user).isIdDataComplete()),
+                        firstItem: _checkType(
+                            UserHelper(user: user).isIdDataComplete()),
                         secondItem: Text(
                           'Government Issued ID',
                           style: TextStyles.smallTextDark14Px,
@@ -253,7 +257,8 @@ class ProfileScreen extends StatelessWidget {
 
                       // address
                       CustomProfileRow(
-                        firstItem: _checkType(UserHelper(user: user).isAddressComplete()),
+                        firstItem: _checkType(
+                            UserHelper(user: user).isAddressComplete()),
                         secondItem: Text(
                           'Residential Address',
                           style: TextStyles.smallTextDark14Px,
@@ -273,7 +278,8 @@ class ProfileScreen extends StatelessWidget {
 
                       // employment details
                       CustomProfileRow(
-                        firstItem: _checkType(UserHelper(user: user).isEmployerDetailsComplete()),
+                        firstItem: _checkType(
+                            UserHelper(user: user).isEmployerDetailsComplete()),
                         secondItem: Text(
                           'Employment Details',
                           style: TextStyles.smallTextDark14Px,
@@ -293,7 +299,8 @@ class ProfileScreen extends StatelessWidget {
 
                       // next of kin
                       CustomProfileRow(
-                        firstItem: _checkType(UserHelper(user: user).isNextOfKinComplete()),
+                        firstItem: _checkType(
+                            UserHelper(user: user).isNextOfKinComplete()),
                         secondItem: Text(
                           'Next of Kin',
                           style: TextStyles.smallTextDark14Px,
@@ -576,8 +583,10 @@ class GovIDModalView extends StatelessWidget {
                   leadingIconPath: SvgAppIcons.icLicenseDriver,
                   itemTitle: 'Driver\'s License',
                   endIconPath: SvgAppIcons.icArrowRight,
-                  onTap: () =>
-                      navigationService.navigateTo(RouteName.snapDocument),
+                  onTap: () => navigationService.navigateTo(
+                      RouteName.snapDocument,
+                      arguments: SnapDocumentArguments(
+                          documentType: DocumentType.driverLicense)),
                 ),
 
                 const VerticalSpace(size: 16),
@@ -587,8 +596,10 @@ class GovIDModalView extends StatelessWidget {
                   leadingIconPath: SvgAppIcons.icLicenseDriver,
                   itemTitle: 'National Identity Card',
                   endIconPath: SvgAppIcons.icArrowRight,
-                  onTap: () =>
-                      navigationService.navigateTo(RouteName.snapDocument),
+                  onTap: () => navigationService.navigateTo(
+                      RouteName.snapDocument,
+                      arguments: SnapDocumentArguments(
+                          documentType: DocumentType.nationalIdentityCard)),
                 ),
 
                 const VerticalSpace(size: 16),
@@ -598,8 +609,11 @@ class GovIDModalView extends StatelessWidget {
                   leadingIconPath: SvgAppIcons.icLicenseDriver,
                   itemTitle: 'International Passport',
                   endIconPath: SvgAppIcons.icArrowRight,
-                  onTap: () =>
-                      navigationService.navigateTo(RouteName.snapDocument),
+                  onTap: () => navigationService.navigateTo(
+                    RouteName.snapDocument,
+                    arguments: SnapDocumentArguments(
+                        documentType: DocumentType.driverLicense),
+                  ),
                 ),
 
                 const VerticalSpace(size: 16),
@@ -609,8 +623,10 @@ class GovIDModalView extends StatelessWidget {
                   leadingIconPath: SvgAppIcons.icLicenseDriver,
                   itemTitle: 'Voter’s Card',
                   endIconPath: SvgAppIcons.icArrowRight,
-                  onTap: () =>
-                      navigationService.navigateTo(RouteName.snapDocument),
+                  onTap: () => navigationService.navigateTo(
+                      RouteName.snapDocument,
+                      arguments: SnapDocumentArguments(
+                          documentType: DocumentType.votersCard)),
                 ),
               ],
             ),

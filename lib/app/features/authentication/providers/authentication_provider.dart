@@ -11,6 +11,7 @@ import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/enums.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../../core/route/navigation_service.dart';
 import '../data/model/params/register_params.dart';
@@ -182,20 +183,27 @@ class AuthenticationProvider extends BaseProvider {
     });
   }
 
-  Future<void> uploadimage(BuildContext context, ImageType imageType) async {
+  Future<void> uploadimage(BuildContext context, ImageType imageType,
+      [DocumentType documentType = DocumentType.driverLicense]) async {
     updateLoadingState(LoadingState.busy);
-    var response =
-        await authenticationRepository.uploadPicture(_imagefile!, imageType);
+    var response = await authenticationRepository.uploadPicture(
+        _imagefile!, imageType, documentType);
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'File upload failed!');
       AppSnackBar.showErrorSnackBar(context, errorMsg);
       // trigger error on ui
     }, (onSuccess) {
+      getUser();
       updateLoadingState(LoadingState.loaded);
+      Fluttertoast.showToast(
+        backgroundColor: Colors.blue,
+          msg: imageType == ImageType.selfie
+              ? 'Selfie upload successful'
+              : 'Document upload successful');
       imageType == ImageType.selfie
           ? _navigationService.pushAndRemoveUntil(RouteName.confirmDetails)
-          : _navigationService.pop();
+          : _navigationService.pushAndRemoveUntil(RouteName.navbar);
     });
   }
 }

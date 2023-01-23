@@ -5,6 +5,7 @@ import 'package:floatr/app/features/authentication/providers/authentication_prov
 import 'package:floatr/app/features/loan/view/screens/loan_application_screen.dart';
 import 'package:floatr/app/features/profile/data/model/user_helper.dart';
 import 'package:floatr/app/widgets/app_text.dart';
+import 'package:floatr/app/widgets/custom_keyboard.dart';
 import 'package:floatr/app/widgets/general_button.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/utils/app_colors.dart';
@@ -228,6 +229,13 @@ class DataCompletionWidget extends StatefulWidget {
 
 class _DataCompletionWidgetState extends State<DataCompletionWidget> {
   @override
+  void initState() {
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _proceed(TransactionPinState.initial));
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final NavigationService navigationService = di<NavigationService>();
 
@@ -382,10 +390,17 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                             height: 48,
                             width: context.widthPx,
                             borderRadius: 12,
-                            backgroundColor: userHelper.isFullyOnboarded() ? AppColors.primaryColor : AppColors.primaryColorLight.withOpacity(0.4),
-                            borderColor: userHelper.isFullyOnboarded() ? AppColors.primaryColor : AppColors.primaryColorLight.withOpacity(0.1),
-                            onPressed: () => userHelper.isFullyOnboarded() ?
-                                provider.updateTempCompletion(true) : null,
+                            backgroundColor: userHelper.isFullyOnboarded()
+                                ? AppColors.primaryColor
+                                : AppColors.primaryColorLight.withOpacity(0.4),
+                            borderColor: userHelper.isFullyOnboarded()
+                                ? AppColors.primaryColor
+                                : AppColors.primaryColorLight.withOpacity(0.1),
+                            onPressed: () =>
+                                _proceed(TransactionPinState.initial),
+                            // userHelper.isFullyOnboarded()
+                            //     ? provider.updateTempCompletion(true)
+                            //     : null,
                             child: const AppText(
                               text: 'LET\'S GO!',
                               color: Colors.white,
@@ -401,6 +416,120 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
           ),
         );
       },
+    );
+  }
+
+  _proceed(TransactionPinState transPinState) {
+    final bool isInitial = transPinState == TransactionPinState.initial;
+    AppDialog.showAppDialog(
+        context,
+        ChangeNotifierProvider(
+          create: (context) => KeyboardProvider()
+            ..updateControllerActiveStatus(true)
+            ..updateRequiredLength(6),
+          child: Consumer<KeyboardProvider>(
+            builder: (context, keyboard, _) {
+              return Container(
+                // height: 741,
+                width: context.widthPx,
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(24)),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 38,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: AppColors.grey.withOpacity(0.3),
+                      ),
+                    ),
+
+                    const VerticalSpace(size: 25),
+
+                    SizedBox(
+                      height: 75,
+                      child: Column(
+                        children: [
+                          Text(
+                            isInitial
+                                ? 'Create Your Transactional Pin'
+                                : 'Confirm Pin',
+                            style: TextStyles.normalTextDarkF800,
+                          ),
+                          const VerticalSpace(
+                            size: 20,
+                          ),
+                          SizedBox(
+                            width: 152,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                pinCircle(0, keyboard.inputs),
+                                pinCircle(1, keyboard.inputs),
+                                pinCircle(2, keyboard.inputs),
+                                pinCircle(3, keyboard.inputs),
+                                pinCircle(4, keyboard.inputs),
+                                pinCircle(5, keyboard.inputs),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+
+                    const CustomKeyboard(),
+
+                    const Spacer(),
+
+                    // btn
+                    GeneralButton(
+                      height: 48,
+                      width: 335,
+                      borderColor: keyboard.isFilled
+                          ? AppColors.primaryColor
+                          : AppColors.primaryColorLight.withOpacity(0.1),
+                      backgroundColor: keyboard.isFilled
+                          ? AppColors.primaryColor
+                          : AppColors.primaryColorLight.withOpacity(0.1),
+                      borderRadius: 12,
+                      onPressed: 
+                        isInitial
+                            // switch to to confirm
+                            ? () {
+                                di<NavigationService>().pop(); // pop dialog
+                                _proceed(TransactionPinState.confirm); // show comfirm pin dialog
+                              }
+                            // confirm pin
+                            : () async {
+                              
+                            },
+                      
+                      child: const AppText(
+                        text: 'ENTER',
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        size: 14,
+                      ),
+                    ).paddingOnly(left: 14, right: 14, bottom: 43),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+        height: 541,
+        width: 335);
+  }
+
+  CircleAvatar pinCircle(int mappedNum, nums) {
+    // var nums = context.read<KeyboardProvider>().inputs;
+    return CircleAvatar(
+      radius: 5,
+      backgroundColor: nums.asMap().containsKey(mappedNum)
+          ? AppColors.primaryColor
+          : AppColors.grey.withOpacity(0.5),
     );
   }
 }
@@ -457,6 +586,8 @@ class CriteriaWidget extends StatelessWidget {
 }
 
 enum CriteriaState { pending, done, notDone }
+
+enum TransactionPinState { initial, confirm }
 
 class ActivitiesList extends StatelessWidget {
   const ActivitiesList({

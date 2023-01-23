@@ -29,9 +29,9 @@ class AppDialog {
   }
 
   // pop dialog
-  static showAppDialog(BuildContext context, Widget widget) {
+  static showAppDialog(BuildContext context, Widget widget, {double height = 387, double width = 335}) {
     showDialog(
-      barrierColor: AppColors.dialogsBackgroundColor,
+      barrierColor: AppColors.black.withOpacity(0.8),
       context: context,
       barrierDismissible: false,
       builder: (context) => Dialog(
@@ -42,8 +42,8 @@ class AppDialog {
           decoration: BoxDecoration(
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(16)),
-          height: 387,
-          width: context.widthPx,
+          height: height,
+          width: width,
           child: widget,
         ),
       ),

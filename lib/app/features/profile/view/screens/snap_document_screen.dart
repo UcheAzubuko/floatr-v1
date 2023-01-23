@@ -22,13 +22,13 @@ import '../../../authentication/view/display_picture_screen.dart';
 import '../../../camera/camera_provider.dart';
 
 class SnapDocumentScreen extends StatelessWidget {
-  const SnapDocumentScreen({super.key});
+  const SnapDocumentScreen({super.key, required this.documentType});
 
+  final DocumentType documentType;
   @override
   Widget build(BuildContext context) {
-
     final NavigationService navigationService = di<NavigationService>();
-    
+
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Profile',
@@ -66,11 +66,11 @@ class SnapDocumentScreen extends StatelessWidget {
                       color: Colors.grey,
                     ),
                     child: CameraView(
-                    initialDirection: CameraLensDirection.back,
-                    onImage: (inputImage) {
-                      // processImage(inputImage);
-                    },
-                  ),
+                      initialDirection: CameraLensDirection.back,
+                      onImage: (inputImage) {
+                        // processImage(inputImage);
+                      },
+                    ),
                   )
                 ],
               ),
@@ -152,16 +152,15 @@ class SnapDocumentScreen extends StatelessWidget {
                   final controller =
                       context.read<CameraProvider>().cameraController!;
 
-                  
-                    await controller.stopImageStream();
+                  await controller.stopImageStream();
 
-                    controller.takePicture().then((value) {
-                      log('Picture taken ${value.path}');
-                      navigationService.navigateReplacementTo(
-                          RouteName.displayPicture,
-                          arguments: DisplayImageArguments(file: value, imageType: ImageType.document));
-                    });
-                  
+                  controller.takePicture().then((value) {
+                    log('Picture taken ${value.path}');
+                    navigationService.navigateReplacementTo(
+                        RouteName.displayPicture,
+                        arguments: DisplayImageArguments(
+                            file: value, imageType: ImageType.document, documentType: documentType));
+                  });
                 },
                 width: 56,
                 height: 56,
@@ -178,6 +177,12 @@ class SnapDocumentScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class SnapDocumentArguments {
+  final DocumentType documentType;
+
+  SnapDocumentArguments({required this.documentType});
 }
 
 // Container(
