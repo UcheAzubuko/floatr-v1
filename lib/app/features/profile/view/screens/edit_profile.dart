@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/profile/data/model/params/employer_information_params.dart';
@@ -23,6 +25,7 @@ import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -425,6 +428,11 @@ class _EditResidentialAddressViewState
         } else {
           _navigationService.pop();
         }
+        Fluttertoast.showToast(
+            msg: 'Residential address update successful',
+            backgroundColor: Colors.blue);
+      } else if (provider.loadingState == LoadingState.error) {
+        AppSnackBar.showErrorSnackBar(context, provider.errorMsg);
       }
     }
   }
@@ -677,6 +685,11 @@ class _EditEmploymentViewState extends State<EditEmploymentView> {
         } else {
           _navigationService.pop();
         }
+        Fluttertoast.showToast(
+            msg: 'Employer info update successful',
+            backgroundColor: Colors.blue);
+      } else if (provider.loadingState == LoadingState.error) {
+        AppSnackBar.showErrorSnackBar(context, provider.errorMsg);
       }
     }
   }
@@ -1104,7 +1117,9 @@ class _EditNextOfKinViewState extends State<EditNextOfKinView> {
     );
   }
 
-  _handleUpdateNextOfKin(UserProfileProvider provider,) async {
+  _handleUpdateNextOfKin(
+    UserProfileProvider provider,
+  ) async {
     final bool isValid = _formKey.currentState!.validate();
     final authProvider = context.read<AuthenticationProvider>();
 
@@ -1121,6 +1136,11 @@ class _EditNextOfKinViewState extends State<EditNextOfKinView> {
       if (provider.loadingState == LoadingState.loaded) {
         await authProvider.getUser();
         _navigationService.pop();
+        Fluttertoast.showToast(
+            msg: 'Next of kin update successful',
+            backgroundColor: Colors.blue);
+      } else if (provider.loadingState == LoadingState.error) {
+        AppSnackBar.showErrorSnackBar(context, provider.errorMsg);
       }
     }
   }
@@ -1495,6 +1515,9 @@ class _EditProfileViewState extends State<EditProfileView> {
       if (provider.loadingState == LoadingState.loaded) {
         await authProvider.getUser(); // update user
         _navigationService.pop();
+        Fluttertoast.showToast(msg: 'User personal info update successful', backgroundColor: Colors.blue);
+      } else if (provider.loadingState == LoadingState.error) {
+        AppSnackBar.showErrorSnackBar(context, provider.errorMsg);
       }
     }
   }
