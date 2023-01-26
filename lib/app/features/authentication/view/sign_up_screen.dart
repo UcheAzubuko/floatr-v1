@@ -43,7 +43,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController dateController = TextEditingController();
 
   final _fullnameValidator =
-      ValidationBuilder().fullname().maxLength(20).build();
+      ValidationBuilder().fullname().maxLength(50).build();
   final _emailValidator = ValidationBuilder().email().maxLength(50).build();
   final _passwordValidator = ValidationBuilder().password().build();
   final _phoneValidator = ValidationBuilder().phone().build();

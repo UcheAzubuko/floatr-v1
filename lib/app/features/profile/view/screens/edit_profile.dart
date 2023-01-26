@@ -94,9 +94,9 @@ class _EditResidentialAddressViewState
   TextEditingController cityController = TextEditingController();
   TextEditingController streetController = TextEditingController();
 
-  final _cityValidator = ValidationBuilder().minLength(5).maxLength(20).build();
+  final _cityValidator = ValidationBuilder().minLength(2).maxLength(50).build();
   final _streetValidator =
-      ValidationBuilder().minLength(10).maxLength(50).build();
+      ValidationBuilder().minLength(2).maxLength(50).build();
   final _formKey = GlobalKey<FormState>();
 
   late ResidentialAddressParams _residentialAddressParams;
@@ -445,13 +445,13 @@ class _EditEmploymentViewState extends State<EditEmploymentView> {
   TextEditingController monthlyIncomeController = TextEditingController();
 
   final _companyNameValidator =
-      ValidationBuilder().minLength(5).maxLength(20).build();
+      ValidationBuilder().minLength(2).maxLength(50).build();
   final _employerAddressValidator =
       ValidationBuilder().minLength(10).maxLength(50).build();
-  final _employmentTypeValidator =
-      ValidationBuilder().minLength(5).maxLength(20).build();
+  // final _employmentTypeValidator =
+  //     ValidationBuilder().minLength(5).maxLength(20).build();
   final _positionTypeValidator =
-      ValidationBuilder().minLength(5).maxLength(20).build();
+      ValidationBuilder().minLength(2).maxLength(50).build();
   final _monthlyIncomeValidator = ValidationBuilder().minLength(5).build();
   final _formKey = GlobalKey<FormState>();
 
@@ -699,13 +699,13 @@ class _EditNextOfKinViewState extends State<EditNextOfKinView> {
   TextEditingController streetController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
 
-  final _cityValidator = ValidationBuilder().minLength(5).maxLength(20).build();
+  final _cityValidator = ValidationBuilder().minLength(2).maxLength(50).build();
   final _streetValidator =
-      ValidationBuilder().minLength(10).maxLength(50).build();
+      ValidationBuilder().minLength(2).maxLength(50).build();
   final _relationshipValidator =
-      ValidationBuilder().minLength(5).maxLength(50).build();
+      ValidationBuilder().minLength(2).maxLength(50).build();
   final _fullnameValidator =
-      ValidationBuilder().minLength(10).maxLength(50).build();
+      ValidationBuilder().minLength(2).maxLength(50).build();
   final _emailValidator = ValidationBuilder().email().build();
   final _phoneValidator = ValidationBuilder().phone().build();
   final _formKey = GlobalKey<FormState>();
