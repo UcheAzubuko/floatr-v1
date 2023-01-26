@@ -21,6 +21,7 @@ import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/custom_appbar.dart';
 import 'package:floatr/app/widgets/general_button.dart';
 import 'package:floatr/app/widgets/text_field.dart';
+import 'package:floatr/core/misc/helper_functions.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/spacing.dart';
@@ -630,7 +631,7 @@ class _EditEmploymentViewState extends State<EditEmploymentView> {
 
                 AppTextField(
                   controller: monthlyIncomeController
-                    ..text = user.employment!.minMonthlyIncome ?? '',
+                    ..text = doubleStringToIntString(user.employment!.minMonthlyIncome) ?? '',
                   textInputType: const TextInputType.numberWithOptions(),
                   validator: _monthlyIncomeValidator,
                   hintText: '120000',
