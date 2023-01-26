@@ -19,30 +19,40 @@ class EmploymentType {
         ),
       );
 
+  static String? showCorrectEmploymentFormat(String? employmentStatus) {
+    if (employmentStatus == 'fulltime_employed') {
+      return "Full-Time";
+    } else if (employmentStatus == 'self-employed') {
+      return "Self-Employed";
+    } else if (employmentStatus == 'parttime-employed') {
+      return "Part-Time";
+    }
+    return employmentStatus;
+  }
+
   @override
   String toString() => employmentTypes.toString();
 }
 
-class Employment_ extends Equatable{
-    const Employment_({
-        required this.id,
-        required this.type,
-    });
+class Employment_ extends Equatable {
+  const Employment_({
+    required this.id,
+    required this.type,
+  });
 
-    final String id;
-    final String type;
+  final String id;
+  final String type;
 
-    
-    factory Employment_.fromJson(Map<String, dynamic> json) => Employment_(
+  factory Employment_.fromJson(Map<String, dynamic> json) => Employment_(
         id: json["id"],
         type: json["type"],
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "id": id,
         "type": type,
-    };
-    
-      @override
-      List<Object?> get props => [id, type];
+      };
+
+  @override
+  List<Object?> get props => [id, type];
 }

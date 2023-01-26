@@ -553,7 +553,7 @@ class _EditEmploymentViewState extends State<EditEmploymentView> {
                   child: Align(
                     child: DropdownButtonFormField<Employment_>(
                       decoration: InputDecoration.collapsed(
-                          hintText: user.employment?.type ?? 'Select',
+                          hintText: EmploymentType.showCorrectEmploymentFormat(user.employment?.type) ?? 'Select',
                           hintStyle: const TextStyle(
                               color: AppColors.black,
                               fontSize: 12,
