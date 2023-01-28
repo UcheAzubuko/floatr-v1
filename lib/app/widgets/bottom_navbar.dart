@@ -75,7 +75,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   type: BottomNavigationBarType.fixed,
                   onTap: (newTab) {
                     // print(newTab);
-                    !UserHelper(user: provider.user!).isFullyOnboarded()
+                    !UserHelper(user: provider.user!).isFullyOnboarded
                         ? null
                         : setCurrentTabTo(newTabIndex: newTab);
                   },

@@ -38,19 +38,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final _dateTime = DateTime.now();
 
   String get _periodOfDay {
-    if (_dateTime.hour > 16) {
-      if (_dateTime.minute > 59) {
-        if (_dateTime.second > 59) {
-          return 'GOOD EVENING';
-        }
-      }
-    }
-    if (_dateTime.hour > 11) {
-      if (_dateTime.minute > 59) {
-        if (_dateTime.second > 59) {
-          return 'GOOD AFTERNOON';
-        }
-      }
+    if (_dateTime.hour >= 16 && _dateTime.hour <= 23) {
+      return 'GOOD EVENING';
+    } else if (_dateTime.hour >= 12 && _dateTime.hour <= 15) {
+      return 'GOOD AFTERNOON';
     }
     return 'GOOD MORNING';
   }
@@ -150,7 +141,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 // card with progress or card with offers
                 // const DebtCard(),
 
-                !UserHelper(user: provider.user!).isFullyOnboarded()
+                !UserHelper(user: provider.user!).isFullyOnboarded
                     ? const DataCompletionWidget().paddingOnly(bottom: 30)
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -309,7 +300,7 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                               editProfileView: EditProfile.personalDetails)),
                       child: CriteriaWidget(
                         criteriaTitle: 'Personal Details',
-                        criteriaState: userHelper.isPersonalDetailsComplete()
+                        criteriaState: userHelper.isPersonalDetailsComplete
                             ? CriteriaState.done
                             : CriteriaState.pending,
                       ),
@@ -325,7 +316,7 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                           context, const GovIDModalView(), Colors.transparent),
                       child: CriteriaWidget(
                         criteriaTitle: 'Government Issued ID',
-                        criteriaState: userHelper.isIdDataComplete()
+                        criteriaState: userHelper.isIdDataComplete
                             ? CriteriaState.pending
                             : CriteriaState.notDone,
                       ),
@@ -342,7 +333,7 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                               editProfileView: EditProfile.residentialAddress)),
                       child: CriteriaWidget(
                         criteriaTitle: 'Residential Address',
-                        criteriaState: userHelper.isAddressComplete()
+                        criteriaState: userHelper.isAddressComplete
                             ? CriteriaState.done
                             : CriteriaState.notDone,
                       ),
@@ -359,7 +350,7 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                               editProfileView: EditProfile.employmentDetails)),
                       child: CriteriaWidget(
                         criteriaTitle: 'Employment Details',
-                        criteriaState: userHelper.isEmployerDetailsComplete()
+                        criteriaState: userHelper.isEmployerDetailsComplete
                             ? CriteriaState.done
                             : CriteriaState.notDone,
                       ),
@@ -376,7 +367,7 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                               editProfileView: EditProfile.nextOfKin)),
                       child: CriteriaWidget(
                         criteriaTitle: 'Next of Kin',
-                        criteriaState: userHelper.isNextOfKinComplete()
+                        criteriaState: userHelper.isNextOfKinComplete
                             ? CriteriaState.done
                             : CriteriaState.notDone,
                       ),
@@ -393,10 +384,10 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                             height: 48,
                             width: context.widthPx,
                             borderRadius: 12,
-                            backgroundColor: userHelper.isFullyOnboarded()
+                            backgroundColor: userHelper.isFullyOnboarded
                                 ? AppColors.primaryColor
                                 : AppColors.primaryColorLight.withOpacity(0.4),
-                            borderColor: userHelper.isFullyOnboarded()
+                            borderColor: userHelper.isFullyOnboarded
                                 ? AppColors.primaryColor
                                 : AppColors.primaryColorLight.withOpacity(0.1),
                             onPressed: () {},

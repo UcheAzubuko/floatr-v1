@@ -422,7 +422,7 @@ class _EditResidentialAddressViewState
       await provider.updateResidentialAddress();
       if (provider.loadingState == LoadingState.loaded) {
         await authProvider.getUser(); // update user
-        if (!UserHelper(user: authProvider.user!).isEmployerDetailsComplete()) {
+        if (!UserHelper(user: authProvider.user!).isEmployerDetailsComplete) {
           _navigationService.navigateReplacementTo(RouteName.editProfile,
               arguments: EditProfileArguments(
                   editProfileView: EditProfile.employmentDetails));
@@ -679,7 +679,7 @@ class _EditEmploymentViewState extends State<EditEmploymentView> {
       await provider.updateEmploymentInformation();
       if (provider.loadingState == LoadingState.loaded) {
         await authProvider.getUser(); // update user
-        if (!UserHelper(user: user!).isNextOfKinComplete()) {
+        if (!UserHelper(user: user!).isNextOfKinComplete) {
           _navigationService.navigateReplacementTo(RouteName.editProfile,
               arguments:
                   EditProfileArguments(editProfileView: EditProfile.nextOfKin));

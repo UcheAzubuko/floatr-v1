@@ -30,19 +30,19 @@ class ProfileScreen extends StatelessWidget {
   double _profileCompletionPercentage(UserResponse user) {
     final userHelper = UserHelper(user: user);
     double percent = 0.0;
-    if (userHelper.isAddressComplete()) {
+    if (userHelper.isAddressComplete) {
       percent += 0.2;
     }
-    if (userHelper.isEmployerDetailsComplete()) {
+    if (userHelper.isEmployerDetailsComplete) {
       percent += 0.2;
     }
-    if (userHelper.isPersonalDetailsComplete()) {
+    if (userHelper.isPersonalDetailsComplete) {
       percent += 0.2;
     }
-    if (userHelper.isNextOfKinComplete()) {
+    if (userHelper.isNextOfKinComplete) {
       percent += 0.2;
     }
-    if (userHelper.isIdDataComplete()) {
+    if (userHelper.isIdDataComplete) {
       percent += 0.2;
     }
     return percent;
@@ -68,6 +68,7 @@ class ProfileScreen extends StatelessWidget {
       body: Consumer<AuthenticationProvider>(
         builder: (context, provider, _) {
           final user = provider.user;
+          final userHelper = UserHelper(user: user!);
 
           return SingleChildScrollView(
             child: Column(
@@ -121,7 +122,7 @@ class ProfileScreen extends StatelessWidget {
                         child: CircularPercentIndicator(
                           radius: 52,
                           backgroundColor: AppColors.lightGrey300,
-                          percent: _profileCompletionPercentage(user!),
+                          percent: _profileCompletionPercentage(user),
                           lineWidth: 4,
                           animation: true,
                           progressColor: AppColors.primaryColor,
@@ -219,7 +220,7 @@ class ProfileScreen extends StatelessWidget {
                     children: [
                       CustomProfileRow(
                         firstItem: _checkType(
-                            UserHelper(user: user).isPersonalDetailsComplete()),
+                            userHelper.isPersonalDetailsComplete),
                         secondItem: Text(
                           'Personal Details',
                           style: TextStyles.smallTextDark14Px,
@@ -239,7 +240,7 @@ class ProfileScreen extends StatelessWidget {
                       // gov-id
                       CustomProfileRow(
                         firstItem: _checkType(
-                            UserHelper(user: user).isIdDataComplete()),
+                            userHelper.isIdDataComplete),
                         secondItem: Text(
                           'Government Issued ID',
                           style: TextStyles.smallTextDark14Px,
@@ -258,7 +259,7 @@ class ProfileScreen extends StatelessWidget {
                       // address
                       CustomProfileRow(
                         firstItem: _checkType(
-                            UserHelper(user: user).isAddressComplete()),
+                            userHelper.isAddressComplete),
                         secondItem: Text(
                           'Residential Address',
                           style: TextStyles.smallTextDark14Px,
@@ -279,7 +280,7 @@ class ProfileScreen extends StatelessWidget {
                       // employment details
                       CustomProfileRow(
                         firstItem: _checkType(
-                            UserHelper(user: user).isEmployerDetailsComplete()),
+                            userHelper.isEmployerDetailsComplete),
                         secondItem: Text(
                           'Employment Details',
                           style: TextStyles.smallTextDark14Px,
@@ -300,7 +301,7 @@ class ProfileScreen extends StatelessWidget {
                       // next of kin
                       CustomProfileRow(
                         firstItem: _checkType(
-                            UserHelper(user: user).isNextOfKinComplete()),
+                            userHelper.isNextOfKinComplete),
                         secondItem: Text(
                           'Next of Kin',
                           style: TextStyles.smallTextDark14Px,
