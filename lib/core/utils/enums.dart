@@ -6,3 +6,8 @@ enum DocumentType {
   internationalPassport,
   votersCard
 }
+
+enum CriteriaState { pending, done, notDone }
+
+enum TransactionPinState { initial, confirm }
+
