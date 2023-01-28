@@ -1,6 +1,7 @@
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:floatr/app/features/loan/view/screens/loan_info_screen.dart';
 import 'package:floatr/app/features/loan/view/screens/nav_loan_application_screen.dart';
+import 'package:floatr/app/features/profile/data/model/user_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -74,8 +75,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   type: BottomNavigationBarType.fixed,
                   onTap: (newTab) {
                     // print(newTab);
-                    provider.tempCompletionStatus == false ||
-                            provider.tempCompletionStatus == null
+                    !UserHelper(user: provider.user!).isFullyOnboarded
                         ? null
                         : setCurrentTabTo(newTabIndex: newTab);
                   },

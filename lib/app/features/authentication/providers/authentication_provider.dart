@@ -9,7 +9,9 @@ import 'package:floatr/app/widgets/app_snackbar.dart';
 import 'package:floatr/core/misc/dependency_injectors.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/route_names.dart';
+import 'package:floatr/core/utils/enums.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../../core/route/navigation_service.dart';
 import '../data/model/params/register_params.dart';
@@ -48,6 +50,10 @@ class AuthenticationProvider extends BaseProvider {
 
   bool? get tempCompletionStatus => _tempCompletionStatus;
 
+  String? _transactionPin;
+
+  String? get transactionPin => _transactionPin;
+
   updateLoginParams(LoginParams params) {
     _loginParams = params;
     notifyListeners();
@@ -83,6 +89,11 @@ class AuthenticationProvider extends BaseProvider {
     notifyListeners();
   }
 
+  updateTransactionPin(String transactionPin) {
+    _transactionPin = transactionPin;
+    notifyListeners();
+  }
+
   Future<void> initiateLogin(BuildContext context) async {
     updateLoadingState(LoadingState.busy);
 
@@ -95,17 +106,15 @@ class AuthenticationProvider extends BaseProvider {
       AppSnackBar.showErrorSnackBar(context, errorMsg);
     }, (onSuccess) async {
       await getUser();
-      
-      if (!_user!.isPhoneVerified) {
+
+      if (!_user!.isPhoneVerified!) {
         _navigationService.navigateTo(RouteName.verifyOTP);
-      } else if (!_user!.isBvnVerified) {
+      } else if (!_user!.isBvnVerified!) {
         _navigationService.navigateTo(RouteName.verifyBVN);
-      } else if (!user!.isPhotoVerified) {
+      } else if (!user!.isPhotoVerified!) {
         _navigationService.navigateTo(RouteName.takeSelfie);
-      } else if (user!.canLogin) {
-        _navigationService.navigateTo(RouteName.navbar);
       } else {
-        _navigationService.navigateTo(RouteName.navbar);
+        _navigationService.navigateReplacementTo(RouteName.navbar);
       }
     });
   }
@@ -183,17 +192,41 @@ class AuthenticationProvider extends BaseProvider {
     });
   }
 
-  Future<void> uploadimage(BuildContext context) async {
+  Future<void> createPin() async {
     updateLoadingState(LoadingState.busy);
-    var response = await authenticationRepository.uploadPicture(_imagefile!);
+    var response = await authenticationRepository.createPin(_transactionPin!);
+    response.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? 'Pin creation failed!');
+      // AppSnackBar.showErrorSnackBar(context, errorMsg);
+      // trigger error on ui
+    }, (onSuccess) {
+      getUser();
+      updateLoadingState(LoadingState.loaded);
+    });
+  }
+
+  Future<void> uploadimage(BuildContext context, ImageType imageType,
+      [DocumentType documentType = DocumentType.driverLicense]) async {
+    updateLoadingState(LoadingState.busy);
+    var response = await authenticationRepository.uploadPicture(
+        _imagefile!, imageType, documentType);
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'File upload failed!');
       AppSnackBar.showErrorSnackBar(context, errorMsg);
       // trigger error on ui
     }, (onSuccess) {
+      getUser();
       updateLoadingState(LoadingState.loaded);
-      _navigationService.pushAndRemoveUntil(RouteName.confirmDetails);
+      Fluttertoast.showToast(
+          backgroundColor: Colors.blue,
+          msg: imageType == ImageType.selfie
+              ? 'Selfie upload successful'
+              : 'Document upload successful');
+      imageType == ImageType.selfie
+          ? _navigationService.pushAndRemoveUntil(RouteName.confirmDetails)
+          : _navigationService.pushAndRemoveUntil(RouteName.navbar);
     });
   }
 }

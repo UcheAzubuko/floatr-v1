@@ -232,7 +232,7 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
                                 const VerticalSpace(size: 10),
 
                                 AppTextField(
-                                  hintText: user.gender ?? 'Not Available',
+                                  hintText: user.gender!.name ?? 'Not Available',
                                   controller: TextEditingController(),
                                   textInputType: TextInputType.emailAddress,
                                   textInputAction: TextInputAction.unspecified,
@@ -259,7 +259,7 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
                                 const VerticalSpace(size: 10),
                                 AppTextField(
                                   hintText:
-                                      user.maritalStatus ?? 'Not Available',
+                                      user.maritalStatus!.name ?? 'Not Available',
                                   controller: TextEditingController(),
                                   textInputType: TextInputType.emailAddress,
                                   textInputAction: TextInputAction.unspecified,
@@ -295,7 +295,7 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
                                 const VerticalSpace(size: 10),
 
                                 AppTextField(
-                                  hintText: dateFormat.format(user.dateOfBirth),
+                                  hintText: dateFormat.format(user.dateOfBirth!),
                                   controller: TextEditingController(),
                                   textInputType: TextInputType.emailAddress,
                                   textInputAction: TextInputAction.unspecified,
@@ -322,7 +322,7 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
                                 const VerticalSpace(size: 10),
                                 AppTextField(
                                   hintText:
-                                      user.stateOfOrigin ?? 'Not Available',
+                                      user.stateOfOrigin!.name ?? 'Not Available',
                                   controller: TextEditingController(),
                                   textInputType: TextInputType.emailAddress,
                                   textInputAction: TextInputAction.unspecified,

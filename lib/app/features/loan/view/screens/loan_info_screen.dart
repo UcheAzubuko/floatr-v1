@@ -208,7 +208,7 @@ class AddNewCardScreen extends StatelessWidget {
           ),
 
           SizedBox(
-            height: 186,
+            height: 230,
             width: context.widthPx,
             child: Image.asset(
               AppImages.defaultWallet,
@@ -1095,7 +1095,7 @@ class NavBarCardScreen extends StatelessWidget {
               ),
 
               SizedBox(
-                height: 186,
+                height: 230,
                 width: context.widthPx,
                 child: Image.asset(
                   AppImages.defaultWallet,

@@ -1,20 +1,34 @@
+import 'dart:developer';
+
+import 'package:camera/camera.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/camera/camara_view.dart';
+import 'package:floatr/core/misc/dependency_injectors.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:floatr/core/utils/app_style.dart';
 import 'package:floatr/core/utils/images.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
+import '../../../../../core/route/navigation_service.dart';
+import '../../../../../core/route/route_names.dart';
+import '../../../../../core/utils/enums.dart';
 import '../../../../widgets/app_text.dart';
 import '../../../../widgets/custom_appbar.dart';
 import '../../../../widgets/general_button.dart';
+import '../../../authentication/view/display_picture_screen.dart';
+import '../../../camera/camera_provider.dart';
 
 class SnapDocumentScreen extends StatelessWidget {
-  const SnapDocumentScreen({super.key});
+  const SnapDocumentScreen({super.key, required this.documentType});
 
+  final DocumentType documentType;
   @override
   Widget build(BuildContext context) {
+    final NavigationService navigationService = di<NavigationService>();
+
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Profile',
@@ -38,14 +52,25 @@ class SnapDocumentScreen extends StatelessWidget {
                     width: context.widthPx,
                     SvgImages.documentSnapShotFrame,
                     fit: BoxFit.fill,
+                    height: 270,
                     color: AppColors.primaryColor,
                   ),
 
                   // image container
-                  Container(                
-                    height: 230,
+                  Container(
+                    height: 240,
                     width: context.widthPx * 0.86,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), color: Colors.grey,),
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.grey,
+                    ),
+                    child: CameraView(
+                      initialDirection: CameraLensDirection.back,
+                      onImage: (inputImage) {
+                        // processImage(inputImage);
+                      },
+                    ),
                   )
                 ],
               ),
@@ -121,9 +146,22 @@ class SnapDocumentScreen extends StatelessWidget {
               ),
 
               GeneralButton(
-                backgroundColor: AppColors.primaryColorLight,
+                backgroundColor: AppColors.primaryColor,
                 borderColor: Colors.transparent,
-                onPressed: () {},
+                onPressed: () async {
+                  final controller =
+                      context.read<CameraProvider>().cameraController!;
+
+                  await controller.stopImageStream();
+
+                  controller.takePicture().then((value) {
+                    log('Picture taken ${value.path}');
+                    navigationService.navigateReplacementTo(
+                        RouteName.displayPicture,
+                        arguments: DisplayImageArguments(
+                            file: value, imageType: ImageType.document, documentType: documentType));
+                  });
+                },
                 width: 56,
                 height: 56,
                 child: SvgPicture.asset(
@@ -139,6 +177,12 @@ class SnapDocumentScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class SnapDocumentArguments {
+  final DocumentType documentType;
+
+  SnapDocumentArguments({required this.documentType});
 }
 
 // Container(

@@ -15,6 +15,8 @@ import 'package:floatr/core/errors/failure.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart';
 
+import '../../../../../core/utils/enums.dart';
+
 class AuthenticationRepository {
   final SharedPreferences prefs;
   final APIService apiService;
@@ -107,7 +109,7 @@ class AuthenticationRepository {
   Future<Either<Failure, String>> verifyPhone(VerifyPhoneParams params) async {
     final url = Uri.https(
       APIConfigs.baseUrl,
-      APIConfigs.verifyPhone,
+      APIConfigs.verifyPhonePath,
     );
 
     final verifyPhoneBody = params.toMap();
@@ -136,7 +138,7 @@ class AuthenticationRepository {
   Future<Either<Failure, String>> verifyBVN(VerifyBVNParams params) async {
     final url = Uri.https(
       APIConfigs.baseUrl,
-      APIConfigs.verifyBVN,
+      APIConfigs.verifyBVNPath,
     );
 
     final verifyBvnBody = params.toMap();
@@ -162,7 +164,7 @@ class AuthenticationRepository {
   }
 
   Future<Either<Failure, UserResponse>> getUser() async {
-    final url = Uri.https(APIConfigs.baseUrl, APIConfigs.user);
+    final url = Uri.parse(APIConfigs.userFullPath);
     try {
       String? accessToken = prefs.getString(StorageKeys.accessTokenKey);
       final response = await apiService.get(
@@ -175,9 +177,40 @@ class AuthenticationRepository {
     }
   }
 
-  Future<Either<Failure, bool>> uploadPicture(File imageFile) async {
+  Future<Either<Failure, String>> createPin(String transactionPin) async {
+    final url = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.user,
+    );
+
+    final createPinBody = {"pin": transactionPin};
+
+    try {
+      String? accessToken = prefs.getString(StorageKeys.accessTokenKey);
+      final response = await apiService.post(
+        url: url,
+        body: createPinBody,
+        headers: _authHeaders
+          ..addAll({
+            "Authorization": "Bearer ${accessToken!}"
+          }), // add access token authorization to header
+      );
+      final body = jsonDecode(response.body);
+      accessToken = body["access_token"];
+      await prefs.setString(StorageKeys.accessTokenKey, accessToken!);
+      return Right(body["access_token"]);
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    }
+  }
+
+  Future<Either<Failure, bool>> uploadPicture(
+      File imageFile, ImageType imageType,
+      [DocumentType documentType = DocumentType.driverLicense]) async {
     // final convertedImageFile =
     //     await PictureUploadService.convertToWebp(imageFile);
+
+    final bool isSelfie = imageType == ImageType.selfie;
 
     final filesUploadUrl = Uri.https(
       APIConfigs.baseUrl,
@@ -187,7 +220,8 @@ class AuthenticationRepository {
     final reqBody = {
       "ext": "jpg",
       "name": basename(imageFile.path),
-      "purpose": "user/profile/pictures",
+      "purpose":
+          isSelfie ? "user/profile/pictures" : chooseImagePath(documentType),
       "size": await imageFile.length(),
       "type": "image_jpg",
     };
@@ -219,6 +253,8 @@ class AuthenticationRepository {
             body: imageData,
             headers: imageUploadHeader);
 
+        print(body["url"]);
+
         final putBody = {
           "id": body["id"],
           "completedParts": [
@@ -240,13 +276,21 @@ class AuthenticationRepository {
             APIConfigs.baseUrl,
             APIConfigs.saveSelfiePath,
           );
+
+          final saveDocumentUrl = Uri.https(
+            APIConfigs.baseUrl,
+            APIConfigs.saveDocumentPath,
+          );
+
           try {
             final saveFileBody = {
               "fileId": body["id"],
             };
             // save selfie
             final saveFileResponse = await apiService.post(
-                url: saveSelfieUrl, body: saveFileBody, headers: _authHeaders);
+                url: isSelfie ? saveSelfieUrl : saveDocumentUrl,
+                body: saveFileBody,
+                headers: _authHeaders);
             print(saveFileResponse.body);
           } on ServerException catch (_) {
             return Left(
@@ -265,5 +309,20 @@ class AuthenticationRepository {
     } catch (e) {
       throw Exception(e);
     }
+  }
+}
+
+String chooseImagePath(DocumentType documentType) {
+  switch (documentType) {
+    case DocumentType.driverLicense:
+      return "user/government/issued/driver-license/ids";
+    case DocumentType.internationalPassport:
+      return "user/government/issued/international-passport/ids";
+    case DocumentType.nationalIdentityCard:
+      return "user/government/issued/national/ids";
+    case DocumentType.votersCard:
+      return "user/government/issued/voters-card/ids";
+    default:
+      return "user/government/issued/driver-license/ids";
   }
 }

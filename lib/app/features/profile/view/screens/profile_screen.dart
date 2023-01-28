@@ -1,7 +1,10 @@
 import 'dart:math' as math;
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/authentication/data/model/response/user_repsonse.dart';
+import 'package:floatr/app/features/profile/data/model/user_helper.dart';
 import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
+import 'package:floatr/app/features/profile/view/screens/snap_document_screen.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/dialogs.dart';
 import 'package:floatr/app/widgets/general_button.dart';
@@ -9,6 +12,7 @@ import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/app_icons.dart';
 import 'package:floatr/core/utils/app_style.dart';
+import 'package:floatr/core/utils/enums.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -23,6 +27,40 @@ import '../widgets/account_info_card.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
+  double _profileCompletionPercentage(UserResponse user) {
+    final userHelper = UserHelper(user: user);
+    double percent = 0.0;
+    if (userHelper.isAddressComplete) {
+      percent += 0.2;
+    }
+    if (userHelper.isEmployerDetailsComplete) {
+      percent += 0.2;
+    }
+    if (userHelper.isPersonalDetailsComplete) {
+      percent += 0.2;
+    }
+    if (userHelper.isNextOfKinComplete) {
+      percent += 0.2;
+    }
+    if (userHelper.isIdDataComplete) {
+      percent += 0.2;
+    }
+    return percent;
+  }
+
+  Widget _checkType(bool check) {
+    if (check) {
+      return SvgPicture.asset(
+        SvgAppIcons.icTickCircleFill,
+        color: Colors.green,
+      );
+    }
+    return SvgPicture.asset(
+      SvgAppIcons.icCaution,
+      // color: Colors.green,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final NavigationService navigationService = di<NavigationService>();
@@ -30,6 +68,7 @@ class ProfileScreen extends StatelessWidget {
       body: Consumer<AuthenticationProvider>(
         builder: (context, provider, _) {
           final user = provider.user;
+          final userHelper = UserHelper(user: user!);
 
           return SingleChildScrollView(
             child: Column(
@@ -83,14 +122,14 @@ class ProfileScreen extends StatelessWidget {
                         child: CircularPercentIndicator(
                           radius: 52,
                           backgroundColor: AppColors.lightGrey300,
-                          percent: .25,
+                          percent: _profileCompletionPercentage(user),
                           lineWidth: 4,
                           animation: true,
                           progressColor: AppColors.primaryColor,
                           circularStrokeCap: CircularStrokeCap.round,
                           center: CircleAvatar(
                             radius: 44,
-                            backgroundImage: NetworkImage(user!.photo['url']),
+                            backgroundImage: NetworkImage(user.photo!.url!),
                           ),
                         ),
                       ),
@@ -109,7 +148,7 @@ class ProfileScreen extends StatelessWidget {
 
                 // email
                 Text(
-                  user.email,
+                  user.email!,
                   style: TextStyles.smallTextGrey,
                 ),
 
@@ -121,9 +160,13 @@ class ProfileScreen extends StatelessWidget {
                 AccountInfoCard(
                   infoTitle: 'Account Information',
                   width: context.widthPx,
+                  height: 120,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      const VerticalSpace(
+                        size: 5,
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -134,7 +177,7 @@ class ProfileScreen extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                user.phoneNumber,
+                                user.phoneNumber!,
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: false,
                                 style: TextStyles.smallTextDark,
@@ -154,7 +197,7 @@ class ProfileScreen extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                '${user.uniqueId.substring(0, 10)}...',
+                                '${user.uniqueId!.length > 10 ? user.uniqueId!.substring(0, 10) : user.uniqueId}...',
                                 style: TextStyles.smallTextDark,
                               ).paddingOnly(right: 5),
                               SvgPicture.asset('assets/icons/outline/copy.svg'),
@@ -176,10 +219,8 @@ class ProfileScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       CustomProfileRow(
-                        firstItem: SvgPicture.asset(
-                          SvgAppIcons.icTickCircleFill,
-                          color: Colors.green,
-                        ),
+                        firstItem: _checkType(
+                            userHelper.isPersonalDetailsComplete),
                         secondItem: Text(
                           'Personal Details',
                           style: TextStyles.smallTextDark14Px,
@@ -198,10 +239,8 @@ class ProfileScreen extends StatelessWidget {
 
                       // gov-id
                       CustomProfileRow(
-                        firstItem: SvgPicture.asset(
-                          SvgAppIcons.icCaution,
-                          // color: Colors.green,
-                        ),
+                        firstItem: _checkType(
+                            userHelper.isIdDataComplete),
                         secondItem: Text(
                           'Government Issued ID',
                           style: TextStyles.smallTextDark14Px,
@@ -219,9 +258,8 @@ class ProfileScreen extends StatelessWidget {
 
                       // address
                       CustomProfileRow(
-                        firstItem: SvgPicture.asset(
-                          SvgAppIcons.icCaution,
-                        ),
+                        firstItem: _checkType(
+                            userHelper.isAddressComplete),
                         secondItem: Text(
                           'Residential Address',
                           style: TextStyles.smallTextDark14Px,
@@ -241,9 +279,8 @@ class ProfileScreen extends StatelessWidget {
 
                       // employment details
                       CustomProfileRow(
-                        firstItem: SvgPicture.asset(
-                          SvgAppIcons.icCaution,
-                        ),
+                        firstItem: _checkType(
+                            userHelper.isEmployerDetailsComplete),
                         secondItem: Text(
                           'Employment Details',
                           style: TextStyles.smallTextDark14Px,
@@ -263,9 +300,8 @@ class ProfileScreen extends StatelessWidget {
 
                       // next of kin
                       CustomProfileRow(
-                        firstItem: SvgPicture.asset(
-                          SvgAppIcons.icCaution,
-                        ),
+                        firstItem: _checkType(
+                            userHelper.isNextOfKinComplete),
                         secondItem: Text(
                           'Next of Kin',
                           style: TextStyles.smallTextDark14Px,
@@ -548,8 +584,10 @@ class GovIDModalView extends StatelessWidget {
                   leadingIconPath: SvgAppIcons.icLicenseDriver,
                   itemTitle: 'Driver\'s License',
                   endIconPath: SvgAppIcons.icArrowRight,
-                  onTap: () =>
-                      navigationService.navigateTo(RouteName.snapDocument),
+                  onTap: () => navigationService.navigateTo(
+                      RouteName.snapDocument,
+                      arguments: SnapDocumentArguments(
+                          documentType: DocumentType.driverLicense)),
                 ),
 
                 const VerticalSpace(size: 16),
@@ -559,8 +597,10 @@ class GovIDModalView extends StatelessWidget {
                   leadingIconPath: SvgAppIcons.icLicenseDriver,
                   itemTitle: 'National Identity Card',
                   endIconPath: SvgAppIcons.icArrowRight,
-                  onTap: () =>
-                      navigationService.navigateTo(RouteName.snapDocument),
+                  onTap: () => navigationService.navigateTo(
+                      RouteName.snapDocument,
+                      arguments: SnapDocumentArguments(
+                          documentType: DocumentType.nationalIdentityCard)),
                 ),
 
                 const VerticalSpace(size: 16),
@@ -570,8 +610,11 @@ class GovIDModalView extends StatelessWidget {
                   leadingIconPath: SvgAppIcons.icLicenseDriver,
                   itemTitle: 'International Passport',
                   endIconPath: SvgAppIcons.icArrowRight,
-                  onTap: () =>
-                      navigationService.navigateTo(RouteName.snapDocument),
+                  onTap: () => navigationService.navigateTo(
+                    RouteName.snapDocument,
+                    arguments: SnapDocumentArguments(
+                        documentType: DocumentType.driverLicense),
+                  ),
                 ),
 
                 const VerticalSpace(size: 16),
@@ -581,8 +624,10 @@ class GovIDModalView extends StatelessWidget {
                   leadingIconPath: SvgAppIcons.icLicenseDriver,
                   itemTitle: 'Voter’s Card',
                   endIconPath: SvgAppIcons.icArrowRight,
-                  onTap: () =>
-                      navigationService.navigateTo(RouteName.snapDocument),
+                  onTap: () => navigationService.navigateTo(
+                      RouteName.snapDocument,
+                      arguments: SnapDocumentArguments(
+                          documentType: DocumentType.votersCard)),
                 ),
               ],
             ),

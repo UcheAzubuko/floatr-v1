@@ -1,19 +1,26 @@
+import 'dart:developer';
+
 import 'package:camera/camera.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/view/display_picture_screen.dart';
-import 'package:floatr/app/widgets/app_snackbar.dart';
+import 'package:floatr/app/features/camera/camara_view.dart';
 import 'package:floatr/app/widgets/general_button.dart';
+import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/route/navigation_service.dart';
 import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/enums.dart';
 import '../../../../core/utils/spacing.dart';
 import '../../../widgets/app_text.dart';
 import '../../../widgets/custom_appbar.dart';
+import '../../camera/camera_provider.dart';
 
 class TakeSelefieScreen extends StatefulWidget {
   const TakeSelefieScreen({super.key});
@@ -26,88 +33,31 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen>
     with WidgetsBindingObserver {
   final NavigationService navigationService = di<NavigationService>();
   CameraController? controller;
-  // late List<CameraDescription>? _cameras;
 
-  // Future<void> initAvailableCameras() async {
-  //   _cameras = await availableCameras();
-  // }
+  bool _canProcess = true;
+  bool _isBusy = false;
+  bool _canTakePicture = false;
+
+  final _faceDetector = FaceDetector(
+    options: FaceDetectorOptions(
+      enableContours: true,
+      enableClassification: true,
+      enableTracking: true,
+    ),
+  );
 
   @override
   void initState() {
     super.initState();
-
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    // initAvailableCameras();
-    // });
-
-    availableCameras().then((value) {
-      controller = CameraController(value[1], ResolutionPreset.high);
-
-      controller!.initialize().then((_) {
-        if (!mounted) {
-          return;
-        }
-        setState(() {});
-      }).catchError((Object e) {
-        if (e is CameraException) {
-          switch (e.code) {
-            case 'CameraAccessDenied':
-              AppSnackBar.showSnackBar(
-                  context, 'You have denied camera access.');
-              break;
-            case 'CameraAccessDeniedWithoutPrompt':
-              // iOS only
-              AppSnackBar.showSnackBar(context,
-                  'Please go to Settings app to enable camera access.');
-              break;
-            case 'CameraAccessRestricted':
-              // iOS only
-              AppSnackBar.showSnackBar(context, 'Camera access is restricted.');
-              break;
-          }
-        }
-      });
-    });
   }
 
   @override
   void dispose() {
-    controller!.dispose();
+    _canProcess = false;
+    _faceDetector.close();
     super.dispose();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    final CameraController? cameraController = controller;
-
-    // App state changed before we got the chance to initialize.
-    if (cameraController == null || !cameraController.value.isInitialized) {
-      return;
-    }
-
-    if (state == AppLifecycleState.inactive) {
-      cameraController.dispose();
-    } else if (state == AppLifecycleState.resumed) {
-      onNewCameraSelected(cameraController.description);
-    }
-  }
-
-  Future<void> onNewCameraSelected(CameraDescription cameraDescription) async {
-    final CameraController? oldController = controller;
-    if (oldController != null) {
-      // `controller` needs to be set to null before getting disposed,
-      // to avoid a race condition when we use the controller that is being
-      // disposed. This happens when camera permission dialog shows up,
-      // which triggers `didChangeAppLifecycleState`, which disposes and
-      // re-creates the controller.
-      controller = null;
-      await oldController.dispose();
-    }
-
-    if (mounted) {
-      setState(() {});
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +72,7 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen>
               // center photo circle
               DottedBorder(
                 strokeWidth: 2,
-                color: AppColors.primaryColor,
+                color: _canTakePicture ? Colors.green : AppColors.red,
                 padding: const EdgeInsets.all(10),
                 dashPattern: const [2, 10, 2, 0],
                 radius: const Radius.circular(400),
@@ -134,13 +84,18 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen>
                   decoration: BoxDecoration(
                     color: Colors.transparent,
                     border: Border.all(
-                      color: AppColors.primaryColor,
+                      color: _canTakePicture ? Colors.green : AppColors.red,
                     ),
                     borderRadius: const BorderRadius.all(
                       Radius.circular(400),
                     ),
                   ),
-                  child: CameraPreview(controller!),
+                  child: CameraView(
+                    initialDirection: CameraLensDirection.front,
+                    onImage: (inputImage) {
+                      processImage(inputImage);
+                    },
+                  ),
                 ),
               ),
 
@@ -232,14 +187,23 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen>
               // capture button
 
               GeneralButton(
+                backgroundColor: _canTakePicture
+                    ? AppColors.primaryColor
+                    : AppColors.primaryColorLight,
                 onPressed: () async {
-                  final image = await controller!.takePicture();
+                  final controller =
+                      context.read<CameraProvider>().cameraController!;
 
-                  if (!mounted) return;
+                  if (_canTakePicture) {
+                    await controller.stopImageStream();
 
-                  await navigationService.navigateToRoute(DisplayPictureScreen(
-                    image: image,
-                  ));
+                    controller.takePicture().then((value) {
+                      log('Picture taken ${value.path}');
+                      navigationService.navigateReplacementTo(
+                          RouteName.displayPicture,
+                          arguments: DisplayImageArguments(file: value, imageType: ImageType.selfie));
+                    });
+                  }
                 },
                 width: 56,
                 height: 56,
@@ -255,5 +219,43 @@ class _TakeSelefieScreenState extends State<TakeSelefieScreen>
         ),
       ).paddingSymmetric(horizontal: context.widthPx * 0.037),
     );
+  }
+
+  Future<void> processImage(InputImage inputImage) async {
+    if (!_canProcess) return;
+    if (_isBusy) return;
+    _isBusy = true;
+    // setState(() {
+    //   _text = '';
+    // });
+    final faces = await _faceDetector.processImage(inputImage);
+    if (inputImage.inputImageData?.size != null &&
+        inputImage.inputImageData?.imageRotation != null) {
+      if (faces.length == 1) {
+        log('Found face!');
+        setState(() {
+          // _faceStatusColor = Colors.green;
+          _canTakePicture = true;
+        });
+      } else {
+        setState(() {
+          // _faceStatusColor = Colors.red;
+          _canTakePicture = false;
+        });
+      }
+    } else {
+      //Todo: Trigger call if more than one face.
+      for (final face in faces) {
+        // text += 'face: ${face.boundingBox}\n\n';
+
+      }
+      // _text = text;
+
+      // _customPaint = null;
+    }
+    _isBusy = false;
+    if (mounted) {
+      setState(() {});
+    }
   }
 }

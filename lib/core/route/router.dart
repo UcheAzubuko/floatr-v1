@@ -1,6 +1,7 @@
 import 'package:floatr/app/features/authentication/view/biometrics_screen.dart';
 import 'package:floatr/app/features/authentication/view/confirm_details_screen.dart';
 import 'package:floatr/app/features/authentication/view/create_pin_screen.dart';
+import 'package:floatr/app/features/authentication/view/display_picture_screen.dart';
 import 'package:floatr/app/features/authentication/view/forgot_password_screen.dart';
 import 'package:floatr/app/features/authentication/view/forgot_password_otp_screen.dart';
 import 'package:floatr/app/features/authentication/view/login_screen.dart';
@@ -13,6 +14,7 @@ import 'package:floatr/app/features/dashboard/view/dashboard_screen.dart';
 import 'package:floatr/app/features/loan/view/screens/loan_info_screen.dart';
 import 'package:floatr/app/features/onboarding/post_onboarding.dart';
 import 'package:floatr/app/features/onboarding/splash_screen.dart';
+import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
 import 'package:floatr/app/features/profile/view/screens/profile_screen.dart';
 import 'package:floatr/app/features/profile/view/screens/snap_document_screen.dart';
 import 'package:floatr/core/route/route_names.dart';
@@ -41,8 +43,14 @@ class Router {
         return MaterialPageRoute(builder: (_) => const ConfirmDetailsScreen());
       case RouteName.createPin:
         return MaterialPageRoute(builder: (_) => const CreatePinScreen());
+      case RouteName.displayPicture:
+      final args = settings.arguments as DisplayImageArguments;
+        return MaterialPageRoute(builder: (_) => DisplayPictureScreen(image: args.file, imageType: args.imageType,), );
       case RouteName.biometrics:
         return MaterialPageRoute(builder: (_) => const BiometricsScreen());
+      case RouteName.editProfile:
+      final args = settings.arguments as EditProfileArguments;
+        return MaterialPageRoute(builder: (_) => EditProfileScreen(editProfileView: args.editProfileView,));
       case RouteName.forgotPassword:
         return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
       case RouteName.forgotPasswordOtp:
@@ -55,7 +63,8 @@ class Router {
       case RouteName.profile:
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
       case RouteName.snapDocument:
-        return MaterialPageRoute(builder: (_) => const SnapDocumentScreen());
+      final args = settings.arguments as SnapDocumentArguments;
+        return MaterialPageRoute(builder: (_) => SnapDocumentScreen(documentType: args.documentType,));
       case RouteName.navbar:
         return MaterialPageRoute(builder: (_) => const BottomNavigation());
       case RouteName.cards:
