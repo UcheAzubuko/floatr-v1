@@ -339,6 +339,26 @@ class NextOfKin {
       };
 }
 
+class Loan {
+  Loan({
+    this.hasActiveApplication,
+    this.hasPendingApplication,
+    this.hasSettlingLoan,
+  });
+
+  final bool? hasActiveApplication;
+  final bool? hasSettlingLoan;
+  final bool? hasPendingApplication;
+
+  factory Loan.fromRawJson(String str) => Loan.fromJson(json.decode(str));
+
+  factory Loan.fromJson(Map<String, dynamic> json) => Loan(
+    hasPendingApplication: json["hasPendingApplication"],
+    hasActiveApplication: json["hasActiveApplication"],
+    hasSettlingLoan: json["hasSettlingLoan"]
+  );
+}
+
 class Photo {
   Photo({
     required this.uniqueId,
@@ -375,8 +395,10 @@ class Photo {
         size: json["size"],
         purpose: json["purpose"],
         meta: json["meta"],
-        createdAt: DateTime.parse(json["createdAt"] ?? DateTime.now().toString()),
-        updatedAt: DateTime.parse(json["updatedAt"] ?? DateTime.now().toString()),
+        createdAt:
+            DateTime.parse(json["createdAt"] ?? DateTime.now().toString()),
+        updatedAt:
+            DateTime.parse(json["updatedAt"] ?? DateTime.now().toString()),
         deletedAt: json["deletedAt"],
         url: json["url"],
       );
