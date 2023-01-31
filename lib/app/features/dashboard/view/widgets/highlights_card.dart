@@ -48,7 +48,7 @@ class _HighlightsCardState extends State<HighlightsCard> {
         context,
         ChangeNotifierProvider(
           create: (context) => KeyboardProvider()
-            ..updateControllerActiveStatus(true)
+            ..updateControllerActiveStatus(shouldDeactivateController: true)
             ..updateRequiredLength(6),
           child: Consumer<KeyboardProvider>(
             builder: (context, keyboard, _) {

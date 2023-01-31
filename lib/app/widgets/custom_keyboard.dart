@@ -214,8 +214,8 @@ class KeyboardProvider with ChangeNotifier {
   }
 
   /// Pass a bool to activate/deactivate controller
-  updateControllerActiveStatus(bool deactivateController) {
-    _isControllerDeactivated = deactivateController;
+  updateControllerActiveStatus({bool shouldDeactivateController = false}) {
+    _isControllerDeactivated = shouldDeactivateController;
     notifyListeners();
   }
 
