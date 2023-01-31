@@ -6,6 +6,7 @@ class APIConfigs {
   static const employmentPath = 'v1/users/me/employment';
   static const gendersPath = '/v1/genders';
   static const loginPath = '/v1/auth/login';
+  static const loans = '/v1/loans';
   static const maritalStatusPath = '/v1/marital-status';
   static const nextOfKinPath = '/v1/users/me/next-of-kin';
   static const registerPath = '/v1/auth/register';
