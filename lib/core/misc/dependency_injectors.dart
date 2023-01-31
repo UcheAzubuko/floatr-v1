@@ -1,4 +1,5 @@
 import 'package:floatr/app/features/authentication/data/repositories/authentication_repository.dart';
+import 'package:floatr/app/features/loan/data/repositories/loans_repository.dart';
 import 'package:floatr/app/features/profile/data/repositories/profile_repository.dart';
 import 'package:floatr/app/features/profile/data/repositories/user_resources_repository.dart';
 import 'package:get_it/get_it.dart';
@@ -18,6 +19,7 @@ Future<void> setupLocator() async {
   di.registerLazySingleton<AuthenticationRepository>(() => AuthenticationRepository(prefs: di(), apiService: di()));
   di.registerLazySingleton<UserResourcesRepository>(() => UserResourcesRepository(sharedPreferences: di(), apiService: di()));
   di.registerLazySingleton<ProfileRepository>(() => ProfileRepository(sharedPreferences: di(), apiService: di()));
+  di.registerLazySingleton<LoansRepository>(() => LoansRepository(sharedPreferences: di(), apiService: di()));
 
   // services
   di.registerLazySingleton<APIService>(() => APIService());

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../../core/misc/dependency_injectors.dart';
+import '../../../../../core/misc/helper_functions.dart';
 import '../../../../../core/route/navigation_service.dart';
 import '../../../../../core/utils/app_colors.dart';
 import '../../../../../core/utils/app_icons.dart';
@@ -11,12 +12,13 @@ import '../../../../../core/utils/app_style.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../../widgets/app_text.dart';
 import '../../../../widgets/general_button.dart';
+import '../../../loan/model/responses/loans_response.dart';
 import '../../../loan/view/screens/loan_application_screen.dart';
 
 class HighlightsInfoCard extends StatelessWidget {
-  const HighlightsInfoCard({
-    Key? key,
-  }) : super(key: key);
+  const HighlightsInfoCard({Key? key, required this.loan}) : super(key: key);
+
+  final Loan loan;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class HighlightsInfoCard extends StatelessWidget {
         // info
         Container(
           height: 144,
-          width: 283,
+          width: 290,
           padding: const EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -42,7 +44,7 @@ class HighlightsInfoCard extends StatelessWidget {
                   // amount
                   SizedBox(
                     height: 54,
-                    width: 104.19,
+                    width: 118.19,
                     child: Column(
                       children: [
                         Row(
@@ -62,7 +64,7 @@ class HighlightsInfoCard extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              '₦5,000',
+                              '₦${formatAmount(doubleStringToIntString(loan.maxAmount)!)}',
                               style: TextStyles.normalTextDarkF600,
                             ).paddingOnly(right: 6),
                             Container(
@@ -130,7 +132,7 @@ class HighlightsInfoCard extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              '7 Days',
+                              '${loan.maxTenureInDays} Days',
                               style: TextStyles.normalTextDarkF600,
                             ),
                           ],
