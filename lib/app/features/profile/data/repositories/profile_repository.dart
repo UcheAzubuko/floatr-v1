@@ -144,7 +144,6 @@ class ProfileRepository {
       accessToken = body["access_token"];
       return Right(accessToken!);
     } on ServerException catch (_) {
-      print(' Next of kin update ${_.message}');
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }
   }
