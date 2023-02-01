@@ -44,7 +44,7 @@ class HighlightsInfoCard extends StatelessWidget {
                   // amount
                   SizedBox(
                     height: 54,
-                    width: 118.19,
+                    width: 120.19,
                     child: Column(
                       children: [
                         Row(
@@ -148,7 +148,7 @@ class HighlightsInfoCard extends StatelessWidget {
                 width: 245,
                 height: 30,
                 onPressed: () => navigationService
-                    .navigateToRoute(const LoanApplicationScreen()),
+                    .navigateToRoute(LoanApplicationScreen(loan: loan,)),
                 borderRadius: 8,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

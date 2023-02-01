@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/loan/model/responses/loans_response.dart';
 import 'package:floatr/app/features/loan/view/screens/loan_info_screen.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/dialogs.dart';
 import 'package:floatr/app/widgets/general_button.dart';
+import 'package:floatr/core/misc/helper_functions.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:floatr/core/utils/app_icons.dart';
 import 'package:floatr/core/utils/app_style.dart';
@@ -20,7 +22,12 @@ import '../../../../widgets/custom_appbar.dart';
 import '../../../../widgets/prompt_widget.dart';
 
 class LoanApplicationScreen extends StatelessWidget {
-  const LoanApplicationScreen({super.key});
+  const LoanApplicationScreen({
+    super.key,
+    required this.loan,
+  });
+
+  final Loan loan;
 
   @override
   Widget build(BuildContext context) {
@@ -38,21 +45,26 @@ class LoanApplicationScreen extends StatelessWidget {
       ),
     );
   }
-}
 
-Widget _view(LoanApplicationView loanApplicationView) {
-  switch (loanApplicationView) {
-    case LoanApplicationView.eligible:
-      return const EligibleLenderView();
-    case LoanApplicationView.ineligible:
-      return const IneligibleLenderView();
+  Widget _view(LoanApplicationView loanApplicationView) {
+    switch (loanApplicationView) {
+      case LoanApplicationView.eligible:
+        return EligibleLenderView(
+          loan: loan,
+        );
+      case LoanApplicationView.ineligible:
+        return const IneligibleLenderView();
+    }
   }
 }
 
 class EligibleLenderView extends StatefulWidget {
   const EligibleLenderView({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+    required this.loan,
+  });
+
+  final Loan loan;
 
   @override
   State<EligibleLenderView> createState() => _EligibleLenderViewState();
@@ -61,6 +73,16 @@ class EligibleLenderView extends StatefulWidget {
 class _EligibleLenderViewState extends State<EligibleLenderView> {
   List<String> loanTerms = ['1 Week', '2 Weeks'];
   String? selectedLoanTerm = '1 Week';
+
+  late Loan loan;
+  late double amount;
+
+  @override
+  void initState() {
+    loan = widget.loan;
+    amount = double.parse(loan.minAmount);
+    super.initState();
+  }
 
   int get loanTerm {
     if (selectedLoanTerm == '1 Week') {
@@ -72,18 +94,18 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
     return 0;
   }
 
-  double? amount = 5000;
+  //  = int.parse(loan.minAmount) as double;
 
   int get platformFee {
-    return (20 / 100 * amount!) ~/ 1;
+    return (double.parse(widget.loan.platformCharge) / 100 * amount) ~/ 1;
   }
 
   int get interest {
-    return (5 / 100 * amount!) ~/ 1;
+    return (double.parse(widget.loan.interestCharge) / 100 * amount) ~/ 1;
   }
 
   int get paybackAmount {
-    return (amount! + interest + platformFee) ~/ 1;
+    return (amount+ interest + platformFee) ~/ 1;
   }
 
   int get repaymentAmount {
@@ -91,13 +113,13 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
   }
 
   int get loanAmount {
-    if (amount! ~/ 1 == 30999.999999999996) {
+    if (amount~/ 1 == 30999.999999999996) {
       return 40000;
     }
-    if (amount! ~/ 1 > 30000 && amount! ~/ 1 < 32000) {
+    if (amount~/ 1 > 30000 && amount~/ 1 < 32000) {
       return 31000;
     }
-    return amount! ~/ 1;
+    return amount~/ 1;
   }
 
   @override
@@ -152,7 +174,7 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
               style: TextStyles.smallTextDark14Px,
             ),
             Text(
-              'N$loanAmount',
+              'N${formatAmount(loanAmount.toString())}',
               style: TextStyles.largeTextDark,
             ),
           ],
@@ -169,11 +191,11 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'from N5,000',
+                  'from N${formatAmount(doubleStringToIntString(loan.minAmount)!)}',
                   style: TextStyles.smallerTextDark10px,
                 ),
                 Text(
-                  'to N50,000',
+                  'to N${formatAmount(doubleStringToIntString(loan.maxAmount)!)}',
                   style: TextStyles.smallerTextDark10px,
                 ),
               ],
@@ -219,12 +241,12 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
               //     ),
               //   ),
               // ),
-              child: Slider(
-                value: amount!,
-                min: 5000.0,
-                max: 50000.0,
-                divisions: 45,
-                label: loanAmount.toString(),
+              child: Slider.adaptive(
+                value: amount,
+                min: double.parse(doubleStringToIntString(loan.minAmount)!),
+                max: double.parse(doubleStringToIntString(loan.maxAmount)!),
+                divisions: 10,
+                label: amount.toString(),
                 activeColor: AppColors.primaryColor,
                 inactiveColor: AppColors.disabledBackgroundColor,
                 onChanged: (double value) {
@@ -312,7 +334,8 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                           // loan amount
                           LoanApplicationInformation(
                             option: 'Loan Amount',
-                            optionValue: 'N$loanAmount',
+                            optionValue:
+                                'N${formatAmount(loanAmount.toString())}',
                             percentage: '',
                           ),
 
@@ -336,8 +359,9 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                           // interest
                           LoanApplicationInformation(
                             option: 'Interest',
-                            optionValue: 'N$interest',
-                            percentage: '5',
+                            optionValue:
+                                'N${formatAmount(interest.toString())}',
+                            percentage: doubleStringToIntString(loan.interestCharge.toString())!,
                           ),
 
                           const VerticalSpace(
@@ -348,7 +372,8 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
 
                           LoanApplicationInformation(
                             option: 'No of Repayments',
-                            optionValue: '$loanTerm * N$repaymentAmount',
+                            optionValue:
+                                '$loanTerm * N${formatAmount(repaymentAmount.toString())}',
                             percentage: '',
                           ),
 
@@ -365,8 +390,8 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                           // // platform
                           LoanApplicationInformation(
                             option: 'Platform Fee',
-                            optionValue: 'N$platformFee',
-                            percentage: '20',
+                            optionValue: 'N${formatAmount(platformFee.toString())}',
+                            percentage: doubleStringToIntString(loan.platformCharge)!,
                           ),
 
                           const VerticalSpace(
@@ -376,7 +401,7 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                           // Payback amount
                           LoanApplicationInformation(
                             option: 'Payback Amount',
-                            optionValue: 'N$paybackAmount',
+                            optionValue: 'N${formatAmount(paybackAmount.toString())}',
                             percentage: '',
                           ),
                         ],
