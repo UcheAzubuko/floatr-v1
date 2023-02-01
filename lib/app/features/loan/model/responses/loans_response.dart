@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 class LoansResponse {
-  LoansResponse({required this.loansResponse});
+  LoansResponse({required this.loans});
 
-  final List<Loan> loansResponse;
+  final List<Loan> loans;
 
-  factory LoansResponse.fromJson(List<dynamic> data) => LoansResponse(loansResponse: List<Loan>.from(data.map((e) => Loan.fromJson(e))));
+  factory LoansResponse.fromJson(List<dynamic> data) =>
+      LoansResponse(loans: List<Loan>.from(data.map((e) => Loan.fromJson(e))));
 
   // LoansResponse.toList(List<dynamic> data)
   //     : loansResponse = List<Loan>.from(data.map((e) => Loan.fromJson(e)));

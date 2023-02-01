@@ -253,24 +253,23 @@ class _HighlightsCardState extends State<HighlightsCard> {
 
                       // loaded
                       case LoadingState.loaded:
-                        final loanResponse =
-                            provider.loansResponse!.loansResponse;
+                        final loans = provider.loansResponse!.loans;
                         return SizedBox(
                           height: 150,
                           child: ListView.separated(
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (_, index) => HighlightsInfoCard(
-                                    loan: loanResponse[index],
+                                    loan: loans[index],
                                   ).paddingOnly(
                                     left: index == 0 ? 25 : 10,
-                                    right: index == loanResponse.length - 1
+                                    right: index == loans.length - 1
                                         ? 25
                                         : 0,
                                   ), // this gives the first item more padding on the left and last item more padding on the right
                               separatorBuilder: (_, __) => const SizedBox(
                                     width: 0,
                                   ),
-                              itemCount: loanResponse.length),
+                              itemCount: loans.length),
                         );
                       default:
                         return const SizedBox(
