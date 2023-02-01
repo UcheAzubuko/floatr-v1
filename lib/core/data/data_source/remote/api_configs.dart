@@ -1,5 +1,6 @@
 class APIConfigs {
   static const baseUrl = 'floatr-backend.herokuapp.com';
+  static const banks = '/v1/banks';
   static const beginPhoneVerificationPath =
       '/v1/users/me/begin-phone-verification';
   static const countriesPath = '/v1/countries';
@@ -15,8 +16,10 @@ class APIConfigs {
   static const saveDocumentPath = '/v1/users/me/identity-document';
   static states(String code) => '/v1/country/$code/states';
   static const user = '/v1/users/me';
-  static const userFullPath = 'https://floatr-backend.herokuapp.com/v1/users/me?mask=false';
+  static const userFullPath =
+      'https://floatr-backend.herokuapp.com/v1/users/me?mask=false';
   static const verifyPhonePath = 'v1/users/me/verify-phone';
+  static const verifyAccount = '/v1/banks/verify-account';
   static const verifyBVNPath = '/v1/users/me/verify-bvn';
 }
 

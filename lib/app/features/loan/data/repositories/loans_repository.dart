@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../../core/data/data_source/remote/api_configs.dart';
 import '../../../../../core/data/services/api_service.dart';
 import '../../../../../core/errors/failure.dart';
+import '../../model/responses/banks_response.dart';
 
 class LoansRepository {
   final SharedPreferences _sharedPreferences;
@@ -39,6 +40,25 @@ class LoansRepository {
         headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
       );
       return Right(LoansResponse.fromJson(jsonDecode(response.body)));
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    }
+  }
+
+  Future<Either<Failure, BanksResponse>> getBanks() async {
+    final url = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.banks,
+    );
+
+    try {
+      String? accessToken =
+          _sharedPreferences.getString(StorageKeys.accessTokenKey);
+      final response = await _apiService.get(
+        url: url,
+        headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
+      );
+      return Right(BanksResponse.fromJson(jsonDecode(response.body)));
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }
