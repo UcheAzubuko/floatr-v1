@@ -373,7 +373,7 @@ class SelectCardScreen extends StatelessWidget {
 
                       // add new bank
                       Text(
-                        'ADD NEW BANK',
+                        'ADD NEW CARD',
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
