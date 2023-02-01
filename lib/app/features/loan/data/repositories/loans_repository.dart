@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:dartz/dartz.dart';
+import 'package:floatr/app/features/loan/model/params/verify_bank_params.dart';
 import 'package:floatr/app/features/loan/model/responses/loans_response.dart';
+import 'package:floatr/app/features/loan/model/responses/verify_bank_response.dart';
 import 'package:floatr/core/errors/exception.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -59,6 +61,29 @@ class LoansRepository {
         headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
       );
       return Right(BanksResponse.fromJson(jsonDecode(response.body)));
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    }
+  }
+
+  Future<Either<Failure, VerifyBankResponse>> verifyAccount(
+      VerifyBankParams verifyBankParams) async {
+    final url = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.verifyAccount,
+    );
+
+    final params = verifyBankParams.toMap();
+
+    try {
+      String? accessToken =
+          _sharedPreferences.getString(StorageKeys.accessTokenKey);
+      final response = await _apiService.post(
+        url: url,
+        body: params,
+        headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
+      );
+      return Right(VerifyBankResponse.fromJson(jsonDecode(response.body)));
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }
