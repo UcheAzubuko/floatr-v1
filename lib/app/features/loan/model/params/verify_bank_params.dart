@@ -1,7 +1,7 @@
 class VerifyBankParams {
-  final String bankAccountNumber;
-  final String bankId;
-  final String processor;
+  String bankAccountNumber;
+  String bankId;
+  String processor;
 
   VerifyBankParams({
     required this.bankAccountNumber,

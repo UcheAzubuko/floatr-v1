@@ -89,13 +89,15 @@ class LoanProvider extends BaseProvider {
   Future<void> verifyAccount() async {
     updateLoadingState(LoadingState.busy);
 
-    final repsonse = await _loansRepository.verifyAccount(verifyBankParams!);
+    final repsonse = await _loansRepository
+        .verifyAccount(verifyBankParams!..processor = 'monnify');
 
     repsonse.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? ' Could not Verify bank');
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
+      print(onSuccess.accountName);
       updateAccount(onSuccess);
     });
   }

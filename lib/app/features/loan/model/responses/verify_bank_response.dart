@@ -1,7 +1,7 @@
 class VerifyBankResponse {
-  final String accountNo;
-  final String accountName;
-  final String bankId;
+  final String? accountNo;
+  final String? accountName;
+  final String? bankId;
 
   VerifyBankResponse({
     required this.accountName,

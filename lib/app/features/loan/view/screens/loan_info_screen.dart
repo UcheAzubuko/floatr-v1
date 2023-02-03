@@ -1,9 +1,13 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/loan/model/params/verify_bank_params.dart';
+import 'package:floatr/app/features/loan/providers/loan_provider.dart';
 import 'package:floatr/app/widgets/prompt_widget.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../../core/misc/dependency_injectors.dart';
 import '../../../../../core/utils/app_colors.dart';
@@ -15,6 +19,7 @@ import '../../../../widgets/app_text.dart';
 import '../../../../widgets/custom_appbar.dart';
 import '../../../../widgets/general_button.dart';
 import '../../../../widgets/text_field.dart';
+import '../../model/responses/banks_response.dart';
 
 class LoanApplicationInformationBaseView extends StatelessWidget {
   const LoanApplicationInformationBaseView({super.key, required this.child});
@@ -661,97 +666,210 @@ class AddNewBankScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    VerifyBankParams? verifyBankParams = VerifyBankParams(
+        bankAccountNumber: '', bankId: '', processor: 'monnify');
+
+    Bank? selectedBank;
+    TextEditingController accountNameController = TextEditingController();
+
     NavigationService navigationService = di<NavigationService>();
     return LoanApplicationInformationBaseView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const VerticalSpace(
-            size: 43,
-          ),
-
-          // title
-          Text(
-            'Add New Bank',
-            style: TextStyles.largeTextDark,
-          ),
-
-          const VerticalSpace(
-            size: 9,
-          ),
-
-          Text(
-            'What bank account would you like us to send the \nfunds to?',
-            style: TextStyles.smallTextGrey14Px,
-          ),
-
-          const VerticalSpace(
-            size: 20,
-          ),
-
-          PromptWidget(
-            row: Row(
+      child: ChangeNotifierProvider(
+        create: (context) => LoanProvider(loansRepository: di())..getBanks(),
+        child: Form(
+          key: formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: Builder(builder: (context) {
+            final loan = context.watch<LoanProvider>();
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SvgPicture.asset(SvgAppIcons.icCaution),
-                const HorizontalSpace(
-                  size: 8,
+                const VerticalSpace(
+                  size: 43,
                 ),
-                const Text(
-                  'Account Name should match your registered \nname.',
-                  style: TextStyle(
-                    color: AppColors.primaryColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+
+                // title
+                Text(
+                  'Add New Bank',
+                  style: TextStyles.largeTextDark,
+                ),
+
+                const VerticalSpace(
+                  size: 9,
+                ),
+
+                Text(
+                  'What bank account would you like us to send the \nfunds to?',
+                  style: TextStyles.smallTextGrey14Px,
+                ),
+
+                const VerticalSpace(
+                  size: 20,
+                ),
+
+                PromptWidget(
+                  row: Row(
+                    children: [
+                      SvgPicture.asset(SvgAppIcons.icCaution),
+                      const HorizontalSpace(
+                        size: 8,
+                      ),
+                      const Text(
+                        'Account Name should match your registered \nname.',
+                        style: TextStyle(
+                          color: AppColors.primaryColor,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+
+                const VerticalSpace(
+                  size: 20,
+                ),
+
+                Text(
+                  'Select Bank',
+                  style: TextStyles.smallTextDark14Px,
+                ).paddingOnly(bottom: 8),
+
+                Container(
+                  height: 42,
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 10.0, horizontal: 20.0),
+                  decoration: BoxDecoration(
+                      color: AppColors.grey.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Selector<LoanProvider, BanksResponse>(
+                      selector: ((_, provider) =>
+                          provider.banksResponse ??
+                          BanksResponse(
+                              banks: [Bank(id: '0', name: 'Loading...')])),
+                      builder: (context, bankResponse, __) {
+                        return DropdownButtonFormField<Bank>(
+                          decoration: const InputDecoration.collapsed(
+                              hintText: 'Select Bank',
+                              hintStyle: TextStyle(
+                                  color: AppColors.black,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500)),
+                          // value: ,
+                          focusColor: AppColors.black,
+
+                          borderRadius: BorderRadius.circular(12),
+                          icon: Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            color: AppColors.grey.withOpacity(0.3),
+                          ),
+                          isExpanded: true,
+                          items: bankResponse.banks
+                              .map(
+                                (Bank bank) => DropdownMenuItem<Bank>(
+                                  value: bank,
+                                  child: AppText(
+                                    text: bank.name,
+                                    fontWeight: FontWeight.w500,
+                                    size: 12,
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (Bank? bank) {
+                            selectedBank = bank!;
+                            verifyBankParams.bankId = bank.id;
+                          },
+                          value: selectedBank,
+                          onSaved: (Bank? bank) {},
+                        );
+                      },
+                    ),
+                  ),
+                ),
+
+                const VerticalSpace(
+                  size: 32,
+                ),
+
+                //
+                Text(
+                  'Account Number',
+                  style: TextStyles.smallTextDark14Px,
+                ).paddingOnly(bottom: 8),
+
+                AppTextField(
+                  controller: accountNameController,
+                  hintText: 'Enter your Account number',
+                  inputFormatters: [LengthLimitingTextInputFormatter(10)],
+                  validator: (value) {
+                    if (value!.length < 10) {
+                      return 'Account Number not valid';
+                    }
+                    return null;
+                    // return '';
+                  },
+                  onChanged: (value) async {
+                    if (value!.length == 10) {
+                      verifyBankParams.bankAccountNumber = value;
+                      context.read<LoanProvider>()
+                        ..updateBankParams(verifyBankParams)
+                        ..verifyAccount();
+                    }
+                  },
+                ),
+                //
+
+                const VerticalSpace(
+                  size: 32,
+                ),
+
+                //
+                Text(
+                  'Account Name',
+                  style: TextStyles.smallTextDark14Px,
+                ).paddingOnly(bottom: 8),
+
+                Text(
+                  loan.verifyBankResponse == null
+                      ? ''
+                      : loan.verifyBankResponse!.accountName.toString(),
+                  style: const TextStyle(
+                      fontSize: 15,
+                      color: AppColors.primaryColor,
+                      fontWeight: FontWeight.bold),
+                ),
+
+                const VerticalSpace(
+                  size: 194,
+                ),
+
+                GeneralButton(
+                  height: 42,
+                  onPressed: () => loan.verifyBankResponse != null
+                      ? navigationService
+                          .navigateToRoute(const LoanSummaryScreen())
+                      : null,
+                  borderRadius: 8,
+                  backgroundColor: loan.verifyBankResponse != null
+                      ? AppColors.primaryColor
+                      : AppColors.primaryColorLight,
+                      borderColor: loan.verifyBankResponse != null
+                      ? AppColors.primaryColor
+                      : AppColors.primaryColorLight,
+                  child: const AppText(
+                    text: 'CONTINUE',
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ).paddingOnly(bottom: 30)
               ],
-            ),
-          ),
-
-          const VerticalSpace(
-            size: 20,
-          ),
-
-          Text(
-            'Select Bank',
-            style: TextStyles.smallTextDark14Px,
-          ).paddingOnly(bottom: 8),
-          AppTextField(
-            controller: TextEditingController(),
-            // hintText: 'Enter Cardholder Name',
-          ),
-
-          const VerticalSpace(
-            size: 32,
-          ),
-
-          //
-          Text(
-            'Account Number',
-            style: TextStyles.smallTextDark14Px,
-          ).paddingOnly(bottom: 8),
-          AppTextField(
-            controller: TextEditingController(),
-            hintText: 'Enter your Account number',
-          ),
-          //
-
-          const VerticalSpace(
-            size: 194,
-          ),
-
-          GeneralButton(
-            height: 42,
-            onPressed: () =>
-                navigationService.navigateToRoute(const LoanSummaryScreen()),
-            borderRadius: 8,
-            child: const AppText(
-              text: 'CONTINUE',
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-            ),
-          ).paddingOnly(bottom: 30)
-        ],
+            );
+          }),
+        ),
       ),
     );
   }
