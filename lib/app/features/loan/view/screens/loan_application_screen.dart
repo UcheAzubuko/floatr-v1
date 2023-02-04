@@ -84,15 +84,21 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
     super.initState();
   }
 
-  int get loanTerm {
-    if (selectedLoanTerm == '1 Week') {
-      return 1;
-    }
-    if (selectedLoanTerm == '2 Weeks') {
-      return 2;
-    }
-    return 0;
-  }
+  int loanTerm = 1;
+
+  // int get loanTerm {
+  //   if (selectedLoanTerm == '1 Week') {
+  //     return 1;
+  //   }
+  //   if (selectedLoanTerm == '2 Weeks') {
+  //     return 2;
+  //   }
+  //   return 0;
+  // }
+
+  // set loanTerm(int loanTerm) {
+  //   this.loanTerm = loanTerm;
+  // }
 
   //  = int.parse(loan.minAmount) as double;
 
@@ -105,7 +111,7 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
   }
 
   int get paybackAmount {
-    return (amount+ interest + platformFee) ~/ 1;
+    return (amount + interest + platformFee) ~/ 1;
   }
 
   int get repaymentAmount {
@@ -113,17 +119,30 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
   }
 
   int get loanAmount {
-    if (amount~/ 1 == 30999.999999999996) {
+    if (amount ~/ 1 == 30999.999999999996) {
       return 40000;
     }
-    if (amount~/ 1 > 30000 && amount~/ 1 < 32000) {
+    if (amount ~/ 1 > 30000 && amount ~/ 1 < 32000) {
       return 31000;
     }
-    return amount~/ 1;
+    return amount ~/ 1;
   }
 
   @override
   Widget build(BuildContext context) {
+    // compute weeks
+    int weeks = (loan.maxTenureInDays / 7).floor();
+
+    // store weeks in map
+    Map<String, String> weeksMap = {};
+    for (int i = 1; i <= weeks; i++) {
+      if (i == 1) {
+        weeksMap['$i'] = "$i Week";
+      } else {
+        weeksMap['$i'] = "$i Weeks";
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -277,7 +296,7 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                   borderRadius: BorderRadius.circular(10)),
               child: Align(
                 alignment: Alignment.center,
-                child: DropdownButtonFormField<String>(
+                child: DropdownButtonFormField(
                   decoration: const InputDecoration.collapsed(hintText: ''),
                   // value: ,
                   focusColor: AppColors.black,
@@ -288,17 +307,26 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                     color: AppColors.grey.withOpacity(0.3),
                   ),
                   isExpanded: true,
-                  items: loanTerms
-                      .map((lt) => DropdownMenuItem<String>(
-                          value: lt,
-                          child: AppText(
-                            text: lt,
-                            fontWeight: FontWeight.w700,
-                            size: 12,
-                          )))
-                      .toList(),
-                  onChanged: (lt) => setState(() => selectedLoanTerm = lt),
-                  value: selectedLoanTerm,
+                  items: weeksMap.entries.map((entry) {
+                    return DropdownMenuItem(
+                      value: entry.value,
+                      child: AppText(
+                        text: entry.value,
+                        fontWeight: FontWeight.w700,
+                        size: 12,
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (val) {
+                    setState(() {
+                      loanTerm = int.parse(val![0]);
+                    });
+                    // loanTerm = int.parse(val![0]);
+                    // print(int.parse(val![0]));
+                  },
+                  value: weeksMap.entries.map((e) => e.value).first.isNotEmpty
+                      ? weeksMap.entries.map((e) => e.value).first
+                      : null,
                 ),
               ),
             ),
@@ -361,7 +389,8 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                             option: 'Interest',
                             optionValue:
                                 'N${formatAmount(interest.toString())}',
-                            percentage: doubleStringToIntString(loan.interestCharge.toString())!,
+                            percentage: doubleStringToIntString(
+                                loan.interestCharge.toString())!,
                           ),
 
                           const VerticalSpace(
@@ -390,8 +419,10 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                           // // platform
                           LoanApplicationInformation(
                             option: 'Platform Fee',
-                            optionValue: 'N${formatAmount(platformFee.toString())}',
-                            percentage: doubleStringToIntString(loan.platformCharge)!,
+                            optionValue:
+                                'N${formatAmount(platformFee.toString())}',
+                            percentage:
+                                doubleStringToIntString(loan.platformCharge)!,
                           ),
 
                           const VerticalSpace(
@@ -401,7 +432,8 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                           // Payback amount
                           LoanApplicationInformation(
                             option: 'Payback Amount',
-                            optionValue: 'N${formatAmount(paybackAmount.toString())}',
+                            optionValue:
+                                'N${formatAmount(paybackAmount.toString())}',
                             percentage: '',
                           ),
                         ],
