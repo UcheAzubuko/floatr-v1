@@ -71,9 +71,6 @@ class EligibleLenderView extends StatefulWidget {
 }
 
 class _EligibleLenderViewState extends State<EligibleLenderView> {
-  List<String> loanTerms = ['1 Week', '2 Weeks'];
-  String? selectedLoanTerm = '1 Week';
-
   late Loan loan;
   late double amount;
 
