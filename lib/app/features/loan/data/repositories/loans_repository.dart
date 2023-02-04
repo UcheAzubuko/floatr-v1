@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
 import 'package:floatr/app/features/loan/model/params/verify_bank_params.dart';
@@ -66,14 +67,37 @@ class LoansRepository {
     }
   }
 
+  Future<Either<Failure, String>> addBank(AddBankParams addBankParams) async {
+    final url = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.userBanks,
+    );
+
+    final postBody = addBankParams.toMap();
+
+    try {
+      String? accessToken =
+          _sharedPreferences.getString(StorageKeys.accessTokenKey);
+      final response = await _apiService.post(
+        url: url,
+        body: postBody,
+        headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
+      );
+      log(response.body);
+      return const Right('Success');
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    }
+  }
+
   Future<Either<Failure, VerifyBankResponse>> verifyAccount(
-      VerifyBankParams verifyBankParams) async {
+      BankParams bankParams) async {
     final url = Uri.https(
       APIConfigs.baseUrl,
       APIConfigs.verifyAccount,
     );
 
-    final params = verifyBankParams.toMap();
+    final params = bankParams.toMap();
 
     try {
       String? accessToken =

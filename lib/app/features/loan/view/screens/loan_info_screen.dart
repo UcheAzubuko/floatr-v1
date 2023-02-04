@@ -2,7 +2,9 @@ import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/loan/model/params/verify_bank_params.dart';
 import 'package:floatr/app/features/loan/providers/loan_provider.dart';
+import 'package:floatr/app/widgets/app_snackbar.dart';
 import 'package:floatr/app/widgets/prompt_widget.dart';
+import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -667,8 +669,8 @@ class AddNewBankScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
-    VerifyBankParams? verifyBankParams = VerifyBankParams(
-        bankAccountNumber: '', bankId: '', processor: 'monnify');
+    BankParams? bankParams =
+        BankParams(bankAccountNumber: '', bankId: '', processor: 'monnify');
 
     Bank? selectedBank;
     TextEditingController accountNameController = TextEditingController();
@@ -781,7 +783,7 @@ class AddNewBankScreen extends StatelessWidget {
                               .toList(),
                           onChanged: (Bank? bank) {
                             selectedBank = bank!;
-                            verifyBankParams.bankId = bank.id;
+                            bankParams.bankId = bank.id;
                           },
                           value: selectedBank,
                           onSaved: (Bank? bank) {},
@@ -814,9 +816,9 @@ class AddNewBankScreen extends StatelessWidget {
                   },
                   onChanged: (value) async {
                     if (value!.length == 10) {
-                      verifyBankParams.bankAccountNumber = value;
+                      bankParams.bankAccountNumber = value;
                       context.read<LoanProvider>()
-                        ..updateBankParams(verifyBankParams)
+                        ..updateBankParams(bankParams)
                         ..verifyAccount();
                     }
                   },
@@ -849,15 +851,18 @@ class AddNewBankScreen extends StatelessWidget {
 
                 GeneralButton(
                   height: 42,
+                  isLoading: loan.loadingState == LoadingState.busy,
                   onPressed: () => loan.verifyBankResponse != null
-                      ? navigationService
-                          .navigateToRoute(const LoanSummaryScreen())
+                      ? _handleAddBank(loan, context)
                       : null,
+                  // ? navigationService
+                  //     .navigateToRoute(const LoanSummaryScreen())
+                  // : null,
                   borderRadius: 8,
                   backgroundColor: loan.verifyBankResponse != null
                       ? AppColors.primaryColor
                       : AppColors.primaryColorLight,
-                      borderColor: loan.verifyBankResponse != null
+                  borderColor: loan.verifyBankResponse != null
                       ? AppColors.primaryColor
                       : AppColors.primaryColorLight,
                   child: const AppText(
@@ -872,6 +877,20 @@ class AddNewBankScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _handleAddBank(LoanProvider provider, context) async {
+    final bankDetails = provider.bankParams;
+    final bankName = provider.verifyBankResponse!.accountName;
+    provider.updateAddBankParams(AddBankParams(
+        accountNo: bankDetails!.bankAccountNumber,
+        bankId: bankDetails.bankId,
+        processor: bankDetails.processor,
+        accountName: bankName!));
+    await provider.addBank();
+    if (provider.loadingState == LoadingState.error) {
+      AppSnackBar.showErrorSnackBar(context, provider.errorMsg);
+    }
   }
 }
 

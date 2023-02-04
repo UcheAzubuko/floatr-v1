@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:floatr/app/features/loan/data/repositories/loans_repository.dart';
 import 'package:floatr/app/features/loan/model/params/verify_bank_params.dart';
 import 'package:floatr/app/features/loan/model/responses/loans_response.dart';
@@ -12,6 +14,7 @@ class LoanProvider extends BaseProvider {
       : _loansRepository = loansRepository;
 
   LoadingState _loadingState = LoadingState.idle;
+  String _errorMsg = 'An unknown error occured';
 
   LoansResponse? _loansResponse;
 
@@ -21,9 +24,13 @@ class LoanProvider extends BaseProvider {
 
   BanksResponse? get banksResponse => _banksResponse;
 
-  VerifyBankParams? _verifyBankParams;
+  BankParams? _bankParams;
 
-  VerifyBankParams? get verifyBankParams => _verifyBankParams;
+  BankParams? get bankParams => _bankParams;
+
+  AddBankParams? _addBankParams;
+
+  AddBankParams? get addBankParams => _addBankParams;
 
   VerifyBankResponse? _verifyBankResponse;
 
@@ -33,8 +40,17 @@ class LoanProvider extends BaseProvider {
   LoadingState get loadingState => _loadingState;
 
   @override
+  String get errorMsg => _errorMsg;
+
+  @override
   updateLoadingState(LoadingState loadingState) {
     _loadingState = loadingState;
+    notifyListeners();
+  }
+
+  @override
+  updateErrorMsgState(String errorMsg) {
+    _errorMsg = errorMsg;
     notifyListeners();
   }
 
@@ -48,8 +64,13 @@ class LoanProvider extends BaseProvider {
     notifyListeners();
   }
 
-  updateBankParams(VerifyBankParams verifyBankParams) {
-    _verifyBankParams = verifyBankParams;
+  updateBankParams(BankParams bankParams) {
+    _bankParams = bankParams;
+    notifyListeners();
+  }
+
+  updateAddBankParams(AddBankParams addBankParams) {
+    _addBankParams = addBankParams;
     notifyListeners();
   }
 
@@ -86,18 +107,32 @@ class LoanProvider extends BaseProvider {
     });
   }
 
+  Future<void> addBank() async {
+    updateLoadingState(LoadingState.busy);
+
+    final repsonse =
+        await _loansRepository.addBank(addBankParams!..processor = 'monnify');
+
+    repsonse.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? ' Could not add bank');
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
+      log("Added bank successfully");
+    });
+  }
+
   Future<void> verifyAccount() async {
     updateLoadingState(LoadingState.busy);
 
     final repsonse = await _loansRepository
-        .verifyAccount(verifyBankParams!..processor = 'monnify');
+        .verifyAccount(bankParams!..processor = 'monnify');
 
     repsonse.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? ' Could not Verify bank');
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
-      print(onSuccess.accountName);
       updateAccount(onSuccess);
     });
   }
