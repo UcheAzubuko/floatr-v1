@@ -319,7 +319,7 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                   }).toList(),
                   onChanged: (val) {
                     setState(() {
-                      loanTerm = int.parse(val![0]);
+                      loanTerm = int.parse(val![0]); // The first char in the string is the number to use for the calculation, so I extracted that and assigned to loanTerm. 
                     });
                     // loanTerm = int.parse(val![0]);
                     // print(int.parse(val![0]));
