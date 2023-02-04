@@ -1,3 +1,4 @@
+import 'package:floatr/core/route/router.dart';
 import 'package:flutter/material.dart';
 
 class NavigationService {
@@ -25,11 +26,7 @@ class NavigationService {
 
   /// Pass in the widget to route to directly
   Future<dynamic> navigateToRoute(Widget route) {
-    return _navigationKey.currentState!.push(
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) => route,
-      ),
-    );
+    return _navigationKey.currentState!.push(slidePageTransition(route));
   }
 
   Future<dynamic> maybePop() {

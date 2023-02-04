@@ -44,13 +44,20 @@ class Router {
       case RouteName.createPin:
         return MaterialPageRoute(builder: (_) => const CreatePinScreen());
       case RouteName.displayPicture:
-      final args = settings.arguments as DisplayImageArguments;
-        return MaterialPageRoute(builder: (_) => DisplayPictureScreen(image: args.file, imageType: args.imageType,), );
+        final args = settings.arguments as DisplayImageArguments;
+        return MaterialPageRoute(
+          builder: (_) => DisplayPictureScreen(
+            image: args.file,
+            imageType: args.imageType,
+          ),
+        );
       case RouteName.biometrics:
         return MaterialPageRoute(builder: (_) => const BiometricsScreen());
       case RouteName.editProfile:
-      final args = settings.arguments as EditProfileArguments;
-        return MaterialPageRoute(builder: (_) => EditProfileScreen(editProfileView: args.editProfileView,));
+        final args = settings.arguments as EditProfileArguments;
+        return slidePageTransition(EditProfileScreen(
+          editProfileView: args.editProfileView,
+        ));
       case RouteName.forgotPassword:
         return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
       case RouteName.forgotPasswordOtp:
@@ -61,16 +68,36 @@ class Router {
       case RouteName.dashboard:
         return MaterialPageRoute(builder: (_) => const DashboardScreen());
       case RouteName.profile:
-        return MaterialPageRoute(builder: (_) => const ProfileScreen());
+        return slidePageTransition(const ProfileScreen());
       case RouteName.snapDocument:
-      final args = settings.arguments as SnapDocumentArguments;
-        return MaterialPageRoute(builder: (_) => SnapDocumentScreen(documentType: args.documentType,));
+        final args = settings.arguments as SnapDocumentArguments;
+        return slidePageTransition(SnapDocumentScreen(
+          documentType: args.documentType,
+        ));
       case RouteName.navbar:
-        return MaterialPageRoute(builder: (_) => const BottomNavigation());
+        return slidePageTransition(const BottomNavigation());
       case RouteName.cards:
-        return MaterialPageRoute(builder: (_) => const AddNewBankScreen());
+        return slidePageTransition(const AddNewBankScreen());
       default:
-        return MaterialPageRoute(builder: (_) => const SplashScreen());
+        return slidePageTransition(const SplashScreen());
     }
   }
+}
+
+Route slidePageTransition(Widget screen) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => screen,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(0.0, 1.0);
+      const end = Offset.zero;
+      const curve = Curves.decelerate;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+      return SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      );
+    },
+  );
 }
