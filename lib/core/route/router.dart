@@ -30,23 +30,23 @@ class Router {
       case RouteName.postOnboarding:
         return MaterialPageRoute(builder: (_) => const PostOnboarding());
       case RouteName.login:
-        return MaterialPageRoute(builder: (_) => const LoginScreen());
+        return slidePageTransition(const LoginScreen());
       case RouteName.signup:
-        return MaterialPageRoute(builder: (_) => const SignUpScreen());
+        return slidePageTransition(const SignUpScreen());
       case RouteName.verifyOTP:
-        return MaterialPageRoute(builder: (_) => const VerifyPhoneScreen());
+        return slidePageTransition(const VerifyPhoneScreen());
       case RouteName.verifyBVN:
-        return MaterialPageRoute(builder: (_) => const VerifyBVNScreen());
+        return slidePageTransition(const VerifyBVNScreen());
       case RouteName.takeSelfie:
-        return MaterialPageRoute(builder: (_) => const TakeSelefieScreen());
+        return slidePageTransition(const TakeSelefieScreen());
       case RouteName.confirmDetails:
-        return MaterialPageRoute(builder: (_) => const ConfirmDetailsScreen());
+        return slidePageTransition(const ConfirmDetailsScreen());
       case RouteName.createPin:
         return MaterialPageRoute(builder: (_) => const CreatePinScreen());
       case RouteName.displayPicture:
         final args = settings.arguments as DisplayImageArguments;
-        return MaterialPageRoute(
-          builder: (_) => DisplayPictureScreen(
+        return slidePageTransition(
+          DisplayPictureScreen(
             image: args.file,
             imageType: args.imageType,
           ),
