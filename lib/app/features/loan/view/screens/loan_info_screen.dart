@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:floatr/app/features/loan/model/params/verify_bank_params.dart';
 import 'package:floatr/app/features/loan/providers/loan_provider.dart';
 import 'package:floatr/app/widgets/app_snackbar.dart';
@@ -9,9 +12,12 @@ import 'package:floatr/core/route/navigation_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:monnify_payment_sdk/monnify_payment_sdk.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../core/misc/dependency_injectors.dart';
+import '../../../../../core/secrets.dart';
 import '../../../../../core/utils/app_colors.dart';
 import '../../../../../core/utils/app_icons.dart';
 import '../../../../../core/utils/app_style.dart';
@@ -316,8 +322,21 @@ class AddNewCardScreen extends StatelessWidget {
   }
 }
 
-class SelectCardScreen extends StatelessWidget {
+class SelectCardScreen extends StatefulWidget {
   const SelectCardScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SelectCardScreen> createState() => _SelectCardScreenState();
+}
+
+class _SelectCardScreenState extends State<SelectCardScreen> {
+  late Monnify? monnify;
+
+  @override
+  void initState() {
+    _initMonnify();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -359,8 +378,7 @@ class SelectCardScreen extends StatelessWidget {
                   size: 35,
                 ),
                 InkWell(
-                  onTap: () => navigationService
-                      .navigateToRoute(const AddNewCardScreen()),
+                  onTap: onInitializePayment,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
@@ -395,6 +413,40 @@ class SelectCardScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  _initMonnify() async {
+    monnify = await Monnify.initialize(
+      applicationMode: ApplicationMode.LIVE,
+      apiKey: monnifyAPILiveKey,
+      contractCode: contractKey,
+    );
+  }
+
+  void onInitializePayment() async {
+    final paymentReference = DateTime.now().millisecondsSinceEpoch.toString();
+    final user = context.read<AuthenticationProvider>().user;
+
+    // Initia
+    final transaction = TransactionDetails().copyWith(
+      amount: 100,
+      currencyCode: 'NGN',
+      customerName: '${user!.firstName} ${user.lastName}',
+      customerEmail: user.email,
+      paymentReference: paymentReference,
+      paymentMethods: [PaymentMethod.CARD],
+    );
+
+    try {
+      final response =
+          await monnify?.initializePayment(transaction: transaction);
+
+      Fluttertoast.showToast(msg: response.toString());
+      log(response.toString());
+    } catch (e) {
+      log('$e');
+      Fluttertoast.showToast(msg: e.toString());
+    }
   }
 }
 
