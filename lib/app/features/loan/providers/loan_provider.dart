@@ -7,6 +7,7 @@ import 'package:floatr/app/features/loan/model/responses/verify_bank_response.da
 import 'package:floatr/core/providers/base_provider.dart';
 
 import '../model/responses/banks_response.dart';
+import '../model/responses/my_banks_response.dart';
 
 class LoanProvider extends BaseProvider {
   final LoansRepository _loansRepository;
@@ -23,6 +24,10 @@ class LoanProvider extends BaseProvider {
   BanksResponse? _banksResponse;
 
   BanksResponse? get banksResponse => _banksResponse;
+
+  MyBanksResponse? _myBanksResponse;
+
+  MyBanksResponse? get myBanksResponse => _myBanksResponse;
 
   BankParams? _bankParams;
 
@@ -61,6 +66,11 @@ class LoanProvider extends BaseProvider {
 
   updateBanks(BanksResponse banksResponse) {
     _banksResponse = banksResponse;
+    notifyListeners();
+  }
+
+  updateMyBanks(MyBanksResponse myBanksResponse) {
+    _myBanksResponse = myBanksResponse;
     notifyListeners();
   }
 
@@ -104,6 +114,20 @@ class LoanProvider extends BaseProvider {
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
       updateBanks(onSuccess);
+    });
+  }
+
+  Future<void> getMyBanks() async {
+    updateLoadingState(LoadingState.busy);
+
+    final repsonse = await _loansRepository.getMyBanks();
+
+    repsonse.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? ' Could not get Banks');
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
+      updateMyBanks(onSuccess);
     });
   }
 

@@ -518,25 +518,57 @@ class SelectBankScreen extends StatelessWidget {
             size: 29,
           ),
 
-          SizedBox(
-            height: context.heightPx * 0.6,
-            child: ListView(
-              children: const [
-                SelectBank(
-                  color: AppColors.lightGrey300,
-                  bankName: 'United Bank for Africa',
-                  bankNumber: '2139872309',
-                  isDefault: true,
-                ),
-                VerticalSpace(
-                  size: 24,
-                ),
-                SelectBank(
-                  color: AppColors.lightGrey300,
-                  bankName: 'United Bank for Africa',
-                  bankNumber: '2139872309',
-                ),
-              ],
+          ChangeNotifierProvider(
+            create: (context) =>
+                LoanProvider(loansRepository: di())..getMyBanks(),
+            child: SizedBox(
+              height: context.heightPx * 0.4,
+              child: Consumer<LoanProvider>(
+                builder: (context, loanProvider, _) {
+                  final banks = loanProvider.myBanksResponse == null
+                      ? []
+                      : loanProvider.myBanksResponse!.mybanks;
+                  switch (loanProvider.loadingState) {
+                    case LoadingState.busy:
+                      return const Center(
+                        child: CircularProgressIndicator.adaptive(),
+                      );
+                    case LoadingState.loaded:
+                      if (banks.isEmpty) {
+                        return Center(
+                          child: Text(
+                            '''You have not added any accounts yet!.''',
+                            style: TextStyles.normalTextDarkF800,
+                          ),
+                        );
+                      }
+
+                      return ListView.builder(
+                          itemCount: banks.length,
+                          itemBuilder: (context, index) => SelectBank(
+                                color: AppColors.lightGrey300,
+                                bankName: banks[index].bank.name,
+                                bankNumber: banks[index].accountNo,
+                                isDefault: banks[index].isDefault,
+                              ).paddingOnly(bottom: 20));
+                    case LoadingState.error:
+                      return Center(
+                        child: Text(
+                          '''An Unexpected error occured!.''',
+                          style: TextStyles.normalTextDarkF800,
+                        ),
+                      );
+
+                    default:
+                      return Center(
+                        child: Text(
+                          '''An Unexpected error occured!.''',
+                          style: TextStyles.normalTextDarkF800,
+                        ),
+                      );
+                  }
+                },
+              ),
             ),
           ),
 

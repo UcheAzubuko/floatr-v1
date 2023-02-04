@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import 'package:floatr/app/features/loan/model/params/verify_bank_params.dart';
 import 'package:floatr/app/features/loan/model/responses/loans_response.dart';
+import 'package:floatr/app/features/loan/model/responses/my_banks_response.dart';
 import 'package:floatr/app/features/loan/model/responses/verify_bank_response.dart';
 import 'package:floatr/core/errors/exception.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -85,6 +86,26 @@ class LoansRepository {
       );
       log(response.body);
       return const Right('Success');
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    }
+  }
+
+  Future<Either<Failure, MyBanksResponse>> getMyBanks() async {
+    final url = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.userBanks,
+    );
+
+    try {
+      String? accessToken =
+          _sharedPreferences.getString(StorageKeys.accessTokenKey);
+
+      final response = await _apiService.get(
+        url: url,
+        headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
+      );
+      return Right(MyBanksResponse.fromJson(jsonDecode(response.body)));
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }
