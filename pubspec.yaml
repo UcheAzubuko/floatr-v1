@@ -52,7 +52,7 @@ dependencies:
   camera: ^0.10.1
   flutter_countdown_timer: ^4.1.0
   jwt_decoder: ^2.0.1
-  monnify_payment_sdk: ^1.0.2  
+  monnify_payment_sdk:
 dev_dependencies:
   flutter_test:
     sdk: flutter
