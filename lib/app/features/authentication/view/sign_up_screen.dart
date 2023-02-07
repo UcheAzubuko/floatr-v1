@@ -126,7 +126,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 AppTextField(
                   hintText: 'ex. James Okoro',
                   controller: fullNameController,
-                  textInputType: TextInputType.emailAddress,
+                  textInputType: TextInputType.name,
                   textInputAction: TextInputAction.unspecified,
                   onSaved: (String? name) => _registerParams.name = name!,
                   validator: _fullnameValidator,
