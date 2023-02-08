@@ -27,11 +27,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
     _pageController = PageController();
   }
 
-  // @override
-  // void dispose() {
-  //   _pageController.dispose();
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +55,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
           children: const [
             DashboardScreen(),
             NavLoanApplicationScreen(),
-            NavBarCardScreen(),
+            SelectCardScreen(),
             ProfileScreen(),
           ],
         ),

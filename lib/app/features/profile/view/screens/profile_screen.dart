@@ -127,6 +127,7 @@ class ProfileScreen extends StatelessWidget {
                           animation: true,
                           progressColor: AppColors.primaryColor,
                           circularStrokeCap: CircularStrokeCap.round,
+                          animationDuration: 2000,
                           center: CircleAvatar(
                             radius: 44,
                             backgroundImage: NetworkImage(user.photo!.url!),
