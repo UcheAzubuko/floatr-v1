@@ -1,5 +1,9 @@
 class APIConfigs {
+  // base url
   static const baseUrl = 'floatr-backend.herokuapp.com';
+
+
+  static const activities = 'v1/users/me/activities';
   static const banks = '/v1/banks';
   static const beginPhoneVerificationPath =
       '/v1/users/me/begin-phone-verification';

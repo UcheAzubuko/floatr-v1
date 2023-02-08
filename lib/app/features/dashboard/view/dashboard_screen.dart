@@ -1,8 +1,10 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
+import 'package:floatr/app/features/dashboard/providers/dashboard_provider.dart';
 import 'package:floatr/app/features/dashboard/view/widgets/activities_widgets.dart';
 import 'package:floatr/app/features/profile/data/model/user_helper.dart';
+import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:floatr/core/utils/app_icons.dart';
@@ -180,11 +182,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             size: 22,
                           ),
 
-                          SizedBox(
-                            height: 256,
-                            width: context.widthPx,
-                            child: const ActivitiesList(),
-                          ),
+                          Consumer<DashboardProvider>(
+                              builder: (context, provider, _) {
+                                return SizedBox(
+                                  height: 256,
+                                  width: context.widthPx,
+                                  child: _showActitvity(provider),
+                                );
+                              },
+                            ),
+                          
                         ],
                       ),
 
@@ -198,6 +205,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
           );
         },
       ),
+    );
+  }
+
+  Widget _showActitvity(DashboardProvider dashboardProvider) {
+    if (dashboardProvider.loadingState == LoadingState.busy) {
+      return const Center(
+        child: CircularProgressIndicator.adaptive(),
+      );
+    } else if (dashboardProvider.loadingState == LoadingState.loaded) {
+      if (dashboardProvider.activiesResponse != null) {
+        if (dashboardProvider.activiesResponse!.activities.isEmpty) {
+          return const NoActivityView();
+        } else {
+          return ActivitiesList(
+            activities: dashboardProvider.activiesResponse!.activities,
+          );
+        }
+      }
+    } 
+    return const Center(
+      child: Text('Could not get activities'),
     );
   }
 }

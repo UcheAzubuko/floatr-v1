@@ -236,52 +236,58 @@ class _HighlightsCardState extends State<HighlightsCard> {
                 ],
               ).paddingOnly(left: 26),
               const VerticalSpace(size: 48),
-              ChangeNotifierProvider(
-                create: (context) =>
-                    LoanProvider(loansRepository: di())..getFeaturedLoans(),
-                child: Consumer<LoanProvider>(
-                  builder: (context, provider, _) {
-                    switch (provider.loadingState) {
-                      // loading
-                      case LoadingState.busy:
-                        return const SizedBox(
+              Consumer<LoanProvider>(
+                builder: (context, provider, _) {
+                  switch (provider.loadingState) {
+                    // loading
+                    case LoadingState.busy:
+                      return const SizedBox(
+                        height: 150,
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+
+                    // loaded
+                    case LoadingState.loaded:
+                      // final loans = provider.loansResponse!.loans;
+                      if (provider.loansResponse == null) {
+                        const SizedBox(
                           height: 150,
                           child: Center(
                             child: CircularProgressIndicator(),
                           ),
                         );
-
-                      // loaded
-                      case LoadingState.loaded:
-                        final loans = provider.loansResponse!.loans;
-                        return SizedBox(
-                          height: 150,
-                          child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (_, index) => HighlightsInfoCard(
-                                    loan: loans[index],
-                                  ).paddingOnly(
-                                    left: index == 0 ? 25 : 10,
-                                    right: index == loans.length - 1
-                                        ? 25
-                                        : 0,
-                                  ), // this gives the first item more padding on the left and last item more padding on the right
-                              separatorBuilder: (_, __) => const SizedBox(
-                                    width: 0,
-                                  ),
-                              itemCount: loans.length),
-                        );
-                      default:
-                        return const SizedBox(
-                          height: 150,
-                          child: Center(
-                            child: Text('Couldn\'t get loans'),
-                          ),
-                        );
-                    }
-                  },
-                ),
-              )
+                      }
+                      return SizedBox(
+                        height: 150,
+                        child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (_, index) => HighlightsInfoCard(
+                                  loan: provider.loansResponse!.loans[index],
+                                ).paddingOnly(
+                                  left: index == 0 ? 25 : 10,
+                                  right: index ==
+                                          provider.loansResponse!.loans.length -
+                                              1
+                                      ? 25
+                                      : 0,
+                                ), // this gives the first item more padding on the left and last item more padding on the right
+                            separatorBuilder: (_, __) => const SizedBox(
+                                  width: 0,
+                                ),
+                            itemCount: provider.loansResponse!.loans.length),
+                      );
+                    default:
+                      return const SizedBox(
+                        height: 150,
+                        child: Center(
+                          child: Text('Couldn\'t get loans'),
+                        ),
+                      );
+                  }
+                },
+              ),
             ],
           ),
         ],

@@ -27,11 +27,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
     _pageController = PageController();
   }
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _pageController.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
           onPageChanged: (index) {
             setState(() => currentTabIndex = index);
           },
-          children: const <Widget>[
+          children: const [
             DashboardScreen(),
             NavLoanApplicationScreen(),
             NavBarCardScreen(),

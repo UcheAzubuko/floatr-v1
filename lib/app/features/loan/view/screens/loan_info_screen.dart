@@ -570,10 +570,7 @@ class SelectBankScreen extends StatelessWidget {
             size: 29,
           ),
 
-          ChangeNotifierProvider(
-            create: (context) =>
-                LoanProvider(loansRepository: di())..getMyBanks(),
-            child: SizedBox(
+          SizedBox(
               height: context.heightPx * 0.4,
               child: Consumer<LoanProvider>(
                 builder: (context, loanProvider, _) {
@@ -622,7 +619,7 @@ class SelectBankScreen extends StatelessWidget {
                 },
               ),
             ),
-          ),
+          
 
           InkWell(
             onTap: () =>

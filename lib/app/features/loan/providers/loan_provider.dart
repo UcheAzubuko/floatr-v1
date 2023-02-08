@@ -98,8 +98,8 @@ class LoanProvider extends BaseProvider {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? ' Could not get loans');
     }, (onSuccess) {
-      updateLoadingState(LoadingState.loaded);
       updateFeaturedLoans(onSuccess);
+      updateLoadingState(LoadingState.loaded);
     });
   }
 
