@@ -12,6 +12,7 @@ import 'package:floatr/app/features/authentication/view/verify_bvn_screen.dart';
 import 'package:floatr/app/features/authentication/view/verify_otp_screen.dart';
 import 'package:floatr/app/features/dashboard/view/dashboard_screen.dart';
 import 'package:floatr/app/features/loan/view/screens/loan_info_screen.dart';
+import 'package:floatr/app/features/onboarding/onboarding_screen_main.dart';
 import 'package:floatr/app/features/onboarding/post_onboarding.dart';
 import 'package:floatr/app/features/onboarding/splash_screen.dart';
 import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
@@ -19,7 +20,9 @@ import 'package:floatr/app/features/profile/view/screens/profile_screen.dart';
 import 'package:floatr/app/features/profile/view/screens/snap_document_screen.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../app/features/authentication/providers/authentication_provider.dart';
 import '../../app/widgets/bottom_navbar.dart';
 
 class Router {
@@ -29,6 +32,13 @@ class Router {
         return MaterialPageRoute(builder: (_) => const SplashScreen());
       case RouteName.postOnboarding:
         return MaterialPageRoute(builder: (_) => const PostOnboarding());
+      case RouteName.onBoarding:
+        return MaterialPageRoute(builder: (_) {
+          final auth = _.read<AuthenticationProvider>();
+          return auth.isLoggedIn
+              ? const BottomNavigation()
+              : const OnboardingScreen();
+        });
       case RouteName.login:
         return slidePageTransition(const LoginScreen());
       case RouteName.signup:

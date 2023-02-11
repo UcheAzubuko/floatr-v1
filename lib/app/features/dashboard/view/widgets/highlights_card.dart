@@ -148,7 +148,7 @@ class _HighlightsCardState extends State<HighlightsCard> {
                                   // compare both pins
                                   if (tempPin != pin) {
                                     Fluttertoast.showToast(
-                                        msg: 'Both Pins do not match!',
+                                        msg: 'Both PINs do not match!',
                                         backgroundColor: Colors.red);
                                   } else {
                                     authProvider.updateTransactionPin(pin);
@@ -159,7 +159,7 @@ class _HighlightsCardState extends State<HighlightsCard> {
                                           .pop(); // pop dialog
                                       // show success confirmation
                                       Fluttertoast.showToast(
-                                          msg: 'Transaction pin created',
+                                          msg: 'Transaction PIN created.',
                                           backgroundColor: Colors.blue);
                                     });
                                   }

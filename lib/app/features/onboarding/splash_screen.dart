@@ -1,9 +1,13 @@
-import 'package:floatr/app/features/onboarding/onboarding_screen_main.dart';
+import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
+import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 import '../../../app/extensions/sized_context.dart';
+import '../../../core/misc/dependency_injectors.dart';
+import '../../../core/route/navigation_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,24 +17,17 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreen extends State<SplashScreen> {
-  int splashtime = 3;
+  // int splashtime = 15;
   // duration of splash screen on second
 
   @override
   void initState() {
-    Future.delayed(Duration(seconds: splashtime), () async {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          //pushReplacement = replacing the route so that
-          //splash screen won't show on back button press
-          //navigation to Home page.
-          builder: (context) {
-            return const OnboardingScreen();
-          },
-        ),
-      );
-    });
+    final auth = context.read<AuthenticationProvider>();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => auth.getUser()
+      .then((_) {
+        di<NavigationService>().navigateTo(RouteName.onBoarding);
+      }));
 
     super.initState();
   }

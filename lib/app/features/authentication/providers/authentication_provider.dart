@@ -134,6 +134,19 @@ class AuthenticationProvider extends BaseProvider {
     });
   }
 
+  bool _isLoggedIn() {
+    if (_user != null) {
+        if (!_user!.isPhoneVerified! ||
+            !_user!.isBvnVerified! ||
+            !_user!.isPhotoVerified!) {
+          return false;
+        }  
+      }
+    return authenticationRepository.isLoggedIn;
+  }
+
+  bool get isLoggedIn => _isLoggedIn();
+
   Future<void> initiateVerifyPhone(BuildContext context) async {
     updateLoadingState(LoadingState.busy);
     var response =
@@ -184,8 +197,6 @@ class AuthenticationProvider extends BaseProvider {
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'Failed to get user');
-      // AppSnackBar.showErrorSnackBar(context, errorMsg);
-      // trigger error on ui
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
       updateUser(onSuccess);
