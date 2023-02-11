@@ -10,32 +10,45 @@ import '../../core/utils/app_style.dart';
 class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
   final String? title;
   final bool useInAppArrow;
+  final bool shrinkAppBar;
 
   @override
   final Size preferredSize;
 
-  CustomAppBar({Key? key, this.title, this.useInAppArrow = false})
+  CustomAppBar(
+      {Key? key,
+      this.title,
+      this.useInAppArrow = false,
+      this.shrinkAppBar = false})
       : preferredSize = const Size.fromHeight(50.0),
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final NavigationService navigationService = di<NavigationService>();
-    return AppBar(
-      // your customization here
-      title: Text(
-        title ?? '',
-        style: TextStyles.normalTextDarkF800,
-      ),
-      automaticallyImplyLeading: true,
-      leading: InkWell(
-        onTap: () => navigationService.maybePop(),
-        child: SvgPicture.asset(useInAppArrow ? SvgAppIcons.icArrowNormalLeft : 'assets/icons/fill/arrow-left.svg',
-            height: context.heightPx * 0.02,
-            width: context.widthPx * 0.02,
-            fit: BoxFit.scaleDown),
-      ),
-      centerTitle: false,
-    );
+    return shrinkAppBar
+        ? PreferredSize(
+            preferredSize: const Size.fromHeight(0), // Set this height
+            child: Container(),
+          )
+        : AppBar(
+            // your customization here
+            title: Text(
+              title ?? '',
+              style: TextStyles.normalTextDarkF800,
+            ),
+            automaticallyImplyLeading: true,
+            leading: InkWell(
+              onTap: () => navigationService.maybePop(),
+              child: SvgPicture.asset(
+                  useInAppArrow
+                      ? SvgAppIcons.icArrowNormalLeft
+                      : 'assets/icons/fill/arrow-left.svg',
+                  height: context.heightPx * 0.02,
+                  width: context.widthPx * 0.02,
+                  fit: BoxFit.scaleDown),
+            ),
+            centerTitle: false,
+          );
   }
 }

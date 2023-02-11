@@ -30,9 +30,11 @@ import '../../../../widgets/text_field.dart';
 import '../../model/responses/banks_response.dart';
 
 class LoanApplicationInformationBaseView extends StatelessWidget {
-  const LoanApplicationInformationBaseView({super.key, required this.child});
+  const LoanApplicationInformationBaseView(
+      {super.key, required this.child, this.applyCustomAppBar = true});
 
   final Widget child;
+  final bool applyCustomAppBar;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +42,7 @@ class LoanApplicationInformationBaseView extends StatelessWidget {
         appBar: CustomAppBar(
           title: 'Loan Application',
           useInAppArrow: true,
+          shrinkAppBar: !applyCustomAppBar,
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -173,7 +176,9 @@ class EligibleScreen extends StatelessWidget {
           GeneralButton(
             height: 42,
             onPressed: () =>
-                navigationService.navigateToRoute(const SelectCardScreen()),
+                navigationService.navigateToRoute(const SelectCardScreen(
+              showAppBar: true,
+            )),
             borderRadius: 8,
             child: const AppText(
               text: 'CONTINUE',
@@ -323,7 +328,9 @@ class AddNewCardScreen extends StatelessWidget {
 }
 
 class SelectCardScreen extends StatefulWidget {
-  const SelectCardScreen({Key? key}) : super(key: key);
+  const SelectCardScreen({Key? key, this.showAppBar = false}) : super(key: key);
+
+  final bool showAppBar;
 
   @override
   State<SelectCardScreen> createState() => _SelectCardScreenState();
@@ -342,12 +349,15 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
   Widget build(BuildContext context) {
     NavigationService navigationService = di<NavigationService>();
     return LoanApplicationInformationBaseView(
+      applyCustomAppBar: widget.showAppBar,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const VerticalSpace(
-            size: 43,
-          ),
+          widget.showAppBar
+              ? const VerticalSpace(
+                  size: 43,
+                )
+              : const SizedBox(),
 
           // title
           Text(
@@ -571,55 +581,54 @@ class SelectBankScreen extends StatelessWidget {
           ),
 
           SizedBox(
-              height: context.heightPx * 0.4,
-              child: Consumer<LoanProvider>(
-                builder: (context, loanProvider, _) {
-                  final banks = loanProvider.myBanksResponse == null
-                      ? []
-                      : loanProvider.myBanksResponse!.mybanks;
-                  switch (loanProvider.loadingState) {
-                    case LoadingState.busy:
-                      return const Center(
-                        child: CircularProgressIndicator.adaptive(),
-                      );
-                    case LoadingState.loaded:
-                      if (banks.isEmpty) {
-                        return Center(
-                          child: Text(
-                            '''You have not added any accounts yet!.''',
-                            style: TextStyles.normalTextDarkF800,
-                          ),
-                        );
-                      }
-
-                      return ListView.builder(
-                          itemCount: banks.length,
-                          itemBuilder: (context, index) => SelectBank(
-                                color: AppColors.lightGrey300,
-                                bankName: banks[index].bank.name,
-                                bankNumber: banks[index].accountNo,
-                                isDefault: banks[index].isDefault,
-                              ).paddingOnly(bottom: 20));
-                    case LoadingState.error:
+            height: context.heightPx * 0.4,
+            child: Consumer<LoanProvider>(
+              builder: (context, loanProvider, _) {
+                final banks = loanProvider.myBanksResponse == null
+                    ? []
+                    : loanProvider.myBanksResponse!.mybanks;
+                switch (loanProvider.loadingState) {
+                  case LoadingState.busy:
+                    return const Center(
+                      child: CircularProgressIndicator.adaptive(),
+                    );
+                  case LoadingState.loaded:
+                    if (banks.isEmpty) {
                       return Center(
                         child: Text(
-                          '''An Unexpected error occured!.''',
+                          '''You have not added any accounts yet!.''',
                           style: TextStyles.normalTextDarkF800,
                         ),
                       );
+                    }
 
-                    default:
-                      return Center(
-                        child: Text(
-                          '''An Unexpected error occured!.''',
-                          style: TextStyles.normalTextDarkF800,
-                        ),
-                      );
-                  }
-                },
-              ),
+                    return ListView.builder(
+                        itemCount: banks.length,
+                        itemBuilder: (context, index) => SelectBank(
+                              color: AppColors.lightGrey300,
+                              bankName: banks[index].bank.name,
+                              bankNumber: banks[index].accountNo,
+                              isDefault: banks[index].isDefault,
+                            ).paddingOnly(bottom: 20));
+                  case LoadingState.error:
+                    return Center(
+                      child: Text(
+                        '''An Unexpected error occured!''',
+                        style: TextStyles.normalTextDarkF800,
+                      ),
+                    );
+
+                  default:
+                    return Center(
+                      child: Text(
+                        '''An Unexpected error occured!''',
+                        style: TextStyles.normalTextDarkF800,
+                      ),
+                    );
+                }
+              },
             ),
-          
+          ),
 
           InkWell(
             onTap: () =>

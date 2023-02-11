@@ -22,12 +22,15 @@ class _SplashScreen extends State<SplashScreen> {
 
   @override
   void initState() {
+
     final auth = context.read<AuthenticationProvider>();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => auth.getUser()
-      .then((_) {
-        di<NavigationService>().navigateTo(RouteName.onBoarding);
-      }));
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => auth.getUser().then((_) {
+              Future.delayed(const Duration(seconds: 1), () async {
+                di<NavigationService>().navigateTo(RouteName.onBoarding);
+              });
+            }));
 
     super.initState();
   }
