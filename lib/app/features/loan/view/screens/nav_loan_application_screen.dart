@@ -101,7 +101,7 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const VerticalSpace(
-          size: 43,
+          size: 90,
         ),
         Row(
           children: [
