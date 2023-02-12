@@ -347,7 +347,6 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    NavigationService navigationService = di<NavigationService>();
     return LoanApplicationInformationBaseView(
       applyCustomAppBar: widget.showAppBar,
       child: Column(
@@ -765,7 +764,6 @@ class AddNewBankScreen extends StatelessWidget {
     Bank? selectedBank;
     TextEditingController accountNameController = TextEditingController();
 
-    NavigationService navigationService = di<NavigationService>();
     return LoanApplicationInformationBaseView(
       child: ChangeNotifierProvider(
         create: (context) => LoanProvider(loansRepository: di())..getBanks(),

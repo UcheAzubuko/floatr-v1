@@ -38,10 +38,8 @@ class ActivitiesRepository {
         url: url,
         headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
       );
-      print(response.body);
       return Right(ActivitiesResponse.fromJson(jsonDecode(response.body)));
     } on ServerException catch (_) {
-      print(_.message);
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }
   }

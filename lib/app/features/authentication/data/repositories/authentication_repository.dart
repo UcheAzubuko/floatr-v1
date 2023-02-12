@@ -265,7 +265,6 @@ class AuthenticationRepository {
             body: imageData,
             headers: imageUploadHeader);
 
-        print(body["url"]);
 
         final putBody = {
           "id": body["id"],
@@ -299,11 +298,10 @@ class AuthenticationRepository {
               "fileId": body["id"],
             };
             // save selfie
-            final saveFileResponse = await _apiService.post(
+            await _apiService.post(
                 url: isSelfie ? saveSelfieUrl : saveDocumentUrl,
                 body: saveFileBody,
                 headers: _authHeaders);
-            print(saveFileResponse.body);
           } on ServerException catch (_) {
             return Left(
                 ServerFailure(code: _.code.toString(), message: _.message));
