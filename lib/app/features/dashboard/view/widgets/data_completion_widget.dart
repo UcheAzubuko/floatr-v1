@@ -1,4 +1,6 @@
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/authentication/data/model/response/user_repsonse.dart';
+import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -34,10 +36,10 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
     super.initState();
   }
 
+  final NavigationService _navigationService = di<NavigationService>();
+
   @override
   Widget build(BuildContext context) {
-    final NavigationService navigationService = di<NavigationService>();
-
     return Consumer<AuthenticationProvider>(
       builder: (context, authProvider, _) {
         UserHelper userHelper = UserHelper(user: authProvider.user!);
@@ -100,7 +102,7 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
 
                     // personal
                     InkWell(
-                      onTap: () => navigationService.navigateToRoute(
+                      onTap: () => _navigationService.navigateToRoute(
                           const EditProfileScreen(
                               editProfileView: EditProfile.personalDetails)),
                       child: CriteriaWidget(
@@ -133,7 +135,7 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
 
                     // res addy
                     InkWell(
-                      onTap: () => navigationService.navigateToRoute(
+                      onTap: () => _navigationService.navigateToRoute(
                           const EditProfileScreen(
                               editProfileView: EditProfile.residentialAddress)),
                       child: CriteriaWidget(
@@ -150,7 +152,7 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
 
                     // employment details
                     InkWell(
-                      onTap: () => navigationService.navigateToRoute(
+                      onTap: () => _navigationService.navigateToRoute(
                           const EditProfileScreen(
                               editProfileView: EditProfile.employmentDetails)),
                       child: CriteriaWidget(
@@ -167,7 +169,7 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
 
                     // next of kin
                     InkWell(
-                      onTap: () => navigationService.navigateToRoute(
+                      onTap: () => _navigationService.navigateToRoute(
                           const EditProfileScreen(
                               editProfileView: EditProfile.nextOfKin)),
                       child: CriteriaWidget(
@@ -189,13 +191,9 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                             height: 48,
                             width: context.widthPx,
                             borderRadius: 12,
-                            backgroundColor: userHelper.isFullyOnboarded
-                                ? AppColors.primaryColor
-                                : AppColors.primaryColorLight.withOpacity(0.4),
-                            borderColor: userHelper.isFullyOnboarded
-                                ? AppColors.primaryColor
-                                : AppColors.primaryColorLight.withOpacity(0.1),
-                            onPressed: () {},
+                            backgroundColor: AppColors.primaryColor,
+                            borderColor: AppColors.primaryColor,
+                            onPressed: () => _handleRouting(provider.user!),
                             // _proceed(TransactionPinState.initial),
                             // userHelper.isFullyOnboarded()
                             //     ? provider.updateTempCompletion(true)
@@ -216,5 +214,29 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
         );
       },
     );
+  }
+
+  _handleRouting(UserResponse user) {
+    if (!UserHelper(user: user).isPersonalDetailsComplete) {
+      _navigationService.navigateTo(RouteName.editProfile,
+          arguments: EditProfileArguments(
+              editProfileView: EditProfile.personalDetails));
+    } else if(!UserHelper(user: user).isIdDataComplete) {
+      AppDialog.showAppModal(
+              context, const GovIDModalView(), Colors.transparent);
+    } else if(!UserHelper(user: user).isAddressComplete) {
+      _navigationService.navigateTo(RouteName.editProfile,
+          arguments: EditProfileArguments(
+              editProfileView: EditProfile.residentialAddress));
+    
+    } else if(!UserHelper(user: user).isEmployerDetailsComplete) {
+      _navigationService.navigateTo(RouteName.editProfile,
+          arguments: EditProfileArguments(
+              editProfileView: EditProfile.employmentDetails));
+    } else {
+      _navigationService.navigateTo(RouteName.editProfile,
+          arguments: EditProfileArguments(
+              editProfileView: EditProfile.nextOfKin));
+    }
   }
 }

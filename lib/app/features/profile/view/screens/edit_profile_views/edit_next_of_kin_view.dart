@@ -153,8 +153,9 @@ class _EditNextOfKinViewState extends State<EditNextOfKinView> {
 
                     AppTextField(
                         controller: fullnameController
-                          ..text =
-                              '${authProvider.user!.nextOfKin!.firstName ?? ''} ${authProvider.user!.nextOfKin!.lastName ?? ''}',
+                          ..text = authProvider.user!.nextOfKin == null
+                              ? '${authProvider.user!.nextOfKin!.firstName ?? ''} ${authProvider.user!.nextOfKin!.lastName ?? ''}'
+                              : '',
                         validator: _fullnameValidator,
                         hintText: 'Okeke Ali',
                         onSaved: (String? fullname) {
@@ -276,13 +277,17 @@ class _EditNextOfKinViewState extends State<EditNextOfKinView> {
                                       ),
                                     )
                                     .toList(),
-                                onChanged: (Country? country) async {
+                                onChanged: (Country? country) {
                                   // setState(() {
                                   selectedCountry = country;
                                   _nextOfKinParams.countryId = country!.id;
                                   // });
 
-                                  await context
+                                  setState(() {
+                                    selectedState = null;
+                                  });
+
+                                  context
                                       .read<UserResourcesProvider>()
                                       .getStates(selectedCountry!.id!);
                                 },
@@ -362,14 +367,10 @@ class _EditNextOfKinViewState extends State<EditNextOfKinView> {
                                     )
                                     .toList(),
                                 onChanged: (state.State? state) {
-                                  // setState(() {
+
                                   selectedState = state;
                                   _nextOfKinParams.stateId = state!.id;
-                                  // });
-
-                                  // context
-                                  //     .read<UserResourcesProvider>()
-                                  //     .getStates(selcetedCountry!.id!);
+                                
                                 },
                                 onSaved: (state.State? state) {
                                   // this checks are being done just incase if the user already has
@@ -469,12 +470,10 @@ class _EditNextOfKinViewState extends State<EditNextOfKinView> {
         await authProvider.getUser();
         _navigationService.pop();
         Fluttertoast.showToast(
-            msg: 'Next of kin update successful',
-            backgroundColor: Colors.blue);
+            msg: 'Next of kin update successful', backgroundColor: Colors.blue);
       } else if (provider.loadingState == LoadingState.error) {
         AppSnackBar.showErrorSnackBar(context, provider.errorMsg);
       }
     }
   }
 }
-

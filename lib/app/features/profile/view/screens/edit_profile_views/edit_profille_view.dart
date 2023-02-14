@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 import 'package:floatr/app/features/profile/data/model/responses/state_repsonse.dart'
     as state;
 
-
 import '../../../../../../core/misc/dependency_injectors.dart';
 import '../../../../../../core/providers/base_provider.dart';
 import '../../../../../../core/route/navigation_service.dart';
@@ -19,15 +18,18 @@ import '../../../../../../core/utils/app_style.dart';
 import '../../../../../../core/utils/spacing.dart';
 import '../../../../../widgets/app_snackbar.dart';
 import '../../../../../widgets/app_text.dart';
+import '../../../../../widgets/dialogs.dart';
 import '../../../../../widgets/general_button.dart';
 import '../../../../authentication/providers/authentication_provider.dart';
 import '../../../data/model/params/user_profile_params.dart';
 import '../../../data/model/responses/gender_response.dart';
 import '../../../data/model/responses/marital_status_response.dart';
+import '../../../data/model/user_helper.dart';
 import '../../../providers/user_profile_provider.dart';
 import '../../../providers/user_resources_provider.dart';
 import '../../widgets/account_info_card.dart';
 import '../edit_profile.dart';
+import '../profile_screen.dart';
 
 class EditProfileView extends StatefulWidget {
   const EditProfileView({
@@ -397,8 +399,16 @@ class _EditProfileViewState extends State<EditProfileView> {
       await provider.updateUserProfiile();
       if (provider.loadingState == LoadingState.loaded) {
         await authProvider.getUser(); // update user
-        _navigationService.pop();
-        Fluttertoast.showToast(msg: 'User personal info update successful', backgroundColor: Colors.blue);
+        if (!UserHelper(user: authProvider.user!).isIdDataComplete) {
+          _navigationService.pop();
+          AppDialog.showAppModal(
+              context, const GovIDModalView(), Colors.transparent);
+        } else {
+          _navigationService.pop();
+        }
+        Fluttertoast.showToast(
+            msg: 'User personal info update successful',
+            backgroundColor: Colors.blue);
       } else if (provider.loadingState == LoadingState.error) {
         AppSnackBar.showErrorSnackBar(context, provider.errorMsg);
       }
