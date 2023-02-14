@@ -48,7 +48,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     return Scaffold(
         body: PageView(
           controller: _pageController,
-          physics: const BouncingScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(), // makes pageview none swipeable
           onPageChanged: (index) {
             setState(() => currentTabIndex = index);
           },
