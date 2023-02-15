@@ -5,8 +5,9 @@ import 'package:floatr/app/features/loan/model/params/verify_bank_params.dart';
 import 'package:floatr/app/features/loan/model/responses/loans_response.dart';
 import 'package:floatr/app/features/loan/model/responses/verify_bank_response.dart';
 import 'package:floatr/core/providers/base_provider.dart';
+import 'package:flutter/material.dart';
 
-import '../model/responses/banks_response.dart';
+import '../model/responses/banks_response.dart' as bank;
 import '../model/responses/my_banks_response.dart';
 
 class LoanProvider extends BaseProvider {
@@ -17,17 +18,22 @@ class LoanProvider extends BaseProvider {
   LoadingState _loadingState = LoadingState.idle;
   String _errorMsg = 'An unknown error occured';
 
-  LoansResponse? _loansResponse;
+  LoansResponse? get loansResponse => _loansResponse.value;
 
-  LoansResponse? get loansResponse => _loansResponse;
+  final ValueNotifier<LoansResponse?> _loansResponse =
+      ValueNotifier<LoansResponse?>(LoansResponse(loans: List<Loan>.empty()));
 
-  BanksResponse? _banksResponse;
+  final ValueNotifier<bank.BanksResponse?> _banksResponse =
+      ValueNotifier<bank.BanksResponse?>(
+          bank.BanksResponse(banks: List<bank.Bank>.empty()));
 
-  BanksResponse? get banksResponse => _banksResponse;
+  bank.BanksResponse? get banksResponse => _banksResponse.value;
 
-  MyBanksResponse? _myBanksResponse;
+  final ValueNotifier<MyBanksResponse?> _myBanksResponse =
+      ValueNotifier<MyBanksResponse?>(
+          MyBanksResponse(mybanks: List<MyBank>.empty()));
 
-  MyBanksResponse? get myBanksResponse => _myBanksResponse;
+  MyBanksResponse? get myBanksResponse => _myBanksResponse.value;
 
   BankParams? _bankParams;
 
@@ -37,9 +43,10 @@ class LoanProvider extends BaseProvider {
 
   AddBankParams? get addBankParams => _addBankParams;
 
-  VerifyBankResponse? _verifyBankResponse;
+  final ValueNotifier<VerifyBankResponse?> _verifyBankResponse =
+      ValueNotifier<VerifyBankResponse?>(null);
 
-  VerifyBankResponse? get verifyBankResponse => _verifyBankResponse;
+  VerifyBankResponse? get verifyBankResponse => _verifyBankResponse.value;
 
   @override
   LoadingState get loadingState => _loadingState;
@@ -59,20 +66,20 @@ class LoanProvider extends BaseProvider {
     notifyListeners();
   }
 
-  updateFeaturedLoans(LoansResponse loansResponse) {
-    _loansResponse = loansResponse;
-    notifyListeners();
-  }
+  // updateFeaturedLoans(LoansResponse loansResponse) {
+  //   _loansResponse = loansResponse;
+  //   notifyListeners();
+  // }
 
-  updateBanks(BanksResponse banksResponse) {
-    _banksResponse = banksResponse;
-    notifyListeners();
-  }
+  // updateBanks(BanksResponse banksResponse) {
+  //   _banksResponse = banksResponse;
+  //   notifyListeners();
+  // }
 
-  updateMyBanks(MyBanksResponse myBanksResponse) {
-    _myBanksResponse = myBanksResponse;
-    notifyListeners();
-  }
+  // updateMyBanks(MyBanksResponse myBanksResponse) {
+  //   _myBanksResponse = myBanksResponse;
+  //   notifyListeners();
+  // }
 
   updateBankParams(BankParams bankParams) {
     _bankParams = bankParams;
@@ -84,10 +91,10 @@ class LoanProvider extends BaseProvider {
     notifyListeners();
   }
 
-  updateAccount(VerifyBankResponse verifyBankResponse) {
-    _verifyBankResponse = verifyBankResponse;
-    notifyListeners();
-  }
+  // updateAccount(VerifyBankResponse verifyBankResponse) {
+  //   _verifyBankResponse = verifyBankResponse;
+  //   notifyListeners();
+  // }
 
   Future<void> getFeaturedLoans() async {
     updateLoadingState(LoadingState.busy);
@@ -98,7 +105,7 @@ class LoanProvider extends BaseProvider {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? ' Could not get loans');
     }, (onSuccess) {
-      updateFeaturedLoans(onSuccess);
+      _loansResponse.value = onSuccess;
       updateLoadingState(LoadingState.loaded);
     });
   }
@@ -113,7 +120,7 @@ class LoanProvider extends BaseProvider {
       updateErrorMsgState(onError.message ?? ' Could not get Banks');
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
-      updateBanks(onSuccess);
+      _banksResponse.value = onSuccess;
     });
   }
 
@@ -127,7 +134,7 @@ class LoanProvider extends BaseProvider {
       updateErrorMsgState(onError.message ?? ' Could not get Banks');
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
-      updateMyBanks(onSuccess);
+      _myBanksResponse.value = onSuccess;
     });
   }
 
@@ -157,7 +164,7 @@ class LoanProvider extends BaseProvider {
       updateErrorMsgState(onError.message ?? ' Could not Verify bank');
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
-      updateAccount(onSuccess);
+      _verifyBankResponse.value = onSuccess;
     });
   }
 }

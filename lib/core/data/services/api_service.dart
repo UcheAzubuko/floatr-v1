@@ -1,11 +1,7 @@
-// ignore_for_file: depend_on_referenced_packages, avoid_print
-
 import 'dart:convert';
-// ignore: avoid_web_libraries_in_flutter
-// import 'dart:html' as html;
+import 'dart:developer';
 
 import 'package:http/http.dart' as http;
-// import 'package:http_parser/http_parser.dart' as httpParser;
 import '../../errors/exception.dart';
 
 class APIService {
@@ -53,12 +49,12 @@ class APIService {
     final errorBody = jsonDecode(response.body);
     String errorMessage = 'An error occured';
 
-    if (errorBody.containsKey("errors")) {
+    if (errorBody is Map && errorBody.containsKey("errors")) {
       errorMessage = errorBody["errors"].values.join('.\n');
-    } else {
+    } else if (errorBody is Map && errorBody.containsKey('message')){
       errorMessage = errorBody["message"];
     }
-    print('Handler $errorMessage');
+    log('Handler $errorMessage');
     throw ServerException(errorMessage, response.statusCode);
   }
 }
