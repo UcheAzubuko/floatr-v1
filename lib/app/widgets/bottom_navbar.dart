@@ -19,49 +19,34 @@ class BottomNavigation extends StatefulWidget {
 
 class _BottomNavigationState extends State<BottomNavigation> {
   int currentTabIndex = 0;
-  late PageController _pageController;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
-    
+    Widget getViewForIndex(int index) {
+      switch (index) {
+        case 0:
+          return const DashboardScreen();
+        case 1:
+          return const NavLoanApplicationScreen();
+        case 2:
+          return const NavBarCardScreen();
+        case 3:
+          return const ProfileScreen();
+
+        default:
+          return const DashboardScreen();
+      }
+    }
+
     void setCurrentTabTo({required int newTabIndex}) {
       setState(() {
         currentTabIndex = newTabIndex;
-        _pageController.animateToPage(newTabIndex,
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.elasticInOut);
       });
     }
 
     return Scaffold(
-        body: PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(), // makes pageview none swipeable
-          onPageChanged: (index) {
-            setState(() => currentTabIndex = index);
-          },
-          children: const [
-            DashboardScreen(),
-            NavLoanApplicationScreen(),
-            SelectCardScreen(),
-            ProfileScreen(),
-          ],
-        ),
-
         // backgroundColor: ImpactlyAppColors.backgroundColor,
-        // body: getViewForIndex(currentTabIndex),
+        body: getViewForIndex(currentTabIndex),
         // extendBodyBehindAppBar: true,
         // extendBody: true,
         bottomNavigationBar: Theme(
@@ -132,6 +117,15 @@ class _BottomNavigationState extends State<BottomNavigation> {
                       label: '',
                     ),
 
+                    // // wallet
+                    // BottomNavigationBarItem(
+                    //   icon: BottomItemIcon(
+                    //     color:
+                    //         currentTabIndex == 3 ? AppColors.gold : AppColors.white,
+                    //     assetName: SvgAppIcons.icWallet,
+                    //   ),
+                    //   label: 'Wallet',
+                    // ),
 
                     // profile
                     BottomNavigationBarItem(
