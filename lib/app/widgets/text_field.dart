@@ -1,5 +1,6 @@
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTextField extends StatelessWidget {
@@ -14,8 +15,10 @@ class AppTextField extends StatelessWidget {
   final TextInputType? textInputType;
   final TextInputAction? textInputAction;
   final void Function(String?)? onSaved;
+  final void Function(String?)? onChanged;
   final VoidCallback? onTap;
   final bool readOnly;
+  final List<TextInputFormatter>? inputFormatters;
 
   const AppTextField(
       {Key? key,
@@ -30,7 +33,9 @@ class AppTextField extends StatelessWidget {
       this.onSaved,
       this.onTap,
       this.labelText,
+      this.onChanged,
       this.readOnly = false,
+      this.inputFormatters,
       this.suffixIcon})
       : super(key: key);
   @override
@@ -39,13 +44,15 @@ class AppTextField extends StatelessWidget {
       cursorColor: AppColors.primaryColor,
       obscureText: obscureText,
       validator: validator,
+      keyboardType: textInputType,
       maxLines: obscureText == true ? 1 : maxLines,
+      inputFormatters: inputFormatters,
       style: GoogleFonts.plusJakartaSans(
-          color: AppColors.black,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          // textStyle: Theme.of(context).textTheme.bodyText1,
-        ),
+        color: AppColors.black,
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        // textStyle: Theme.of(context).textTheme.bodyText1,
+      ),
       decoration: InputDecoration(
         prefixIcon: prefixIcon,
         contentPadding:
@@ -77,7 +84,7 @@ class AppTextField extends StatelessWidget {
           borderSide: BorderSide(color: Colors.white),
         ),
       ),
-      onChanged: (value) {},
+      onChanged: onChanged,
       onSaved: onSaved,
       controller: controller,
       onTap: onTap,

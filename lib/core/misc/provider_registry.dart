@@ -6,6 +6,8 @@ import 'package:floatr/core/providers/base_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
+import '../../app/features/dashboard/providers/dashboard_provider.dart';
+import '../../app/features/loan/providers/loan_provider.dart';
 import 'dependency_injectors.dart';
 
 final globalProviders = <SingleChildWidget>[
@@ -16,4 +18,6 @@ final globalProviders = <SingleChildWidget>[
   ChangeNotifierProvider(create: (_) => AuthenticationProvider(authenticationRepository: di())),
   ChangeNotifierProvider(create: (_) => UserResourcesProvider(userResourcesRepository: di())),
   ChangeNotifierProvider(create: (_) => UserProfileProvider(profileRepository: di())),
+  ChangeNotifierProvider(create: (_) => LoanProvider(loansRepository: di())..getMyBanks()..getFeaturedLoans()..getBanks()),
+  ChangeNotifierProvider(create: (_) => DashboardProvider(activitieRepository: di())..getMyActivies()),
 ];

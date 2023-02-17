@@ -5,6 +5,7 @@ import 'package:floatr/app/features/authentication/data/model/params/verify_bvn_
 import 'package:floatr/app/features/authentication/data/model/params/verify_phone_params.dart';
 import 'package:floatr/app/features/authentication/data/model/response/user_repsonse.dart';
 import 'package:floatr/app/features/authentication/data/repositories/authentication_repository.dart';
+import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
 import 'package:floatr/app/widgets/app_snackbar.dart';
 import 'package:floatr/core/misc/dependency_injectors.dart';
 import 'package:floatr/core/providers/base_provider.dart';
@@ -14,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../../core/route/navigation_service.dart';
+import '../../profile/data/model/user_helper.dart';
 import '../data/model/params/register_params.dart';
 
 class AuthenticationProvider extends BaseProvider {
@@ -134,6 +136,19 @@ class AuthenticationProvider extends BaseProvider {
     });
   }
 
+  bool _isLoggedIn() {
+    if (_user != null) {
+      if (!_user!.isPhoneVerified! ||
+          !_user!.isBvnVerified! ||
+          !_user!.isPhotoVerified!) {
+        return false;
+      }
+    }
+    return authenticationRepository.isLoggedIn;
+  }
+
+  bool get isLoggedIn => _isLoggedIn();
+
   Future<void> initiateVerifyPhone(BuildContext context) async {
     updateLoadingState(LoadingState.busy);
     var response =
@@ -184,8 +199,6 @@ class AuthenticationProvider extends BaseProvider {
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'Failed to get user');
-      // AppSnackBar.showErrorSnackBar(context, errorMsg);
-      // trigger error on ui
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
       updateUser(onSuccess);
@@ -224,9 +237,16 @@ class AuthenticationProvider extends BaseProvider {
           msg: imageType == ImageType.selfie
               ? 'Selfie upload successful'
               : 'Document upload successful');
-      imageType == ImageType.selfie
-          ? _navigationService.pushAndRemoveUntil(RouteName.confirmDetails)
-          : _navigationService.pushAndRemoveUntil(RouteName.navbar);
+
+      if (imageType == ImageType.selfie) {
+        _navigationService.pushAndRemoveUntil(RouteName.confirmDetails);
+      } else {
+        !UserHelper(user: user!).isAddressComplete
+            ? _navigationService.navigateReplacementTo(RouteName.editProfile,
+                arguments: EditProfileArguments(
+                    editProfileView: EditProfile.residentialAddress))
+            : _navigationService.pushAndRemoveUntil(RouteName.navbar);
+      }
     });
   }
 }

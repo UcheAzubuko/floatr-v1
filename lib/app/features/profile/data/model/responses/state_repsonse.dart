@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
-class StateResponse {
-  List<State> stateResponses;
+class StateResponse extends Equatable{
+  final List<State> stateResponses;
 
-  StateResponse({required this.stateResponses});
+  const StateResponse({required this.stateResponses});
 
   factory StateResponse.fromMap(List<dynamic> stateResponses) => StateResponse(
         stateResponses: List<State>.from(
@@ -17,6 +17,9 @@ class StateResponse {
 
   @override
   String toString() => stateResponses.toString();
+  
+  @override
+  List<Object?> get props => [stateResponses];
 }
 
 class State extends Equatable{

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:floatr/app/features/authentication/data/model/params/login_params.dart';
 import 'package:floatr/app/features/authentication/data/model/params/register_params.dart';
 import 'package:floatr/app/features/authentication/data/model/params/verify_bvn_params.dart';
@@ -18,10 +19,13 @@ import 'package:path/path.dart';
 import '../../../../../core/utils/enums.dart';
 
 class AuthenticationRepository {
-  final SharedPreferences prefs;
-  final APIService apiService;
+  final SharedPreferences _prefs;
+  final APIService _apiService;
 
-  AuthenticationRepository({required this.prefs, required this.apiService});
+  AuthenticationRepository(
+      {required SharedPreferences prefs, required APIService apiService})
+      : _prefs = prefs,
+        _apiService = apiService;
 
   /// authHeaders
   final Map<String, String> _authHeaders = {
@@ -39,14 +43,14 @@ class AuthenticationRepository {
     final loginBody = params.toMap();
 
     try {
-      final response = await apiService.post(
+      final response = await _apiService.post(
         url: url,
         body: loginBody,
         headers: _authHeaders,
       );
       final body = jsonDecode(response.body);
       final accessToken = body["access_token"];
-      await prefs.setString(
+      await _prefs.setString(
           StorageKeys.accessTokenKey, accessToken); // store token
       return Right(accessToken); // grab access_token
     } on ServerException catch (_) {
@@ -64,7 +68,7 @@ class AuthenticationRepository {
     final registerBody = params.toMap();
 
     try {
-      final response = await apiService.post(
+      final response = await _apiService.post(
         url: url,
         body: registerBody,
         headers: _authHeaders,
@@ -73,7 +77,7 @@ class AuthenticationRepository {
       final accessToken = body["access_token"];
 
       // store token
-      await prefs.setString(StorageKeys.accessTokenKey, accessToken);
+      await _prefs.setString(StorageKeys.accessTokenKey, accessToken);
 
       /// begin phone verification
       await beginPhoneVerification();
@@ -84,6 +88,12 @@ class AuthenticationRepository {
     }
   }
 
+  bool _isLoggedIn() =>
+      _prefs.containsKey(StorageKeys.accessTokenKey) &&
+      !JwtDecoder.isExpired(_prefs.getString(StorageKeys.accessTokenKey)!);
+
+  bool get isLoggedIn => _isLoggedIn();
+
   Future<Either<Failure, bool>> beginPhoneVerification() async {
     final url = Uri.https(
       APIConfigs.baseUrl,
@@ -91,10 +101,10 @@ class AuthenticationRepository {
     );
 
     final reqBody = {"mode": "sms"};
-    final accessToken = prefs.getString(StorageKeys.accessTokenKey);
+    final accessToken = _prefs.getString(StorageKeys.accessTokenKey);
 
     try {
-      await apiService.post(
+      await _apiService.post(
         url: url,
         body: reqBody,
         headers: _authHeaders..addAll({"Authorization": "Bearer $accessToken"}),
@@ -115,8 +125,8 @@ class AuthenticationRepository {
     final verifyPhoneBody = params.toMap();
 
     try {
-      String? accessToken = prefs.getString(StorageKeys.accessTokenKey);
-      final response = await apiService.post(
+      String? accessToken = _prefs.getString(StorageKeys.accessTokenKey);
+      final response = await _apiService.post(
         url: url,
         body: verifyPhoneBody,
         headers: _authHeaders
@@ -126,7 +136,7 @@ class AuthenticationRepository {
       );
       final body = jsonDecode(response.body); // grab access_token
       accessToken = body["access_token"]; // update token
-      await prefs.setString(
+      await _prefs.setString(
           StorageKeys.accessTokenKey, accessToken!); // store new token
       return Right(accessToken);
     } on ServerException catch (_) {
@@ -144,8 +154,8 @@ class AuthenticationRepository {
     final verifyBvnBody = params.toMap();
 
     try {
-      String? accessToken = prefs.getString(StorageKeys.accessTokenKey);
-      final response = await apiService.post(
+      String? accessToken = _prefs.getString(StorageKeys.accessTokenKey);
+      final response = await _apiService.post(
         url: url,
         body: verifyBvnBody,
         headers: _authHeaders
@@ -155,7 +165,7 @@ class AuthenticationRepository {
       );
       final body = jsonDecode(response.body);
       accessToken = body["access_token"]; // update token
-      await prefs.setString(
+      await _prefs.setString(
           StorageKeys.accessTokenKey, accessToken!); // store new token
       return Right(body["access_token"]);
     } on ServerException catch (_) {
@@ -166,14 +176,16 @@ class AuthenticationRepository {
   Future<Either<Failure, UserResponse>> getUser() async {
     final url = Uri.parse(APIConfigs.userFullPath);
     try {
-      String? accessToken = prefs.getString(StorageKeys.accessTokenKey);
-      final response = await apiService.get(
+      String? accessToken = _prefs.getString(StorageKeys.accessTokenKey);
+      final response = await _apiService.get(
           url: url,
           headers: _authHeaders
             ..addAll({"Authorization": "Bearer ${accessToken!}"}));
       return Right(UserResponse.fromRawJson(response.body));
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    } catch (_) {
+      return Left(ServerFailure(code: '0', message: _.toString()));
     }
   }
 
@@ -186,8 +198,8 @@ class AuthenticationRepository {
     final createPinBody = {"pin": transactionPin};
 
     try {
-      String? accessToken = prefs.getString(StorageKeys.accessTokenKey);
-      final response = await apiService.post(
+      String? accessToken = _prefs.getString(StorageKeys.accessTokenKey);
+      final response = await _apiService.post(
         url: url,
         body: createPinBody,
         headers: _authHeaders
@@ -197,7 +209,7 @@ class AuthenticationRepository {
       );
       final body = jsonDecode(response.body);
       accessToken = body["access_token"];
-      await prefs.setString(StorageKeys.accessTokenKey, accessToken!);
+      await _prefs.setString(StorageKeys.accessTokenKey, accessToken!);
       return Right(body["access_token"]);
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
@@ -228,8 +240,8 @@ class AuthenticationRepository {
 
     // prepare upload
     try {
-      final accessToken = prefs.getString(StorageKeys.accessTokenKey);
-      final response = await apiService.post(
+      final accessToken = _prefs.getString(StorageKeys.accessTokenKey);
+      final response = await _apiService.post(
         url: filesUploadUrl,
         body: reqBody,
         headers: _authHeaders
@@ -248,12 +260,11 @@ class AuthenticationRepository {
 
         List<int> imageData = await imageFile.readAsBytes();
 
-        final uploadReqest = await apiService.put(
+        final uploadReqest = await _apiService.put(
             url: Uri.parse(body["url"]),
             body: imageData,
             headers: imageUploadHeader);
 
-        print(body["url"]);
 
         final putBody = {
           "id": body["id"],
@@ -265,7 +276,7 @@ class AuthenticationRepository {
 
         // complete request
         try {
-          final response = await apiService.put(
+          final response = await _apiService.put(
             url: filesUploadUrl,
             body: jsonEncode(putBody),
             headers: _authHeaders, // add access token authorization to header
@@ -287,11 +298,10 @@ class AuthenticationRepository {
               "fileId": body["id"],
             };
             // save selfie
-            final saveFileResponse = await apiService.post(
+            await _apiService.post(
                 url: isSelfie ? saveSelfieUrl : saveDocumentUrl,
                 body: saveFileBody,
                 headers: _authHeaders);
-            print(saveFileResponse.body);
           } on ServerException catch (_) {
             return Left(
                 ServerFailure(code: _.code.toString(), message: _.message));

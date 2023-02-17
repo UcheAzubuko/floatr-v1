@@ -71,7 +71,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
     // _otpFieldController..set(keyboard.inputs);
     return ChangeNotifierProvider(
       create: (context) => KeyboardProvider()
-        ..updateControllerActiveStatus(false)
+        ..updateControllerActiveStatus(shouldDeactivateController: false)
         ..updateRequiredLength(4),
       child: Consumer<KeyboardProvider>(
         builder: (context, keyboard, _) {

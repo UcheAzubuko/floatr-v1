@@ -116,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   hintText: 'jen@floatr.com',
                   controller: emailController,
-                  textInputType: TextInputType.phone,
+                  textInputType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.unspecified,
                   onSaved: (String? email) => _loginParams.email = email!,
                   validator: _emailValidator,

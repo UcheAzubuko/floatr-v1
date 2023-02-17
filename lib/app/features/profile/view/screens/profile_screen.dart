@@ -127,6 +127,7 @@ class ProfileScreen extends StatelessWidget {
                           animation: true,
                           progressColor: AppColors.primaryColor,
                           circularStrokeCap: CircularStrokeCap.round,
+                          animationDuration: 2000,
                           center: CircleAvatar(
                             radius: 44,
                             backgroundImage: NetworkImage(user.photo!.url!),
@@ -219,8 +220,8 @@ class ProfileScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       CustomProfileRow(
-                        firstItem: _checkType(
-                            userHelper.isPersonalDetailsComplete),
+                        firstItem:
+                            _checkType(userHelper.isPersonalDetailsComplete),
                         secondItem: Text(
                           'Personal Details',
                           style: TextStyles.smallTextDark14Px,
@@ -239,8 +240,7 @@ class ProfileScreen extends StatelessWidget {
 
                       // gov-id
                       CustomProfileRow(
-                        firstItem: _checkType(
-                            userHelper.isIdDataComplete),
+                        firstItem: _checkType(userHelper.isIdDataComplete),
                         secondItem: Text(
                           'Government Issued ID',
                           style: TextStyles.smallTextDark14Px,
@@ -258,8 +258,7 @@ class ProfileScreen extends StatelessWidget {
 
                       // address
                       CustomProfileRow(
-                        firstItem: _checkType(
-                            userHelper.isAddressComplete),
+                        firstItem: _checkType(userHelper.isAddressComplete),
                         secondItem: Text(
                           'Residential Address',
                           style: TextStyles.smallTextDark14Px,
@@ -279,8 +278,8 @@ class ProfileScreen extends StatelessWidget {
 
                       // employment details
                       CustomProfileRow(
-                        firstItem: _checkType(
-                            userHelper.isEmployerDetailsComplete),
+                        firstItem:
+                            _checkType(userHelper.isEmployerDetailsComplete),
                         secondItem: Text(
                           'Employment Details',
                           style: TextStyles.smallTextDark14Px,
@@ -300,8 +299,7 @@ class ProfileScreen extends StatelessWidget {
 
                       // next of kin
                       CustomProfileRow(
-                        firstItem: _checkType(
-                            userHelper.isNextOfKinComplete),
+                        firstItem: _checkType(userHelper.isNextOfKinComplete),
                         secondItem: Text(
                           'Next of Kin',
                           style: TextStyles.smallTextDark14Px,
@@ -584,10 +582,12 @@ class GovIDModalView extends StatelessWidget {
                   leadingIconPath: SvgAppIcons.icLicenseDriver,
                   itemTitle: 'Driver\'s License',
                   endIconPath: SvgAppIcons.icArrowRight,
-                  onTap: () => navigationService.navigateTo(
-                      RouteName.snapDocument,
-                      arguments: SnapDocumentArguments(
-                          documentType: DocumentType.driverLicense)),
+                  onTap: () {
+                    navigationService.pop(); // pop modal first
+                    navigationService.navigateTo(RouteName.snapDocument,
+                        arguments: SnapDocumentArguments(
+                            documentType: DocumentType.driverLicense));
+                  },
                 ),
 
                 const VerticalSpace(size: 16),

@@ -1,5 +1,6 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/loan/providers/loan_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -33,6 +34,7 @@ class _HighlightsCardState extends State<HighlightsCard> {
   @override
   void initState() {
     final user = context.read<AuthenticationProvider>().user;
+    // Provider.of<LoanProvider>(context).getFeaturedLoans();
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => user!.hasSetPin! ? null : _proceed(TransactionPinState.initial),
     );
@@ -42,13 +44,13 @@ class _HighlightsCardState extends State<HighlightsCard> {
   _proceed(TransactionPinState transPinState, {String? setInitialPin}) {
     final bool isInitial = transPinState == TransactionPinState.initial;
     // set tempPin as setInitialPin for comparison, if setInitial pin is null,
-    // it therefore means there exists no other pin to compare with. 
+    // it therefore means there exists no other pin to compare with.
     String? tempPin = setInitialPin;
     AppDialog.showAppDialog(
         context,
         ChangeNotifierProvider(
           create: (context) => KeyboardProvider()
-            ..updateControllerActiveStatus(true)
+            ..updateControllerActiveStatus(shouldDeactivateController: true)
             ..updateRequiredLength(6),
           child: Consumer<KeyboardProvider>(
             builder: (context, keyboard, _) {
@@ -144,9 +146,9 @@ class _HighlightsCardState extends State<HighlightsCard> {
 
                                 if (tempPin != null) {
                                   // compare both pins
-                                  if (tempPin != pin) { 
+                                  if (tempPin != pin) {
                                     Fluttertoast.showToast(
-                                        msg: 'Both Pins do not match!',
+                                        msg: 'Both PINs do not match!',
                                         backgroundColor: Colors.red);
                                   } else {
                                     authProvider.updateTransactionPin(pin);
@@ -157,7 +159,7 @@ class _HighlightsCardState extends State<HighlightsCard> {
                                           .pop(); // pop dialog
                                       // show success confirmation
                                       Fluttertoast.showToast(
-                                          msg: 'Transaction pin created',
+                                          msg: 'Transaction PIN created.',
                                           backgroundColor: Colors.blue);
                                     });
                                   }
@@ -234,20 +236,58 @@ class _HighlightsCardState extends State<HighlightsCard> {
                 ],
               ).paddingOnly(left: 26),
               const VerticalSpace(size: 48),
-              SizedBox(
-                height: 150,
-                child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (_, index) =>
-                        const HighlightsInfoCard().paddingOnly(
-                          left: index == 0 ? 25 : 10,
-                          right: index == 3 ? 25 : 0,
-                        ), // this gives the first item more padding on the left and last item more padding on the right
-                    separatorBuilder: (_, __) => const SizedBox(
-                          width: 0,
+              Consumer<LoanProvider>(
+                builder: (context, provider, _) {
+                  switch (provider.loadingState) {
+                    // loading
+                    case LoadingState.busy:
+                      return const SizedBox(
+                        height: 150,
+                        child: Center(
+                          child: CircularProgressIndicator(),
                         ),
-                    itemCount: 4),
-              )
+                      );
+
+                    // loaded
+                    case LoadingState.loaded:
+                      // final loans = provider.loansResponse!.loans;
+                      if (provider.loansResponse == null) {
+                        const SizedBox(
+                          height: 150,
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+                      return SizedBox(
+                        height: 150,
+                        child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (_, index) => HighlightsInfoCard(
+                                  loan: provider.loansResponse!.loans[index],
+                                ).paddingOnly(
+                                  left: index == 0 ? 25 : 10,
+                                  right: index ==
+                                          provider.loansResponse!.loans.length -
+                                              1
+                                      ? 25
+                                      : 0,
+                                ), // this gives the first item more padding on the left and last item more padding on the right
+                            separatorBuilder: (_, __) => const SizedBox(
+                                  width: 0,
+                                ),
+                            itemCount: provider.loansResponse!.loans.length),
+                      );
+                    default:
+                      return const SizedBox(
+                        height: 150,
+                        child: Center(
+                          child: Text('Couldn\'t get loans'),
+                        ),
+                      );
+                  }
+                },
+              ),
             ],
           ),
         ],
