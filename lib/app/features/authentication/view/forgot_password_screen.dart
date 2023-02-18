@@ -74,7 +74,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   navigationService.navigateTo(RouteName.forgotPasswordOtp),
               buttonTextColor: Colors.white,
               child: const Text(
-                'Verify Phone Number',
+                'VERIFY PHONE NUMBER',
                 style: TextStyle(color: Colors.white),
               ),
             ),

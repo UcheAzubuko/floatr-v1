@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:floatr/app/features/authentication/data/model/params/reset_password_params.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:floatr/app/features/authentication/data/model/params/login_params.dart';
 import 'package:floatr/app/features/authentication/data/model/params/register_params.dart';
@@ -265,7 +266,6 @@ class AuthenticationRepository {
             body: imageData,
             headers: imageUploadHeader);
 
-
         final putBody = {
           "id": body["id"],
           "completedParts": [
@@ -318,6 +318,81 @@ class AuthenticationRepository {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     } catch (e) {
       throw Exception(e);
+    }
+  }
+
+  Future<Either<Failure, bool>> forgotPassword(
+      ResetPasswordParams params) async {
+    final forgotPasswordUrl = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.forgotPassword,
+    );
+
+    final body = {"phoneNumber": params.phoneNumber};
+
+    try {
+      final accessToken = _prefs.getString(StorageKeys.accessTokenKey);
+      await _apiService.post(
+        url: forgotPasswordUrl,
+        body: body,
+        headers: _authHeaders
+          ..addAll({
+            "Authorization": "Bearer ${accessToken!}"
+          }), // add access token authorization to header
+      );
+      return const Right(true);
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    }
+  }
+
+  Future<Either<Failure, bool>> verifyForgotPasswordToken(
+      ResetPasswordParams params) async {
+    final forgotPasswordUrl = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.verifyForgotPasswordToken,
+    );
+
+    final body = {"token": params.token, "phoneNumber": params.phoneNumber};
+
+    try {
+      final accessToken = _prefs.getString(StorageKeys.accessTokenKey);
+      await _apiService.post(
+        url: forgotPasswordUrl,
+        body: body,
+        headers: _authHeaders
+          ..addAll({
+            "Authorization": "Bearer ${accessToken!}"
+          }), // add access token authorization to header
+      );
+      return const Right(true);
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    }
+  }
+
+  Future<Either<Failure, bool>> resetPassword(
+      ResetPasswordParams params) async {
+    final forgotPasswordUrl = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.resetPassword,
+    );
+
+    final body = params.toMap();
+
+    try {
+      final accessToken = _prefs.getString(StorageKeys.accessTokenKey);
+      await _apiService.post(
+        url: forgotPasswordUrl,
+        body: body,
+        headers: _authHeaders
+          ..addAll({
+            "Authorization": "Bearer ${accessToken!}"
+          }), // add access token authorization to header
+      );
+      return const Right(true);
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }
   }
 }

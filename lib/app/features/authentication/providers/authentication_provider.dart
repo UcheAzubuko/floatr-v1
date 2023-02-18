@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:floatr/app/features/authentication/data/model/params/login_params.dart';
+import 'package:floatr/app/features/authentication/data/model/params/reset_password_params.dart';
 import 'package:floatr/app/features/authentication/data/model/params/verify_bvn_params.dart';
 import 'package:floatr/app/features/authentication/data/model/params/verify_phone_params.dart';
 import 'package:floatr/app/features/authentication/data/model/response/user_repsonse.dart';
@@ -43,6 +44,10 @@ class AuthenticationProvider extends BaseProvider {
   UserResponse? _user;
 
   UserResponse? get user => _user;
+
+  ResetPasswordParams? _resetPasswordParams;
+
+  ResetPasswordParams? get resetPasswordParams => _resetPasswordParams;
 
   File? _imagefile;
 
@@ -93,6 +98,11 @@ class AuthenticationProvider extends BaseProvider {
 
   updateTransactionPin(String transactionPin) {
     _transactionPin = transactionPin;
+    notifyListeners();
+  }
+
+  updateResetPasswordParams(ResetPasswordParams resetPasswordParams) {
+    _resetPasswordParams = resetPasswordParams;
     notifyListeners();
   }
 
@@ -247,6 +257,39 @@ class AuthenticationProvider extends BaseProvider {
                     editProfileView: EditProfile.residentialAddress))
             : _navigationService.pushAndRemoveUntil(RouteName.navbar);
       }
+    });
+  }
+
+  Future<void> forgotPassword() async {
+    updateLoadingState(LoadingState.busy);
+    var response = await authenticationRepository.forgotPassword(_resetPasswordParams!);
+    response.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? 'Initiating forgot password failed');
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
+    });
+  }
+
+  Future<void> verifyForgotPasswordToken() async {
+    updateLoadingState(LoadingState.busy);
+    var response = await authenticationRepository.verifyForgotPasswordToken(_resetPasswordParams!);
+    response.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? 'Verifying token failed');
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
+    });
+  }
+
+  Future<void> resetPassword() async {
+    updateLoadingState(LoadingState.busy);
+    var response = await authenticationRepository.resetPassword(_resetPasswordParams!);
+    response.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? 'Password reset failed');
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
     });
   }
 }

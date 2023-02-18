@@ -33,145 +33,155 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var keyboard = context.watch<KeyboardProvider>();
+    
     // _otpFieldController..set(keyboard.inputs);
-    return Scaffold(
-      appBar: CustomAppBar(),
-      resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // verify screen
-            AppText(
-              text: 'Forgot Password',
-              color: AppColors.primaryColor,
-              fontWeight: FontWeight.w900,
-              size: context.widthPx * 0.089,
-            ),
+    return ChangeNotifierProvider(
+      create: (context) => KeyboardProvider()
+        ..updateControllerActiveStatus(shouldDeactivateController: false)
+        ..updateRequiredLength(4),
+      builder: (context, _) {
+        return Consumer<KeyboardProvider>(builder: (context, keyboard, _) {
+            return Scaffold(
+              appBar: CustomAppBar(),
+              resizeToAvoidBottomInset: false,
+              body: SafeArea(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // verify screen
+                    AppText(
+                      text: 'Forgot Password',
+                      color: AppColors.primaryColor,
+                      fontWeight: FontWeight.w900,
+                      size: context.widthPx * 0.089,
+                    ),
 
-            SizedBox(
-              height: context.heightPx * 0.009,
-            ),
+                    SizedBox(
+                      height: context.heightPx * 0.009,
+                    ),
 
-            AppText(
-              text: 'Please enter the code that was sent to:',
-              color: AppColors.grey,
-              fontWeight: FontWeight.w600,
-              size: context.widthPx * 0.035,
-            ),
+                    AppText(
+                      text: 'Please enter the code that was sent to:',
+                      color: AppColors.grey,
+                      fontWeight: FontWeight.w600,
+                      size: context.widthPx * 0.035,
+                    ),
 
-            SizedBox(
-              height: context.heightPx * 0.009,
-            ),
+                    SizedBox(
+                      height: context.heightPx * 0.009,
+                    ),
 
-            AppText(
-              text: '+2348147990002',
-              color: AppColors.grey,
-              fontWeight: FontWeight.w600,
-              size: context.widthPx * 0.035,
-            ),
+                    AppText(
+                      text: '+2348147990002',
+                      color: AppColors.grey,
+                      fontWeight: FontWeight.w600,
+                      size: context.widthPx * 0.035,
+                    ),
 
-            const VerticalSpace(
-              size: 60,
-            ),
+                    const VerticalSpace(
+                      size: 60,
+                    ),
 
-            OTPTextField(
-              length: 4,
-              width: context.widthPx,
-              fieldStyle: FieldStyle.box,
-              fieldWidth: context.widthPx * 0.18,
-              controller: keyboard.controller,
-              contentPadding: EdgeInsets.all(context.diagonalPx * 0.02),
-              readOnly: true,
-              style: GoogleFonts.plusJakartaSans(
-                color: AppColors.black,
-                fontSize: context.widthPx * 0.075,
-                fontWeight: FontWeight.w600,
-                textStyle: Theme.of(context).textTheme.bodyText1,
-              ),
-              onChanged: (str) {
-                if (str.length == 4) {
-                  FocusScope.of(context).unfocus();
-                  // setState(() {
-                  //   _hasInputtedOTP = true;
-                  // });
-                } else {
-                  // setState(() {
-                  //   _hasInputtedOTP = false;
-                  // });
-                }
-              },
-              // onCompleted: (val) => FocusScope.of(context).unfocus(),
-              outlineBorderRadius: 15,
-              inputFormatter: [
-                FilteringTextInputFormatter.digitsOnly,
-              ],
-              otpFieldStyle: OtpFieldStyle(
-                backgroundColor: AppColors.textFieldBackground.withOpacity(0.4),
-                enabledBorderColor: Colors.transparent,
-              ),
-            ),
-
-            const VerticalSpace(
-              size: 60,
-            ),
-
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                AppText(
-                  text: 'Didn\'t get the code?',
-                  color: AppColors.greyAsparagus,
-                  fontWeight: FontWeight.w600,
-                  size: context.widthPx * 0.031,
-                ),
-                SizedBox(
-                  width: context.widthPx * 0.009,
-                ),
-                Container(
-                  padding: EdgeInsets.only(
-                    bottom: context.heightPx * 0.0006,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: AppColors.primaryColor,
-                        width: context.widthPx * 0.001,
+                    OTPTextField(
+                      length: 4,
+                      width: context.widthPx,
+                      fieldStyle: FieldStyle.box,
+                      fieldWidth: context.widthPx * 0.18,
+                      controller: keyboard.controller,
+                      contentPadding: EdgeInsets.all(context.diagonalPx * 0.02),
+                      readOnly: true,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: AppColors.black,
+                        fontSize: context.widthPx * 0.075,
+                        fontWeight: FontWeight.w600,
+                        textStyle: Theme.of(context).textTheme.bodyText1,
+                      ),
+                      onChanged: (str) {
+                        if (str.length == 4) {
+                          FocusScope.of(context).unfocus();
+                          // setState(() {
+                          //   _hasInputtedOTP = true;
+                          // });
+                        } else {
+                          // setState(() {
+                          //   _hasInputtedOTP = false;
+                          // });
+                        }
+                      },
+                      // onCompleted: (val) => FocusScope.of(context).unfocus(),
+                      outlineBorderRadius: 15,
+                      inputFormatter: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      otpFieldStyle: OtpFieldStyle(
+                        backgroundColor: AppColors.textFieldBackground.withOpacity(0.4),
+                        enabledBorderColor: Colors.transparent,
                       ),
                     ),
-                  ),
-                  child: AppText(
-                    text: 'Resend Code',
-                    color: AppColors.primaryColor,
-                    fontWeight: FontWeight.w600,
-                    size: context.widthPx * 0.031,
-                  ),
-                ),
-              ],
-            ),
 
-            const Spacer(),
-
-            FocusScope.of(context).hasFocus
-                ? const CustomKeyboard()
-                : GeneralButton(
-                    onPressed: () =>
-                        navigationService.navigateTo(RouteName.resetPassword),
-                    buttonTextColor: Colors.white,
-                    child: const Text(
-                      'Verify',
-                      style: TextStyle(color: Colors.white),
+                    const VerticalSpace(
+                      size: 60,
                     ),
-                  ),
 
-            const SizedBox(
-              height: 25,
-            ),
-          ],
-        ),
-      ).paddingSymmetric(horizontal: context.widthPx * 0.037),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        AppText(
+                          text: 'Didn\'t get the code?',
+                          color: AppColors.greyAsparagus,
+                          fontWeight: FontWeight.w600,
+                          size: context.widthPx * 0.031,
+                        ),
+                        SizedBox(
+                          width: context.widthPx * 0.009,
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(
+                            bottom: context.heightPx * 0.0006,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: AppColors.primaryColor,
+                                width: context.widthPx * 0.001,
+                              ),
+                            ),
+                          ),
+                          child: AppText(
+                            text: 'Resend Code',
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.w600,
+                            size: context.widthPx * 0.031,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const Spacer(),
+
+                    FocusScope.of(context).hasFocus
+                        ? const CustomKeyboard()
+                        : GeneralButton(
+                            onPressed: () =>
+                                navigationService.navigateTo(RouteName.resetPassword),
+                            buttonTextColor: Colors.white,
+                            child: const Text(
+                              'Verify',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+
+                    const SizedBox(
+                      height: 25,
+                    ),
+                  ],
+                ),
+              ).paddingSymmetric(horizontal: context.widthPx * 0.037),
+            );
+          }
+        );
+      }
     );
   }
 }
