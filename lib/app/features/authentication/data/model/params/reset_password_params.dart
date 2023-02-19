@@ -1,7 +1,7 @@
 class ResetPasswordParams {
-  final String? password;
-  final String? phoneNumber;
-  final String? token;
+   String? password;
+   String? phoneNumber;
+   String? token;
 
   ResetPasswordParams({this.password, this.phoneNumber, this.token});
 

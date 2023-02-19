@@ -331,14 +331,10 @@ class AuthenticationRepository {
     final body = {"phoneNumber": params.phoneNumber};
 
     try {
-      final accessToken = _prefs.getString(StorageKeys.accessTokenKey);
+      // final accessToken = _prefs.getString(StorageKeys.accessTokenKey);
       await _apiService.post(
         url: forgotPasswordUrl,
         body: body,
-        headers: _authHeaders
-          ..addAll({
-            "Authorization": "Bearer ${accessToken!}"
-          }), // add access token authorization to header
       );
       return const Right(true);
     } on ServerException catch (_) {
