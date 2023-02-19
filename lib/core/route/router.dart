@@ -10,6 +10,7 @@ import 'package:floatr/app/features/authentication/view/sign_up_screen.dart';
 import 'package:floatr/app/features/authentication/view/take_selfie_screen.dart';
 import 'package:floatr/app/features/authentication/view/verify_bvn_screen.dart';
 import 'package:floatr/app/features/authentication/view/verify_otp_screen.dart';
+import 'package:floatr/app/features/dashboard/view/dashboard_loan_details.dart';
 import 'package:floatr/app/features/dashboard/view/dashboard_screen.dart';
 import 'package:floatr/app/features/loan/view/screens/loan_info_screen.dart';
 import 'package:floatr/app/features/onboarding/onboarding_screen_main.dart';
@@ -63,6 +64,10 @@ class Router {
         );
       case RouteName.biometrics:
         return MaterialPageRoute(builder: (_) => const BiometricsScreen());
+      case RouteName.dashboardLoanDueTime:
+        final args = settings.arguments as DashboardLoanDetailsArguments;
+        return slidePageTransition(
+            DashoardLoanDetails(dashboardLoanView: args.dashboardLoanView));
       case RouteName.editProfile:
         final args = settings.arguments as EditProfileArguments;
         return slidePageTransition(EditProfileScreen(

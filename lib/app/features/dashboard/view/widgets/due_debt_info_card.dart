@@ -1,9 +1,12 @@
-
 import 'package:dotted_border/dotted_border.dart';
 import 'package:floatr/app/extensions/padding.dart';
+import 'package:floatr/app/features/dashboard/view/dashboard_loan_details.dart';
+import 'package:floatr/core/route/navigation_service.dart';
+import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../../core/misc/dependency_injectors.dart';
 import '../../../../../core/utils/app_colors.dart';
 import '../../../../../core/utils/app_style.dart';
 import '../../../../../core/utils/spacing.dart';
@@ -17,6 +20,7 @@ class DueDebtInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    NavigationService navigationService = di<NavigationService>();
     return Container(
       height: 144,
       width: 288,
@@ -80,7 +84,7 @@ class DueDebtInfoCard extends StatelessWidget {
                   height: 90,
                   width: 0,
                 ),
-              ),
+              ).paddingOnly(left: 1, bottom: 1),
 
               // due date
               SizedBox(
@@ -118,7 +122,7 @@ class DueDebtInfoCard extends StatelessWidget {
           GeneralButton(
             width: 245,
             height: 30,
-            onPressed: () {},
+            onPressed: () => navigationService.navigateTo(RouteName.dashboardLoanDueTime, arguments: DashboardLoanDetailsArguments(dashboardLoanView: DashboardLoanView.loanDueTime)),
             borderRadius: 8,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
