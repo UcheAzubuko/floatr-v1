@@ -112,12 +112,28 @@ class AuthenticationProvider extends BaseProvider {
 
   Future<bool> canAuthenticate() => biometricRepository.canAuthenticate();
 
-  Future<void> didAuthenticate(BuildContext context) async {
+  Future<void> didAuthenticate([bool performBiometricLogin = false]) async {
     // updateLoadingState(LoadingState.busy);
-    canAuthenticate().then((value) {
-      if (value) {
-        biometricRepository.didAuthenticate();
+    canAuthenticate().then((canAuthenticate) {
+      if (canAuthenticate) {
+        biometricRepository.didAuthenticate().then((didAuthenticate) async {
+          performBiometricLogin ? await biometricLogin() : () {};
+        });
       }
+    });
+  }
+
+  Future<void> biometricLogin() async {
+    var response = await authenticationRepository.biometricLogin();
+
+    response.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? 'A login error occured!');
+      // trigger error on ui
+      // AppSnackBar.showErrorSnackBar(context, errorMsg);
+    }, (onSuccess) async {
+      await getUser();
+      _navigationService.navigateReplacementTo(RouteName.navbar);
     });
   }
 

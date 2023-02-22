@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:floatr/app/features/authentication/data/model/params/reset_password_params.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:floatr/app/features/authentication/data/model/params/login_params.dart';
 import 'package:floatr/app/features/authentication/data/model/params/register_params.dart';
@@ -22,11 +23,15 @@ import '../../../../../core/utils/enums.dart';
 class AuthenticationRepository {
   final SharedPreferences _prefs;
   final APIService _apiService;
+  final FlutterSecureStorage _flutterSecureStorage;
 
   AuthenticationRepository(
-      {required SharedPreferences prefs, required APIService apiService})
+      {required SharedPreferences prefs,
+      required APIService apiService,
+      required FlutterSecureStorage flutterSecureStorage})
       : _prefs = prefs,
-        _apiService = apiService;
+        _apiService = apiService,
+        _flutterSecureStorage = flutterSecureStorage;
 
   /// authHeaders
   final Map<String, String> _authHeaders = {
@@ -53,6 +58,11 @@ class AuthenticationRepository {
       final accessToken = body["access_token"];
       await _prefs.setString(
           StorageKeys.accessTokenKey, accessToken); // store token
+
+      // store pass and email
+      _flutterSecureStorage
+        ..write(key: StorageKeys.emailKey, value: params.email)
+        ..write(key: StorageKeys.passKey, value: params.password);
       return Right(accessToken); // grab access_token
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
@@ -79,6 +89,11 @@ class AuthenticationRepository {
 
       // store token
       await _prefs.setString(StorageKeys.accessTokenKey, accessToken);
+
+      // store pass and email
+      _flutterSecureStorage
+        ..write(key: StorageKeys.emailKey, value: params.email)
+        ..write(key: StorageKeys.passKey, value: params.password);
 
       /// begin phone verification
       await beginPhoneVerification();
@@ -114,6 +129,12 @@ class AuthenticationRepository {
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }
+  }
+
+  Future<Either<Failure, String>> biometricLogin() async {
+    final email = await _flutterSecureStorage.read(key: StorageKeys.emailKey);
+    final password = await _flutterSecureStorage.read(key: StorageKeys.passKey);
+    return login(LoginParams(email: email, password: password));
   }
 
   /// verify phone number

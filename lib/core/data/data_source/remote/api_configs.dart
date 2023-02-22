@@ -33,4 +33,6 @@ class APIConfigs {
 
 class StorageKeys {
   static const accessTokenKey = "__Access__Token__Key__";
+  static const passKey = "__pass__key__";
+  static const emailKey = "__email__key__";
 }
