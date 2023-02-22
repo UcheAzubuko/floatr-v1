@@ -45,6 +45,8 @@ PODS:
     - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (1.7.2)
   - IQKeyboardManagerSwift (6.5.11)
+  - local_auth_ios (0.0.1):
+    - Flutter
   - lottie-ios (3.5.0)
   - MLImage (1.0.0-beta3)
   - MLKitCommon (8.0.0):
@@ -101,6 +103,7 @@ DEPENDENCIES:
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - google_mlkit_commons (from `.symlinks/plugins/google_mlkit_commons/ios`)
   - google_mlkit_face_detection (from `.symlinks/plugins/google_mlkit_face_detection/ios`)
+  - local_auth_ios (from `.symlinks/plugins/local_auth_ios/ios`)
   - monnify_payment_sdk (from `.symlinks/plugins/monnify_payment_sdk/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/ios`)
@@ -141,6 +144,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/google_mlkit_commons/ios"
   google_mlkit_face_detection:
     :path: ".symlinks/plugins/google_mlkit_face_detection/ios"
+  local_auth_ios:
+    :path: ".symlinks/plugins/local_auth_ios/ios"
   monnify_payment_sdk:
     :path: ".symlinks/plugins/monnify_payment_sdk/ios"
   path_provider_foundation:
@@ -163,6 +168,7 @@ SPEC CHECKSUMS:
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
   IQKeyboardManagerSwift: c7955c0bdbf7b2eb29bb7daaa44e3d90f55a9a85
+  local_auth_ios: 0d333dde7780f669e66f19d2ff6005f3ea84008d
   lottie-ios: c55158d67d0629a260625cc2ded2052b829e3c3e
   MLImage: 489dfec109f21da8621b28d476401aaf7a0d4ff4
   MLKitCommon: f6da6c5659618c070b50a80db01248ebe2964175

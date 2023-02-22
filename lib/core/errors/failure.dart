@@ -20,3 +20,8 @@ class ServerFailure extends Failure {
   const ServerFailure({String? code, String? message})
       : super(code: code, message: message);
 }
+
+class LocalAuthFailure extends Failure {
+  const LocalAuthFailure({String? code, String? message})
+      : super(code: code, message: message);
+}

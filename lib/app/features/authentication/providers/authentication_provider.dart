@@ -6,6 +6,7 @@ import 'package:floatr/app/features/authentication/data/model/params/verify_bvn_
 import 'package:floatr/app/features/authentication/data/model/params/verify_phone_params.dart';
 import 'package:floatr/app/features/authentication/data/model/response/user_repsonse.dart';
 import 'package:floatr/app/features/authentication/data/repositories/authentication_repository.dart';
+import 'package:floatr/app/features/authentication/data/repositories/biometric_repository.dart';
 import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
 import 'package:floatr/app/widgets/app_snackbar.dart';
 import 'package:floatr/core/misc/dependency_injectors.dart';
@@ -21,7 +22,10 @@ import '../data/model/params/register_params.dart';
 
 class AuthenticationProvider extends BaseProvider {
   final AuthenticationRepository authenticationRepository;
-  AuthenticationProvider({required this.authenticationRepository});
+  final BiometricRepository biometricRepository;
+  AuthenticationProvider(
+      {required this.authenticationRepository,
+      required this.biometricRepository});
 
   final NavigationService _navigationService = di<NavigationService>();
 
@@ -104,6 +108,17 @@ class AuthenticationProvider extends BaseProvider {
   updateResetPasswordParams(ResetPasswordParams resetPasswordParams) {
     _resetPasswordParams = resetPasswordParams;
     notifyListeners();
+  }
+
+  Future<bool> canAuthenticate() => biometricRepository.canAuthenticate();
+
+  Future<void> didAuthenticate(BuildContext context) async {
+    // updateLoadingState(LoadingState.busy);
+    canAuthenticate().then((value) {
+      if (value) {
+        biometricRepository.didAuthenticate();
+      }
+    });
   }
 
   Future<void> initiateLogin(BuildContext context) async {
@@ -262,10 +277,12 @@ class AuthenticationProvider extends BaseProvider {
 
   Future<void> forgotPassword() async {
     updateLoadingState(LoadingState.busy);
-    var response = await authenticationRepository.forgotPassword(_resetPasswordParams!);
+    var response =
+        await authenticationRepository.forgotPassword(_resetPasswordParams!);
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
-      updateErrorMsgState(onError.message ?? 'Initiating forgot password failed');
+      updateErrorMsgState(
+          onError.message ?? 'Initiating forgot password failed');
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
     });
@@ -273,7 +290,8 @@ class AuthenticationProvider extends BaseProvider {
 
   Future<void> verifyForgotPasswordToken() async {
     updateLoadingState(LoadingState.busy);
-    var response = await authenticationRepository.verifyForgotPasswordToken(_resetPasswordParams!);
+    var response = await authenticationRepository
+        .verifyForgotPasswordToken(_resetPasswordParams!);
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'Verifying token failed');
@@ -284,7 +302,8 @@ class AuthenticationProvider extends BaseProvider {
 
   Future<void> resetPassword() async {
     updateLoadingState(LoadingState.busy);
-    var response = await authenticationRepository.resetPassword(_resetPasswordParams!);
+    var response =
+        await authenticationRepository.resetPassword(_resetPasswordParams!);
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'Password reset failed');

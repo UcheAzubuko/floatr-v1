@@ -53,5 +53,7 @@
 		<string>App needs to use your Camera</string>
 		<key>NSMicrophoneUsageDescription</key>
 		<string>App needs to use your Mic</string>
+		<key>NSFaceIDUsageDescription</key>
+		<string>Authenticating to proceed...</string>
 	</dict>
 </plist>

@@ -15,7 +15,7 @@ final globalProviders = <SingleChildWidget>[
   // ChangeNotifierProvider(create: (_) => KeyboardProvider()),
   ChangeNotifierProvider(create: (_) => CameraProvider()),
   
-  ChangeNotifierProvider(create: (_) => AuthenticationProvider(authenticationRepository: di())),
+  ChangeNotifierProvider(create: (_) => AuthenticationProvider(authenticationRepository: di(), biometricRepository: di())),
   ChangeNotifierProvider(create: (_) => UserResourcesProvider(userResourcesRepository: di())),
   ChangeNotifierProvider(create: (_) => UserProfileProvider(profileRepository: di())),
   ChangeNotifierProvider(create: (_) => LoanProvider(loansRepository: di())..getMyBanks()..getFeaturedLoans()..getBanks()),
