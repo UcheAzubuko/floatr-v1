@@ -1,7 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/extensions/validator_extension.dart';
 import 'package:floatr/app/features/authentication/data/model/params/login_params.dart';
+import 'package:floatr/app/features/authentication/data/model/response/user_repsonse.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/general_button.dart';
@@ -17,6 +20,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
+import '../../../widgets/app_snackbar.dart';
 import '../../../widgets/custom_appbar.dart';
 import '../../../widgets/text_field.dart';
 
@@ -37,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
-  final _emailValidator = ValidationBuilder().email().maxLength(50).build();
+  final _emailValidator = ValidationBuilder().password().maxLength(50).build();
   final _passwordValidator = ValidationBuilder().password().build();
 
   @override
@@ -164,7 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   return GeneralButton(
                     // onPressed: () =>
                     //     navigationService.navigateTo(RouteName.createPin),
-                    onPressed: () => _handleLogin(_),
+                    onPressed: () => _handleLogin(context, _),
                     isLoading: _.loadingState == LoadingState.busy,
                     child: const Text('Login'),
                   );
@@ -204,12 +208,42 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  _handleLogin(AuthenticationProvider authProvider) async {
+  _handleLogin(
+      BuildContext context, AuthenticationProvider authProvider) async {
     final bool isValid = _formKey.currentState!.validate();
+    // final user = authProvider.user;
     if (isValid) {
       _formKey.currentState!.save();
       authProvider.updateLoginParams(_loginParams);
       await authProvider.initiateLogin(context);
+      // if (authProvider.loadingState == LoadingState.loaded) {
+      //   await authProvider.getUser();
+      //   if (authProvider.loadingState == LoadingState.loaded) {
+      //     if (user != null) {
+      //       // add this check
+      //       _routeOnSuccess(user);
+      //     } else {
+      //       print('_user is null'); // add this line
+      //       setState(() {});
+      //     }
+      //   } else {
+      //     AppSnackBar.showErrorSnackBar(context, authProvider.errorMsg);
+      //   }
+      // } else {
+      //   AppSnackBar.showErrorSnackBar(context, authProvider.errorMsg);
+      // }
     }
   }
+
+  // _routeOnSuccess(UserResponse user) {
+  //   if (!user.isPhoneVerified!) {
+  //     navigationService.navigateTo(RouteName.verifyOTP);
+  //   } else if (!user.isBvnVerified!) {
+  //     navigationService.navigateTo(RouteName.verifyBVN);
+  //   } else if (!user.isPhotoVerified!) {
+  //     navigationService.navigateTo(RouteName.takeSelfie);
+  //   } else {
+  //     navigationService.navigateReplacementTo(RouteName.navbar);
+  //   }
+  // }
 }

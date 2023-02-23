@@ -146,8 +146,9 @@ class AuthenticationProvider extends BaseProvider {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'A login error occured!');
       // trigger error on ui
-      AppSnackBar.showErrorSnackBar(context, errorMsg);
+      // AppSnackBar.showErrorSnackBar(context, errorMsg);
     }, (onSuccess) async {
+      // updateLoadingState(LoadingState.loaded);
       await getUser();
 
       if (!_user!.isPhoneVerified!) {
