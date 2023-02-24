@@ -12,6 +12,7 @@ import 'package:floatr/app/widgets/app_snackbar.dart';
 import 'package:floatr/core/misc/dependency_injectors.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/route_names.dart';
+import 'package:floatr/core/utils/app_style.dart';
 import 'package:floatr/core/utils/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -209,6 +210,41 @@ class AuthenticationProvider extends BaseProvider {
       updateLoadingState(LoadingState.loaded);
       _navigationService.navigateReplacementTo(RouteName.verifyBVN);
     });
+  }
+
+  //! THIS IS PURE VIOLATION! BUT TEMPORARY, WOULD REMOVE SOON!
+  //TODO: Remove 
+  void logout() {
+    
+    AlertDialog(
+      title: const Text('Logging Out?'),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: const <Widget>[
+            Text('Are you sure you want to log out?'),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: Text(
+            'CONFIRM',
+            style: TextStyles.smallTextPrimary,
+          ),
+          onPressed: () {
+            authenticationRepository.logout();
+            _navigationService.pushAndRemoveUntil(RouteName.postOnboarding);
+          },
+        ),
+        TextButton(
+          child: Text(
+            'CANCEL',
+            style: TextStyles.smallTextPrimary,
+          ),
+          onPressed: () => _navigationService.pop(),
+        ),
+      ],
+    );
   }
 
   Future<void> initiateVerifyBVN(BuildContext context) async {

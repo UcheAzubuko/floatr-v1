@@ -143,6 +143,11 @@ class AuthenticationRepository {
     return login(LoginParams(email: email, password: password));
   }
 
+  Future logout() async {
+     _prefs.clear();
+    _flutterSecureStorage.deleteAll();
+  }
+
   /// verify phone number
   Future<Either<Failure, String>> verifyPhone(VerifyPhoneParams params) async {
     final url = Uri.https(
