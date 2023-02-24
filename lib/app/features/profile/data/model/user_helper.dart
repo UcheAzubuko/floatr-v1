@@ -46,7 +46,7 @@ class UserHelper {
 
   bool _isFullyOnboarded() =>
       _isPersonalDetailsComplete() &&
-      (_isIdDataComplete() == CriteriaState.notDone || _isIdDataComplete() == CriteriaState.done)  &&
+      (_isIdDataComplete() == CriteriaState.pending || _isIdDataComplete() == CriteriaState.done)  &&
       _isAddressComplete() &&
       _isEmployerDetailsComplete() &&
       _isNextOfKinComplete();
