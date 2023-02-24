@@ -1,4 +1,5 @@
 import 'package:floatr/app/features/authentication/data/model/response/user_repsonse.dart';
+import 'package:floatr/core/utils/enums.dart';
 
 class UserHelper {
   final UserResponse _user;
@@ -8,7 +9,7 @@ class UserHelper {
   bool get isAddressComplete => _isAddressComplete();
   bool get isEmployerDetailsComplete => _isEmployerDetailsComplete();
   bool get isNextOfKinComplete => _isNextOfKinComplete();
-  bool get isIdDataComplete => _isIdDataComplete();
+  CriteriaState get isIdDataComplete => _isIdDataComplete();
   bool get isFullyOnboarded => _isFullyOnboarded();
 
   bool _isPersonalDetailsComplete() =>
@@ -32,12 +33,20 @@ class UserHelper {
       _isNull(_user.nextOfKin!.address) ||
       _isNull(_user.nextOfKin!.firstName));
 
-  bool _isIdDataComplete() =>
-      (_isNull(_user.idTypes) ? 0 : _user.idTypes!.length) > 0;
+  CriteriaState _isIdDataComplete() {
+    if(_user.idTypes!.isEmpty) {
+      return CriteriaState.notDone;
+    } else if(_user.idTypes!.length == 4) {
+      return CriteriaState.done;
+    } else {
+      return CriteriaState.pending;
+    }
+  }
+      // (_isNull(_user.idTypes) ? 0 : _user.idTypes!.length) > 0;
 
   bool _isFullyOnboarded() =>
       _isPersonalDetailsComplete() &&
-      _isIdDataComplete() &&
+      (_isIdDataComplete() == CriteriaState.notDone || _isIdDataComplete() == CriteriaState.done)  &&
       _isAddressComplete() &&
       _isEmployerDetailsComplete() &&
       _isNextOfKinComplete();

@@ -95,8 +95,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                       // profile pic
                       InkWell(
-                        onTap: () =>
-                            navigationService.navigateTo(RouteName.profile),
+                        onTap: () => UserHelper(user: user).isFullyOnboarded ?
+                            navigationService.navigateTo(RouteName.profile) : (){},
                         child: CircleAvatar(
                           radius: 23,
                           backgroundImage: NetworkImage(user.photo!.url!),

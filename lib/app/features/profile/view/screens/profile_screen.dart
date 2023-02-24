@@ -50,23 +50,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (userHelper.isNextOfKinComplete) {
       percent += 0.2;
     }
-    if (userHelper.isIdDataComplete) {
-      percent += 0.2;
+    if (user.idTypes!.length > 1) {
+      percent += (user.idTypes!.length * 0.05);
     }
+
     return percent;
   }
 
-  Widget _checkType(bool check) {
-    if (check) {
+  Widget _checkType({bool? check, bool? isPending}) {
+    if (isPending == null) {
+      if (check!) {
+        return SvgPicture.asset(
+          SvgAppIcons.icTickCircleFill,
+          color: Colors.green,
+        );
+      }
       return SvgPicture.asset(
-        SvgAppIcons.icTickCircleFill,
+        SvgAppIcons.icCaution,
+        // color: Colors.green,
+      );
+    } else if (isPending) {
+      return SvgPicture.asset(
+        'assets/icons/outline/tick-circle-broken.svg',
         color: Colors.green,
       );
     }
     return SvgPicture.asset(
-      SvgAppIcons.icCaution,
-      // color: Colors.green,
-    );
+        SvgAppIcons.icCaution,
+        // color: Colors.green,
+      );
   }
 
   late bool isBiometricActive;
@@ -93,7 +105,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         builder: (context, provider, _) {
           final user = provider.user;
           final userHelper = UserHelper(user: user!);
-
           return SingleChildScrollView(
             child: Column(
               children: [
@@ -244,8 +255,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     children: [
                       CustomProfileRow(
-                        firstItem:
-                            _checkType(userHelper.isPersonalDetailsComplete),
+                        firstItem: _checkType(
+                            check: userHelper.isPersonalDetailsComplete),
                         secondItem: Text(
                           'Personal Details',
                           style: TextStyles.smallTextDark14Px,
@@ -264,7 +275,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       // gov-id
                       CustomProfileRow(
-                        firstItem: _checkType(userHelper.isIdDataComplete),
+                        firstItem: _checkType(
+                            isPending: userHelper.isIdDataComplete ==
+                                CriteriaState.pending),
                         secondItem: Text(
                           'Government Issued ID',
                           style: TextStyles.smallTextDark14Px,
@@ -282,7 +295,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       // address
                       CustomProfileRow(
-                        firstItem: _checkType(userHelper.isAddressComplete),
+                        firstItem:
+                            _checkType(check: userHelper.isAddressComplete),
                         secondItem: Text(
                           'Residential Address',
                           style: TextStyles.smallTextDark14Px,
@@ -302,8 +316,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       // employment details
                       CustomProfileRow(
-                        firstItem:
-                            _checkType(userHelper.isEmployerDetailsComplete),
+                        firstItem: _checkType(
+                            check: userHelper.isEmployerDetailsComplete),
                         secondItem: Text(
                           'Employment Details',
                           style: TextStyles.smallTextDark14Px,
@@ -323,7 +337,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       // next of kin
                       CustomProfileRow(
-                        firstItem: _checkType(userHelper.isNextOfKinComplete),
+                        firstItem:
+                            _checkType(check: userHelper.isNextOfKinComplete),
                         secondItem: Text(
                           'Next of Kin',
                           style: TextStyles.smallTextDark14Px,
@@ -364,7 +379,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               thirdItem: CupertinoSwitch(
                                   value: isBiometricActive,
-                                  
                                   activeColor: AppColors.primaryColor,
                                   onChanged: (isEnabled) {
                                     setState(() {
