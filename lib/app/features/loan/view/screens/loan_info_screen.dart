@@ -378,46 +378,117 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
           ),
 
           // const Spacer(),
-          SizedBox(
-            height: context.heightPx,
-            child: ListView(
-              children: [
-                const DebitCard(),
-                const VerticalSpace(
-                  size: 35,
-                ),
-                InkWell(
-                  onTap: onInitializePayment,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      // plus
-                      CircleAvatar(
-                        radius: 18,
-                        backgroundColor: AppColors.primaryColor,
-                        child: Icon(
-                          Icons.add,
-                          color: Colors.white,
-                        ),
-                      ),
+          Column(
+            children: [
+              SizedBox(
+                height: context.heightPx * 0.55,
+                child: Consumer<LoanProvider>(builder: (context, loanProvider, _) {
+                  final cards = loanProvider.myCardsResponse == null
+                      ? []
+                      : loanProvider.myCardsResponse!;
+                  switch (loanProvider.loadingState) {
+                    case LoadingState.busy:
+                      return const Center(
+                        child: CircularProgressIndicator.adaptive(),
+                      );
+                    case LoadingState.loaded:
+                      if (cards.isEmpty) {
+                        return Center(
+                          child: Text(
+                            '''You have not added any cards yet!''',
+                            style: TextStyles.normalTextDarkF800,
+                          ),
+                        );
+                      }
 
-                      HorizontalSpace(
-                        size: 8,
-                      ),
+                      return ListView.builder(
+                          itemCount: cards.length,
+                          itemBuilder: (context, index) =>
+                              const DebitCard().paddingOnly(bottom: 20));
 
-                      // add new bank
-                      Text(
-                        'ADD NEW CARD',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.primaryColor),
-                      ),
-                    ],
+                    default:
+                    return Center(
+                          child: Text(
+                            '''An Unexpected error occured!''',
+                            style: TextStyles.normalTextDarkF800,
+                          ),
+                        );
+                  }
+                  // children: [
+                  //     const DebitCard(),
+                  //     const VerticalSpace(
+                  //       size: 35,
+                  //     ),
+                  //     InkWell(
+                  //       onTap: onInitializePayment,
+                  //       child: Row(
+                  //         mainAxisAlignment: MainAxisAlignment.center,
+                  //         children: const [
+                  //           // plus
+                  //           CircleAvatar(
+                  //             radius: 18,
+                  //             backgroundColor: AppColors.primaryColor,
+                  //             child: Icon(
+                  //               Icons.add,
+                  //               color: Colors.white,
+                  //             ),
+                  //           ),
+
+                  //           HorizontalSpace(
+                  //             size: 8,
+                  //           ),
+
+                  //           // add new bank
+                  //           Text(
+                  //             'ADD NEW CARD',
+                  //             style: TextStyle(
+                  //                 fontSize: 14,
+                  //                 fontWeight: FontWeight.w700,
+                  //                 color: AppColors.primaryColor),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ).paddingOnly(bottom: 30)
+                  //   ],
+
+                  
+                }),
+              ),
+
+              const VerticalSpace(
+                    size: 35,
                   ),
-                ).paddingOnly(bottom: 30)
-              ],
-            ),
+                  InkWell(
+                    onTap: onInitializePayment,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        // plus
+                        CircleAvatar(
+                          radius: 18,
+                          backgroundColor: AppColors.primaryColor,
+                          child: Icon(
+                            Icons.add,
+                            color: Colors.white,
+                          ),
+                        ),
+
+                        HorizontalSpace(
+                          size: 8,
+                        ),
+
+                        // add new bank
+                        Text(
+                          'ADD NEW CARD',
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primaryColor),
+                        ),
+                      ],
+                    ),
+                  ).paddingOnly(bottom: 30)
+            ],
           )
         ],
       ),

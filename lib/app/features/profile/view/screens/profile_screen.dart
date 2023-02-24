@@ -50,7 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (userHelper.isNextOfKinComplete) {
       percent += 0.2;
     }
-    if (user.idTypes!.length > 1) {
+    if (user.idTypes!.isNotEmpty) {
       percent += (user.idTypes!.length * 0.05);
     }
 

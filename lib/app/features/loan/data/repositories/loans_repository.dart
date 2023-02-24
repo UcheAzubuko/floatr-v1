@@ -111,6 +111,26 @@ class LoansRepository {
     }
   }
 
+  Future<Either<Failure, List<dynamic>>> getMyCards() async {
+    final url = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.userCards,
+    );
+
+    try {
+      String? accessToken =
+          _sharedPreferences.getString(StorageKeys.accessTokenKey);
+
+      final response = await _apiService.get(
+        url: url,
+        headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
+      );
+      return Right(jsonDecode(response.body));
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    }
+  }
+
   Future<Either<Failure, VerifyBankResponse>> verifyAccount(
       BankParams bankParams) async {
     final url = Uri.https(

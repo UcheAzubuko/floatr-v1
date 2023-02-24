@@ -19,6 +19,6 @@ final globalProviders = <SingleChildWidget>[
   ChangeNotifierProvider(create: (_) => AuthenticationProvider(authenticationRepository: di(), biometricRepository: di())),
   ChangeNotifierProvider(create: (_) => UserResourcesProvider(userResourcesRepository: di())),
   ChangeNotifierProvider(create: (_) => UserProfileProvider(profileRepository: di())),
-  ChangeNotifierProvider(create: (_) => LoanProvider(loansRepository: di())..getMyBanks()..getFeaturedLoans()..getBanks()),
+  ChangeNotifierProvider(create: (_) => LoanProvider(loansRepository: di())..getMyBanks()..getFeaturedLoans()..getBanks()..getMyCards()),
   ChangeNotifierProvider(create: (_) => DashboardProvider(activitieRepository: di())..getMyActivies()),
 ];

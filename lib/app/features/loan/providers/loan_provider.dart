@@ -48,6 +48,11 @@ class LoanProvider extends BaseProvider {
 
   VerifyBankResponse? get verifyBankResponse => _verifyBankResponse.value;
 
+  final ValueNotifier<List<dynamic>?> _myCardsResponse =
+      ValueNotifier<List<dynamic>?>(null);
+
+  List<dynamic>? get myCardsResponse => _myCardsResponse.value;
+
   @override
   LoadingState get loadingState => _loadingState;
 
@@ -135,6 +140,20 @@ class LoanProvider extends BaseProvider {
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
       _myBanksResponse.value = onSuccess;
+    });
+  }
+
+  Future<void> getMyCards() async {
+    updateLoadingState(LoadingState.busy);
+
+    final repsonse = await _loansRepository.getMyCards();
+
+    repsonse.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? ' Could not get Cards');
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
+      _myCardsResponse.value = onSuccess;
     });
   }
 
