@@ -524,7 +524,37 @@ class ProfileScreen extends StatelessWidget {
                   height: 52,
                   backgroundColor: Colors.white,
                   borderColor: AppColors.red,
-                  onPressed: () {},
+                  onPressed: () => showDialog(
+                      context: context,
+                      barrierDismissible: true,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Logging Out?'),
+                          content: SingleChildScrollView(
+                            child: ListBody(
+                              children: const <Widget>[
+                                Text('Are you sure you want to log out?'),
+                              ],
+                            ),
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text(
+                                'CONFIRM',
+                                style: TextStyles.smallTextPrimary,
+                              ),
+                              onPressed: () => provider.logout(),
+                            ),
+                            TextButton(
+                              child: Text(
+                                'CANCEL',
+                                style: TextStyles.smallTextPrimary,
+                              ),
+                              onPressed: () => navigationService.pop(),
+                            ),
+                          ],
+                        );
+                      }),
                   borderRadius: 12,
                   child: const AppText(
                     size: 14,

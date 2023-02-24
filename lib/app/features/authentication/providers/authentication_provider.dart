@@ -12,7 +12,6 @@ import 'package:floatr/app/widgets/app_snackbar.dart';
 import 'package:floatr/core/misc/dependency_injectors.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/route_names.dart';
-import 'package:floatr/core/utils/app_style.dart';
 import 'package:floatr/core/utils/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -190,7 +189,7 @@ class AuthenticationProvider extends BaseProvider {
     return authenticationRepository.isLoggedIn;
   }
 
-  bool _isBiometricLoginEnabled() => _isBiometricLoginEnabled();
+  bool _isBiometricLoginEnabled() => authenticationRepository.isBiometricLoginEnabled;
 
   bool get isLoggedIn => _isLoggedIn();
 
@@ -212,39 +211,9 @@ class AuthenticationProvider extends BaseProvider {
     });
   }
 
-  //! THIS IS PURE VIOLATION! BUT TEMPORARY, WOULD REMOVE SOON!
-  //TODO: Remove 
   void logout() {
-    
-    AlertDialog(
-      title: const Text('Logging Out?'),
-      content: SingleChildScrollView(
-        child: ListBody(
-          children: const <Widget>[
-            Text('Are you sure you want to log out?'),
-          ],
-        ),
-      ),
-      actions: <Widget>[
-        TextButton(
-          child: Text(
-            'CONFIRM',
-            style: TextStyles.smallTextPrimary,
-          ),
-          onPressed: () {
-            authenticationRepository.logout();
-            _navigationService.pushAndRemoveUntil(RouteName.postOnboarding);
-          },
-        ),
-        TextButton(
-          child: Text(
-            'CANCEL',
-            style: TextStyles.smallTextPrimary,
-          ),
-          onPressed: () => _navigationService.pop(),
-        ),
-      ],
-    );
+    authenticationRepository.logout();
+    _navigationService.pushAndRemoveUntil(RouteName.postOnboarding);
   }
 
   Future<void> initiateVerifyBVN(BuildContext context) async {
