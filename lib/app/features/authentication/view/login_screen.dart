@@ -9,6 +9,7 @@ import 'package:floatr/app/features/authentication/providers/authentication_prov
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/general_button.dart';
 import 'package:floatr/core/providers/base_provider.dart';
+import 'package:floatr/core/providers/biometric_provider.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/app_colors.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
@@ -47,6 +49,17 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     _loginParams = LoginParams(email: null, password: null);
+    final authProvider = context.read<AuthenticationProvider>();
+    final biometricProvider = context.read<BiometricProvider>();
+    final isFingerPrint =
+        biometricProvider.biometricType == BiometricType.fingerprint;
+
+    if ((biometricProvider.biometricType == BiometricType.face ||
+        biometricProvider.biometricType == BiometricType.fingerprint) &&  authProvider.isBiometricLoginEnabled) {
+
+      biometricProvider.didAuthenticate(() => authProvider.biometricLogin(),
+          'Login with ${isFingerPrint ? 'Fingerprint' : 'Face ID'}');
+    }
     super.initState();
   }
 

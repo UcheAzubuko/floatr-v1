@@ -104,6 +104,12 @@ class AuthenticationRepository {
     }
   }
 
+  bool _isBiometricLoginEnabled() =>
+      _prefs.containsKey(StorageKeys.biometricStatusKey) &&
+      _prefs.getBool(StorageKeys.biometricStatusKey)!;
+
+  bool get isBiometricLoginEnabled => _isBiometricLoginEnabled();
+
   bool _isLoggedIn() =>
       _prefs.containsKey(StorageKeys.accessTokenKey) &&
       !JwtDecoder.isExpired(_prefs.getString(StorageKeys.accessTokenKey)!);

@@ -112,16 +112,16 @@ class AuthenticationProvider extends BaseProvider {
 
   Future<bool> canAuthenticate() => biometricRepository.canAuthenticate();
 
-  Future<void> didAuthenticate([bool performBiometricLogin = false]) async {
-    // updateLoadingState(LoadingState.busy);
-    canAuthenticate().then((canAuthenticate) {
-      if (canAuthenticate) {
-        biometricRepository.didAuthenticate().then((didAuthenticate) async {
-          performBiometricLogin ? await biometricLogin() : () {};
-        });
-      }
-    });
-  }
+  // Future<void> didAuthenticate([bool performBiometricLogin = false]) async {
+  //   // updateLoadingState(LoadingState.busy);
+  //   canAuthenticate().then((canAuthenticate) {
+  //     if (canAuthenticate) {
+  //       biometricRepository.didAuthenticate().then((didAuthenticate) async {
+  //         performBiometricLogin ? await biometricLogin() : () {};
+  //       });
+  //     }
+  //   });
+  // }
 
   Future<void> biometricLogin() async {
     var response = await authenticationRepository.biometricLogin();
@@ -189,7 +189,11 @@ class AuthenticationProvider extends BaseProvider {
     return authenticationRepository.isLoggedIn;
   }
 
+  bool _isBiometricLoginEnabled() => _isBiometricLoginEnabled();
+
   bool get isLoggedIn => _isLoggedIn();
+
+  bool get isBiometricLoginEnabled => _isBiometricLoginEnabled();
 
   Future<void> initiateVerifyPhone(BuildContext context) async {
     updateLoadingState(LoadingState.busy);

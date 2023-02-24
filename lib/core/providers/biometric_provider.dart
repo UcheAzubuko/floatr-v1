@@ -30,18 +30,44 @@ class BiometricProvider extends BaseProvider {
     notifyListeners();
   }
 
-  BiometricType? get biometricType => _biometricType.value;
+  BiometricType? _biometricType;
 
-  final ValueNotifier<BiometricType?> _biometricType =
-      ValueNotifier<BiometricType?>(null);
+  BiometricType? get biometricType => _biometricType;
+
+  bool? _isUserAuthenticated;
+
+  bool? get isUserAuthenticated => _isUserAuthenticated;
+
+  updateBiometricType(BiometricType? biometricType) {
+    _biometricType = biometricType;
+    notifyListeners();
+  }
+
+  updateDidAuthenticate(bool didAuthenticate) {
+    _biometricType = biometricType;
+    notifyListeners();
+  }
 
   Future<void> getBiometricType() async {
     final response = await _biometricRepository.getBiometricType();
 
     response.fold((onError) {
       updateErrorMsgState(onError.message!);
+      updateBiometricType(null);
     }, (onSuccess) {
-      _biometricType.value = onSuccess;
+      updateBiometricType(onSuccess);
+    });
+  }
+
+  /// onSuccessCallback calls only when fingerprint was successful
+  Future<void> didAuthenticate(Function? onSuccessCallback, [String? message]) async {
+    final response = await _biometricRepository.didAuthenticate(onSuccessCallback ?? (){}, message);
+
+    response.fold((onError) {
+      updateErrorMsgState(onError.message!);
+      updateDidAuthenticate(false);
+    }, (onSuccess) {
+      updateDidAuthenticate(onSuccess);
     });
   }
 }
