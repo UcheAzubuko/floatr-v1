@@ -1,5 +1,4 @@
 import 'package:floatr/core/providers/base_provider.dart';
-import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 
 import '../../app/features/authentication/data/repositories/biometric_repository.dart';
