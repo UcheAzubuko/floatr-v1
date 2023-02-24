@@ -65,6 +65,16 @@ class AuthenticationProvider extends BaseProvider {
 
   String? get transactionPin => _transactionPin;
 
+  bool _isBiometricLoginEnabled() =>
+      authenticationRepository.isBiometricLoginEnabled;
+
+  bool get isLoggedIn => _isLoggedIn();
+
+  bool get isBiometricLoginEnabled => _isBiometricLoginEnabled();
+
+  setBiometricLogin(bool isEnabled) => authenticationRepository.setBiometricLogin(isEnabled);
+
+
   updateLoginParams(LoginParams params) {
     _loginParams = params;
     notifyListeners();
@@ -146,7 +156,7 @@ class AuthenticationProvider extends BaseProvider {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'A login error occured!');
       // trigger error on ui
-      // AppSnackBar.showErrorSnackBar(context, errorMsg);
+      AppSnackBar.showErrorSnackBar(context, errorMsg);
     }, (onSuccess) async {
       // updateLoadingState(LoadingState.loaded);
       await getUser();
@@ -188,12 +198,6 @@ class AuthenticationProvider extends BaseProvider {
     }
     return authenticationRepository.isLoggedIn;
   }
-
-  bool _isBiometricLoginEnabled() => authenticationRepository.isBiometricLoginEnabled;
-
-  bool get isLoggedIn => _isLoggedIn();
-
-  bool get isBiometricLoginEnabled => _isBiometricLoginEnabled();
 
   Future<void> initiateVerifyPhone(BuildContext context) async {
     updateLoadingState(LoadingState.busy);

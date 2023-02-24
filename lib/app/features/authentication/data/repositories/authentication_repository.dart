@@ -108,6 +108,10 @@ class AuthenticationRepository {
       _prefs.containsKey(StorageKeys.biometricStatusKey) &&
       _prefs.getBool(StorageKeys.biometricStatusKey)!;
 
+  void setBiometricLogin(bool isEnabled) =>
+      _prefs.setBool(StorageKeys.biometricStatusKey, isEnabled);
+
+
   bool get isBiometricLoginEnabled => _isBiometricLoginEnabled();
 
   bool _isLoggedIn() =>
@@ -144,7 +148,7 @@ class AuthenticationRepository {
   }
 
   Future logout() async {
-     _prefs.clear();
+    _prefs.clear();
     _flutterSecureStorage.deleteAll();
   }
 

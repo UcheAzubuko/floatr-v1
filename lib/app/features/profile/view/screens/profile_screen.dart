@@ -14,19 +14,27 @@ import 'package:floatr/core/utils/app_icons.dart';
 import 'package:floatr/core/utils/app_style.dart';
 import 'package:floatr/core/utils/enums.dart';
 import 'package:floatr/core/utils/spacing.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../core/misc/dependency_injectors.dart';
+import '../../../../../core/providers/biometric_provider.dart';
 import '../../../../../core/utils/app_colors.dart';
 import '../../../authentication/providers/authentication_provider.dart';
 import '../widgets/account_info_card.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
   double _profileCompletionPercentage(UserResponse user) {
     final userHelper = UserHelper(user: user);
     double percent = 0.0;
@@ -59,6 +67,22 @@ class ProfileScreen extends StatelessWidget {
       SvgAppIcons.icCaution,
       // color: Colors.green,
     );
+  }
+
+  late bool isBiometricActive;
+
+  late bool isBiometricAvailable;
+
+  @override
+  void initState() {
+    final biometricProvider = context.read<BiometricProvider>();
+
+    isBiometricAvailable =
+        (biometricProvider.biometricType == BiometricType.face ||
+            biometricProvider.biometricType == BiometricType.fingerprint);
+    isBiometricActive =
+        context.read<AuthenticationProvider>().isBiometricLoginEnabled;
+    super.initState();
   }
 
   @override
@@ -324,27 +348,33 @@ class ProfileScreen extends StatelessWidget {
                 // security
                 AccountInfoCard(
                   infoTitle: 'Security',
-                  height: 210,
+                  height: isBiometricAvailable ? 230 : 168,
                   width: context.widthPx,
                   child: Column(
                     children: [
                       // biometric login
-                      CustomProfileRow(
-                        firstItem: SvgPicture.asset(
-                          SvgAppIcons.icFingerprint,
-                        ),
-                        secondItem: Text(
-                          'Biometric Login',
-                          style: TextStyles.smallTextDark14Px,
-                        ),
-                        thirdItem: SvgPicture.asset(
-                          'assets/icons/outline/arrow-right.svg',
-                          color: Colors.black,
-                          fit: BoxFit.scaleDown,
-                          height: 20,
-                          width: 6,
-                        ),
-                      ),
+                      isBiometricAvailable
+                          ? CustomProfileRow(
+                              firstItem: SvgPicture.asset(
+                                SvgAppIcons.icFingerprint,
+                              ),
+                              secondItem: Text(
+                                'Biometric Login',
+                                style: TextStyles.smallTextDark14Px,
+                              ),
+                              thirdItem: CupertinoSwitch(
+                                  value: isBiometricActive,
+                                  
+                                  activeColor: AppColors.primaryColor,
+                                  onChanged: (isEnabled) {
+                                    setState(() {
+                                      isBiometricActive = isEnabled;
+                                      provider.setBiometricLogin(isEnabled);
+                                    });
+                                    // provider.setBiometricLogin(isEnabled);
+                                  }),
+                            )
+                          : const SizedBox(),
 
                       // change password
                       CustomProfileRow(
@@ -362,7 +392,7 @@ class ProfileScreen extends StatelessWidget {
                           height: 20,
                           width: 6,
                         ),
-                      ),
+                      ).paddingOnly(bottom: 7),
 
                       // change transaction pin
                       CustomProfileRow(
