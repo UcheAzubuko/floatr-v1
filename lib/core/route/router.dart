@@ -18,6 +18,7 @@ import 'package:floatr/app/features/onboarding/post_onboarding.dart';
 import 'package:floatr/app/features/onboarding/splash_screen.dart';
 import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
 import 'package:floatr/app/features/profile/view/screens/profile_screen.dart';
+import 'package:floatr/app/features/profile/view/screens/profile_views/cards_banks_screen.dart';
 import 'package:floatr/app/features/profile/view/screens/snap_document_screen.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,9 @@ class Router {
         return slidePageTransition(const VerifyBVNScreen());
       case RouteName.takeSelfie:
         return slidePageTransition(const TakeSelefieScreen());
+        case RouteName.cardsBanks:
+        final args = settings.arguments as CardsBanksArguments;
+        return slidePageTransition(CardsBanksScreen(togglePosition: args.togglePosition,));
       case RouteName.confirmDetails:
         return slidePageTransition(const ConfirmDetailsScreen());
       case RouteName.createPin:

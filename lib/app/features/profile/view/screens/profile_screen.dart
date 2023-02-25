@@ -4,10 +4,12 @@ import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/data/model/response/user_repsonse.dart';
 import 'package:floatr/app/features/profile/data/model/user_helper.dart';
 import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
+import 'package:floatr/app/features/profile/view/screens/profile_views/cards_banks_screen.dart';
 import 'package:floatr/app/features/profile/view/screens/snap_document_screen.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/dialogs.dart';
 import 'package:floatr/app/widgets/general_button.dart';
+import 'package:floatr/app/widgets/pageview_toggler.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/app_icons.dart';
@@ -454,6 +456,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           height: 20,
                           width: 6,
                         ),
+                        onTap: () => navigationService.navigateTo(RouteName.cardsBanks, arguments: CardsBanksArguments(togglePosition: TogglePosition.left)),
                       ),
 
                       // banks
@@ -472,6 +475,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           height: 20,
                           width: 6,
                         ),
+                        onTap: () => navigationService.navigateTo(RouteName.cardsBanks, arguments: CardsBanksArguments(togglePosition: TogglePosition.right)),
                       ),
                     ],
                   ),

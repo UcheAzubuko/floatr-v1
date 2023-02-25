@@ -354,7 +354,7 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
         children: [
           widget.showAppBar
               ? const VerticalSpace(
-                  size: 43,
+                  size: 25,
                 )
               : const SizedBox(),
 
