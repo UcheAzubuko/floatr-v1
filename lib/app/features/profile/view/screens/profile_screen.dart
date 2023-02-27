@@ -408,6 +408,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           height: 20,
                           width: 6,
                         ),
+                        onTap: () => navigationService.navigateTo(RouteName.changePasswordScreen),
                       ).paddingOnly(bottom: 7),
 
                       // change transaction pin

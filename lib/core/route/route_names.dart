@@ -10,6 +10,7 @@ class RouteName {
   static const String cardsBanks = 'cardsBanks';
   static const String confirmDetails = 'confirmDetails';
   static const String createPin = 'createPin';
+  static const String changePasswordScreen = 'changePasswordScreen';
   static const String dashboardLoanDueTime = 'dashboardLoanDueTime';
   static const String dashboardLoanDetailSchedule = 'dashboardLoanDetailSchedule';
   static const String displayPicture = 'displayPicture';

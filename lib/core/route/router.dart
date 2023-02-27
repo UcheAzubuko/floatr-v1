@@ -16,6 +16,7 @@ import 'package:floatr/app/features/loan/view/screens/loan_info_screen.dart';
 import 'package:floatr/app/features/onboarding/onboarding_screen_main.dart';
 import 'package:floatr/app/features/onboarding/post_onboarding.dart';
 import 'package:floatr/app/features/onboarding/splash_screen.dart';
+import 'package:floatr/app/features/profile/view/screens/change_password_screen.dart';
 import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
 import 'package:floatr/app/features/profile/view/screens/profile_screen.dart';
 import 'package:floatr/app/features/profile/view/screens/profile_views/cards_banks_screen.dart';
@@ -68,6 +69,8 @@ class Router {
         );
       case RouteName.biometrics:
         return MaterialPageRoute(builder: (_) => const BiometricsScreen());
+      case RouteName.changePasswordScreen:
+        return MaterialPageRoute(builder: (_) => const ChangePasswordScreen());
       case RouteName.dashboardLoanDueTime:
         final args = settings.arguments as DashboardLoanDetailsArguments;
         return slidePageTransition(
