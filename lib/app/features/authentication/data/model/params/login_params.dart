@@ -8,7 +8,7 @@ class LoginParams  {
   });
 
   Map<String, dynamic> toMap() {
-    return {"email": email, "password": password};
+    return {"phone": email, "password": password};
   }
 
   // @override

@@ -1,4 +1,5 @@
 
+import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/utils/app_colors.dart';
@@ -14,7 +15,7 @@ class PageViewToggler extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 335,
+      width: context.widthPx,
       height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
@@ -52,7 +53,7 @@ class PageViewToggler extends StatelessWidget {
                 ? Alignment.centerLeft
                 : Alignment.centerRight,
             child: Container(
-                width: 167,
+                width: context.widthPx * 0.5,
                 height: 32,
                 decoration: BoxDecoration(
                     color: AppColors.primaryColor,

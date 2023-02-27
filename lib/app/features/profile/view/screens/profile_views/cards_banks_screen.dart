@@ -124,11 +124,11 @@ class BanksView extends StatelessWidget {
                   child: CircularProgressIndicator.adaptive(),
                 );
               case LoadingState.loaded:
-                // if (banks.isEmpty) {
-                //   return const NoBanksView();
-                // }
+                if (banks.isEmpty) {
+                  return const NoBanksView();
+                }
                 return ListView.builder(
-                    itemCount: 2,
+                    itemCount: banks.length,
                     itemBuilder: (context, index) => SelectBank(
                           color: AppColors.lightGrey300,
                           bankName: banks[index].bank.name,
@@ -230,20 +230,20 @@ class CardView extends StatelessWidget {
           child: Consumer<LoanProvider>(builder: (context, loanProvider, _) {
             final cards = loanProvider.myCardsResponse == null
                 ? []
-                : loanProvider.myCardsResponse!;
+                : loanProvider.myCardsResponse!.cards;
             switch (loanProvider.loadingState) {
               case LoadingState.busy:
                 return const Center(
                   child: CircularProgressIndicator.adaptive(),
                 );
               case LoadingState.loaded:
-                // if (cards.isEmpty) {
-                //   return const NoBanksView();
-                // }
+                if (cards.isEmpty) {
+                  return const NoBanksView();
+                }
                 return ListView.builder(
-                    itemCount: 3,
+                    itemCount: cards.length,
                     itemBuilder: (context, index) =>
-                        const DebitCard().paddingOnly(bottom: 20));
+                        DebitCard(card: cards[index]).paddingOnly(bottom: 20));
 
               case LoadingState.error:
                 return const NoBanksView();

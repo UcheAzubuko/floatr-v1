@@ -30,8 +30,12 @@ class _SplashScreen extends State<SplashScreen> {
         .addPostFrameCallback((_) => auth.getUser().then((_) {
               Future.delayed(const Duration(seconds: 1), () async {
                 if (auth.loadingState == LoadingState.error) {
-                  AppSnackBar.showErrorSnackBar(
-                      context, '${auth.errorMsg}: Please check your internet connection!', const Duration(minutes: 2));
+                  if (!auth.isLoggedIn) {
+                    di<NavigationService>().navigateTo(RouteName.onBoarding);
+                  } else {
+                    AppSnackBar.showErrorSnackBar(
+                        context, auth.errorMsg, const Duration(minutes: 2));
+                  }
                 } else if (auth.loadingState == LoadingState.loaded) {
                   di<NavigationService>().navigateTo(RouteName.onBoarding);
                 }

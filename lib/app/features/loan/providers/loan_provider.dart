@@ -2,11 +2,13 @@ import 'dart:developer';
 
 import 'package:floatr/app/features/loan/data/repositories/loans_repository.dart';
 import 'package:floatr/app/features/loan/model/params/verify_bank_params.dart';
+import 'package:floatr/app/features/loan/model/responses/card_response.dart';
 import 'package:floatr/app/features/loan/model/responses/loans_response.dart';
 import 'package:floatr/app/features/loan/model/responses/verify_bank_response.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:flutter/material.dart';
 
+import '../model/params/add_card_params.dart';
 import '../model/responses/banks_response.dart' as bank;
 import '../model/responses/my_banks_response.dart';
 
@@ -43,15 +45,19 @@ class LoanProvider extends BaseProvider {
 
   AddBankParams? get addBankParams => _addBankParams;
 
+  AddCardParams? _addCardParams;
+
+  AddCardParams? get addCardParams => _addCardParams;
+
   final ValueNotifier<VerifyBankResponse?> _verifyBankResponse =
       ValueNotifier<VerifyBankResponse?>(null);
 
   VerifyBankResponse? get verifyBankResponse => _verifyBankResponse.value;
 
-  final ValueNotifier<List<dynamic>?> _myCardsResponse =
-      ValueNotifier<List<dynamic>?>(null);
+  final ValueNotifier<CardResponse?> _myCardsResponse =
+      ValueNotifier<CardResponse?>(null);
 
-  List<dynamic>? get myCardsResponse => _myCardsResponse.value;
+  CardResponse? get myCardsResponse => _myCardsResponse.value;
 
   @override
   LoadingState get loadingState => _loadingState;
@@ -93,6 +99,11 @@ class LoanProvider extends BaseProvider {
 
   updateAddBankParams(AddBankParams addBankParams) {
     _addBankParams = addBankParams;
+    notifyListeners();
+  }
+
+  updateAddCardParams(AddCardParams addCardParams) {
+    _addCardParams = addCardParams;
     notifyListeners();
   }
 
@@ -169,6 +180,21 @@ class LoanProvider extends BaseProvider {
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
       log("Added bank successfully");
+    });
+  }
+
+  Future<void> addCard() async {
+    updateLoadingState(LoadingState.busy);
+
+    final repsonse = await _loansRepository.addCard(_addCardParams!);
+    print(_addCardParams!.transactionRef);
+
+    repsonse.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? ' Could not add card');
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
+      log("Added Card successfully");
     });
   }
 

@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
-  final _emailValidator = ValidationBuilder().password().maxLength(50).build();
+  final _phoneValidator = ValidationBuilder().phone().maxLength(50).build();
   final _passwordValidator = ValidationBuilder().password().build();
 
   @override
@@ -114,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // phone number text and textfield
                 AppText(
-                  text: 'Email',
+                  text: 'Phone',
                   color: AppColors.black,
                   fontWeight: FontWeight.w600,
                   size: context.widthPx * 0.035,
@@ -131,12 +131,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  hintText: 'jen@floatr.com',
+                  hintText: '+234 987 673 6789',
                   controller: emailController,
-                  textInputType: TextInputType.emailAddress,
+                  textInputType: TextInputType.phone,
                   textInputAction: TextInputAction.unspecified,
                   onSaved: (String? email) => _loginParams.email = email!,
-                  validator: _emailValidator,
+                  validator: _phoneValidator,
                 ),
 
                 const VerticalSpace(size: 10),

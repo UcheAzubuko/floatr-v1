@@ -3,7 +3,10 @@ import 'dart:developer';
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
+import 'package:floatr/app/features/loan/model/params/add_card_params.dart';
 import 'package:floatr/app/features/loan/model/params/verify_bank_params.dart';
+import 'package:floatr/app/features/loan/model/responses/card_response.dart'
+    as cardResponse;
 import 'package:floatr/app/features/loan/providers/loan_provider.dart';
 import 'package:floatr/app/widgets/app_snackbar.dart';
 import 'package:floatr/app/widgets/prompt_widget.dart';
@@ -13,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:monnify_payment_sdk/monnify_payment_sdk.dart';
 import 'package:provider/provider.dart';
 
@@ -338,6 +342,7 @@ class SelectCardScreen extends StatefulWidget {
 
 class _SelectCardScreenState extends State<SelectCardScreen> {
   late Monnify? monnify;
+  DateFormat dateFormat = DateFormat('MMM/yyyy');
 
   @override
   void initState() {
@@ -382,10 +387,11 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
             children: [
               SizedBox(
                 height: context.heightPx * 0.55,
-                child: Consumer<LoanProvider>(builder: (context, loanProvider, _) {
+                child:
+                    Consumer<LoanProvider>(builder: (context, loanProvider, _) {
                   final cards = loanProvider.myCardsResponse == null
                       ? []
-                      : loanProvider.myCardsResponse!;
+                      : loanProvider.myCardsResponse!.cards;
                   switch (loanProvider.loadingState) {
                     case LoadingState.busy:
                       return const Center(
@@ -403,16 +409,17 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
 
                       return ListView.builder(
                           itemCount: cards.length,
-                          itemBuilder: (context, index) =>
-                              const DebitCard().paddingOnly(bottom: 20));
+                          itemBuilder: (context, index) => DebitCard(
+                                card: cards[index],
+                              ).paddingOnly(bottom: 20));
 
                     default:
-                    return Center(
-                          child: Text(
-                            '''An Unexpected error occured!''',
-                            style: TextStyles.normalTextDarkF800,
-                          ),
-                        );
+                      return Center(
+                        child: Text(
+                          '''An Unexpected error occured!''',
+                          style: TextStyles.normalTextDarkF800,
+                        ),
+                      );
                   }
                   // children: [
                   //     const DebitCard(),
@@ -450,44 +457,41 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
                   //       ),
                   //     ).paddingOnly(bottom: 30)
                   //   ],
-
-                  
                 }),
               ),
-
               const VerticalSpace(
-                    size: 35,
-                  ),
-                  InkWell(
-                    onTap: onInitializePayment,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        // plus
-                        CircleAvatar(
-                          radius: 18,
-                          backgroundColor: AppColors.primaryColor,
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.white,
-                          ),
-                        ),
-
-                        HorizontalSpace(
-                          size: 8,
-                        ),
-
-                        // add new bank
-                        Text(
-                          'ADD NEW CARD',
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.primaryColor),
-                        ),
-                      ],
+                size: 35,
+              ),
+              InkWell(
+                onTap: onInitializePayment,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    // plus
+                    CircleAvatar(
+                      radius: 18,
+                      backgroundColor: AppColors.primaryColor,
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
                     ),
-                  ).paddingOnly(bottom: 30)
+
+                    HorizontalSpace(
+                      size: 8,
+                    ),
+
+                    // add new bank
+                    Text(
+                      'ADD NEW CARD',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primaryColor),
+                    ),
+                  ],
+                ),
+              ).paddingOnly(bottom: 30)
             ],
           )
         ],
@@ -506,6 +510,7 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
   void onInitializePayment() async {
     final paymentReference = DateTime.now().millisecondsSinceEpoch.toString();
     final user = context.read<AuthenticationProvider>().user;
+    final loan = context.read<LoanProvider>();
 
     // Initia
     final transaction = TransactionDetails().copyWith(
@@ -521,6 +526,17 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
       final response =
           await monnify?.initializePayment(transaction: transaction);
 
+      loan.updateAddCardParams(
+          AddCardParams(transactionRef: response!.transactionReference));
+      loan.addCard().then((_) {
+        if (loan.loadingState == LoadingState.loaded) {
+          loan.getMyCards();
+        } else {
+          loan.updateLoadingState(
+              LoadingState.loaded); // force loading state to go back to loaded
+        }
+      });
+
       Fluttertoast.showToast(msg: response.toString());
       log(response.toString());
     } catch (e) {
@@ -533,10 +549,13 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
 class DebitCard extends StatelessWidget {
   const DebitCard({
     Key? key,
+    required this.card,
   }) : super(key: key);
+  final cardResponse.Card card;
 
   @override
   Widget build(BuildContext context) {
+    DateFormat dateFormat = DateFormat('MM/yy');
     return Stack(
       children: [
         Container(
@@ -578,9 +597,9 @@ class DebitCard extends StatelessWidget {
                     SvgImages.chip,
                   ),
                   const Spacer(),
-                  const Text(
-                    '●●●● ●●●● ●●●● 2600',
-                    style: TextStyle(
+                  Text(
+                    '●●●● ●●●● ●●●● ${card.maskedPan.substring(card.maskedPan.length - 4)}',
+                    style: const TextStyle(
                         color: Colors.white,
                         letterSpacing: 2,
                         wordSpacing: 3,
@@ -592,17 +611,17 @@ class DebitCard extends StatelessWidget {
               const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
+                children: [
                   Text(
-                    'John Doe',
-                    style: TextStyle(
+                    card.name,
+                    style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,
                         fontWeight: FontWeight.w700),
                   ),
                   Text(
-                    'MM/YY',
-                    style: TextStyle(
+                    dateFormat.format(card.expiryDate),
+                    style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,
                         fontWeight: FontWeight.w700),

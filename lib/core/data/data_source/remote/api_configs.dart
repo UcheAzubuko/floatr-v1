@@ -1,8 +1,10 @@
 class APIConfigs {
   // base url
-  static const baseUrl = 'floatr-backend.herokuapp.com';
+  // static const baseUrl = 'floatr-backend.herokuapp.com';
+  static const baseUrl = 'api.floatr.ng';
 
   static const activities = 'v1/users/me/activities';
+  static const verifyCard = 'v1/transaction/verify/monnify';
   static const banks = '/v1/banks';
   static const beginPhoneVerificationPath =
       '/v1/users/me/begin-phone-verification';
@@ -23,8 +25,7 @@ class APIConfigs {
   static const user = '/v1/users/me';
   static const userBanks = 'v1/users/me/banks';
   static const userCards = 'v1/users/me/cards';
-  static const userFullPath =
-      'https://floatr-backend.herokuapp.com/v1/users/me?mask=false';
+  static const userFullPath = 'https://${baseUrl}/v1/users/me?mask=false';
   static const verifyAccount = '/v1/banks/verify-account';
   static const verifyBVNPath = '/v1/users/me/verify-bvn';
   static const verifyForgotPasswordToken =
