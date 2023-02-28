@@ -2,7 +2,9 @@ import 'dart:math' as math;
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/data/model/response/user_repsonse.dart';
+import 'package:floatr/app/features/profile/data/model/params/change_password_params.dart';
 import 'package:floatr/app/features/profile/data/model/user_helper.dart';
+import 'package:floatr/app/features/profile/providers/user_profile_provider.dart';
 import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
 import 'package:floatr/app/features/profile/view/screens/profile_views/cards_banks_screen.dart';
 import 'package:floatr/app/features/profile/view/screens/snap_document_screen.dart';
@@ -19,14 +21,19 @@ import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../core/misc/dependency_injectors.dart';
+import '../../../../../core/providers/base_provider.dart';
 import '../../../../../core/providers/biometric_provider.dart';
 import '../../../../../core/utils/app_colors.dart';
+import '../../../../widgets/app_snackbar.dart';
+import '../../../../widgets/custom_keyboard.dart';
 import '../../../authentication/providers/authentication_provider.dart';
+import '../../../dashboard/view/widgets/highlights_card.dart';
 import '../widgets/account_info_card.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -78,14 +85,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
     }
     return SvgPicture.asset(
-        SvgAppIcons.icCaution,
-        // color: Colors.green,
-      );
+      SvgAppIcons.icCaution,
+      // color: Colors.green,
+    );
   }
 
   late bool isBiometricActive;
 
   late bool isBiometricAvailable;
+
+  late ChangePinParams _changePinParams;
 
   @override
   void initState() {
@@ -97,6 +106,170 @@ class _ProfileScreenState extends State<ProfileScreen> {
     isBiometricActive =
         context.read<AuthenticationProvider>().isBiometricLoginEnabled;
     super.initState();
+
+    _changePinParams = ChangePinParams();
+  }
+
+  _beginChangePin(TransactionPinState transPinState, {String? setInitialPin}) {
+    final bool isInitial = transPinState == TransactionPinState.initial;
+    // set tempPin as setInitialPin for comparison, if setInitial pin is null,
+    // it therefore means there exists no other pin to compare with.
+    String? tempPin = setInitialPin;
+    bool isLoading = false;
+    AppDialog.showAppDialog(
+        context,
+        ChangeNotifierProvider(
+          create: (context) => KeyboardProvider()
+            ..updateControllerActiveStatus(shouldDeactivateController: true)
+            ..updateRequiredLength(6),
+          child: Consumer<KeyboardProvider>(
+            builder: (context, keyboard, _) {
+              final userProfileProvider = context.read<UserProfileProvider>();
+              return Container(
+                // height: 741,
+                width: context.widthPx,
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(24)),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 38,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: AppColors.grey.withOpacity(0.3),
+                      ),
+                    ),
+
+                    const VerticalSpace(size: 25),
+
+                    SizedBox(
+                      height: 75,
+                      child: Column(
+                        children: [
+                          Text(
+                            isInitial
+                                ? 'Enter Your Current Pin'
+                                : 'Enter New Pin',
+                            style: TextStyles.normalTextDarkF800,
+                          ),
+                          const VerticalSpace(
+                            size: 20,
+                          ),
+                          SizedBox(
+                            width: 152,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                pinCircle(0, keyboard.inputs),
+                                pinCircle(1, keyboard.inputs),
+                                pinCircle(2, keyboard.inputs),
+                                pinCircle(3, keyboard.inputs),
+                                pinCircle(4, keyboard.inputs),
+                                pinCircle(5, keyboard.inputs),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+
+                    const CustomKeyboard(),
+
+                    const Spacer(),
+
+                    // btn
+                    StatefulBuilder(builder: (context, setState) {
+                      return GeneralButton(
+                        height: 48,
+                        width: 335,
+                        borderColor: keyboard.isFilled
+                            ? AppColors.primaryColor
+                            : AppColors.primaryColorLight.withOpacity(0.1),
+                        backgroundColor: keyboard.isFilled
+                            ? AppColors.primaryColor
+                            : AppColors.primaryColorLight.withOpacity(0.1),
+                        borderRadius: 12,
+                        isLoading: isLoading,
+                        onPressed: isInitial
+                            // switch to to confirm
+                            ? () {
+                                if (keyboard.isFilled) {
+                                  // list of keyboard inputs to string
+                                  final pin = keyboard.inputs
+                                      .map((n) => n.toString())
+                                      .join();
+
+                                  di<NavigationService>().pop(); // pop dialog
+                                  // call proceed again, but with the initial entered pin so you can compare against subsequent entered pin.
+                                  _beginChangePin(TransactionPinState.confirm,
+                                      setInitialPin:
+                                          pin); // show comfirm pin dialog
+                                }
+                              }
+                            // confirm pin
+                            : () async {
+                                if (keyboard.isFilled) {
+                                  final pin = keyboard.inputs
+                                      .map((n) => n.toString())
+                                      .join();
+
+                                  if (tempPin != null) {
+                                    // compare both pins
+                                    if (tempPin == pin) {
+                                      Fluttertoast.showToast(
+                                          msg:
+                                              'New pin should be different from old pin!',
+                                          backgroundColor: Colors.red);
+                                    } else {
+                                      _changePinParams.pin = tempPin;
+                                      _changePinParams.newPin = pin;
+
+                                      userProfileProvider.updateChangePinParams(
+                                          _changePinParams);
+
+                                      // force loading
+                                      setState(() => isLoading = true);
+
+                                      await userProfileProvider
+                                          .changePin()
+                                          .then((_) {
+                                        if (userProfileProvider.loadingState ==
+                                            LoadingState.error) {
+                                          di<NavigationService>()
+                                              .pop(); // pop dialog
+                                          AppSnackBar.showErrorSnackBar(context,
+                                              userProfileProvider.errorMsg);
+                                        } else if (userProfileProvider
+                                                .loadingState ==
+                                            LoadingState.loaded) {
+                                          di<NavigationService>().pop();
+                                          Fluttertoast.showToast(
+                                              msg: 'Pin Changed Successfully',
+                                              backgroundColor: Colors.blue);
+                                        }
+                                      });
+                                    }
+                                  }
+                                }
+                              },
+                        child: const AppText(
+                          text: 'ENTER',
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          size: 14,
+                        ),
+                      ).paddingOnly(left: 14, right: 14, bottom: 43);
+                    }),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+        height: 541,
+        width: 335);
   }
 
   @override
@@ -408,7 +581,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           height: 20,
                           width: 6,
                         ),
-                        onTap: () => navigationService.navigateTo(RouteName.changePasswordScreen),
+                        onTap: () => navigationService
+                            .navigateTo(RouteName.changePasswordScreen),
                       ).paddingOnly(bottom: 7),
 
                       // change transaction pin
@@ -427,6 +601,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           height: 20,
                           width: 6,
                         ),
+                        onTap: () =>
+                            _beginChangePin(TransactionPinState.initial),
                       ),
                     ],
                   ),
@@ -457,7 +633,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           height: 20,
                           width: 6,
                         ),
-                        onTap: () => navigationService.navigateTo(RouteName.cardsBanks, arguments: CardsBanksArguments(togglePosition: TogglePosition.left)),
+                        onTap: () => navigationService.navigateTo(
+                            RouteName.cardsBanks,
+                            arguments: CardsBanksArguments(
+                                togglePosition: TogglePosition.left)),
                       ),
 
                       // banks
@@ -476,7 +655,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           height: 20,
                           width: 6,
                         ),
-                        onTap: () => navigationService.navigateTo(RouteName.cardsBanks, arguments: CardsBanksArguments(togglePosition: TogglePosition.right)),
+                        onTap: () => navigationService.navigateTo(
+                            RouteName.cardsBanks,
+                            arguments: CardsBanksArguments(
+                                togglePosition: TogglePosition.right)),
                       ),
                     ],
                   ),

@@ -187,7 +187,7 @@ class ProfileRepository {
       final response = await _apiService.patch(
         url: url,
         body: params,
-        headers: _authHeaders..addAll({"Authorization": "Bearer ${accessToken!}"}),
+        headers: _authHeaders..addAll({"Authorization": "Bearer ${accessToken!}"})..remove("Content-Type"),
       );
       return Right(response.body);
     } on ServerException catch (_) {

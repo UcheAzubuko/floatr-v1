@@ -85,6 +85,11 @@ class UserProfileProvider extends BaseProvider {
     notifyListeners();
   }
 
+  updateChangePinParams(ChangePinParams params) {
+    _changePinParams = params;
+    notifyListeners();
+  }
+
   Future<void> updateResidentialAddress() async {
     updateLoadingState(LoadingState.busy);
     var response = await _profileRepository
