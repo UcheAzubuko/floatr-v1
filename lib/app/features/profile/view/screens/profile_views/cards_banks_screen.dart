@@ -1,10 +1,19 @@
+import 'dart:developer';
+
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/loan/providers/loan_provider.dart';
 import 'package:floatr/core/providers/base_provider.dart';
+import 'package:floatr/core/route/navigation_service.dart';
+import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
+import 'package:monnify_payment_sdk/monnify_payment_sdk.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../../core/misc/dependency_injectors.dart';
+import '../../../../../../core/secrets.dart';
 import '../../../../../../core/utils/app_colors.dart';
 import '../../../../../../core/utils/app_style.dart';
 import '../../../../../../core/utils/images.dart';
@@ -13,6 +22,8 @@ import '../../../../../widgets/app_text.dart';
 import '../../../../../widgets/custom_appbar.dart';
 import '../../../../../widgets/general_button.dart';
 import '../../../../../widgets/pageview_toggler.dart';
+import '../../../../authentication/providers/authentication_provider.dart';
+import '../../../../loan/model/params/add_card_params.dart';
 import '../../../../loan/view/screens/loan_info_screen.dart';
 
 class CardsBanksScreen extends StatelessWidget {
@@ -152,7 +163,7 @@ class BanksView extends StatelessWidget {
         // bottom
         GeneralButton(
           height: 42,
-          onPressed: () {},
+          onPressed: () => di<NavigationService>().navigateTo(RouteName.cards),
           borderRadius: 8,
           child: const AppText(
             text: 'ADD NEW BANK',
@@ -212,10 +223,73 @@ class NoBanksView extends StatelessWidget {
   }
 }
 
-class CardView extends StatelessWidget {
+class CardView extends StatefulWidget {
   const CardView({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<CardView> createState() => _CardViewState();
+}
+
+class _CardViewState extends State<CardView> {
+  late Monnify? monnify;
+  DateFormat dateFormat = DateFormat('MMM/yyyy');
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _initMonnify();
+    });
+
+    super.initState();
+  }
+
+  _initMonnify() async {
+    monnify = await Monnify.initialize(
+      applicationMode: ApplicationMode.LIVE,
+      apiKey: monnifyAPILiveKey,
+      contractCode: contractKey,
+    );
+  }
+
+  void onInitializePayment() async {
+    final paymentReference = DateTime.now().millisecondsSinceEpoch.toString();
+    final user = context.read<AuthenticationProvider>().user;
+    final loan = context.read<LoanProvider>();
+
+    // Initia
+    final transaction = TransactionDetails().copyWith(
+      amount: 100,
+      currencyCode: 'NGN',
+      customerName: '${user!.firstName} ${user.lastName}',
+      customerEmail: user.email,
+      paymentReference: paymentReference,
+      paymentMethods: [PaymentMethod.CARD],
+    );
+
+    try {
+      final response =
+          await monnify?.initializePayment(transaction: transaction);
+
+      loan.updateAddCardParams(
+          AddCardParams(transactionRef: response!.transactionReference));
+      loan.addCard().then((_) {
+        if (loan.loadingState == LoadingState.loaded) {
+          loan.getMyCards();
+        } else {
+          loan.updateLoadingState(
+              LoadingState.loaded); // force loading state to go back to loaded
+        }
+      });
+
+      Fluttertoast.showToast(msg: response.toString());
+      log(response.toString());
+    } catch (e) {
+      log('$e');
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -253,12 +327,14 @@ class CardView extends StatelessWidget {
           }),
         ),
 
-        const VerticalSpace(size: 30,),
+        const VerticalSpace(
+          size: 30,
+        ),
 
         // bottom
         GeneralButton(
           height: 42,
-          onPressed: () {},
+          onPressed: () => onInitializePayment(),
           borderRadius: 8,
           child: const AppText(
             text: 'ADD NEW CARD',

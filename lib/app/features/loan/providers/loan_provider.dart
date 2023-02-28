@@ -179,6 +179,7 @@ class LoanProvider extends BaseProvider {
       updateErrorMsgState(onError.message ?? ' Could not add bank');
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
+      getMyBanks();
       log("Added bank successfully");
     });
   }

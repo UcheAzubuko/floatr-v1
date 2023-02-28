@@ -61,6 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
     if (user.idTypes!.isNotEmpty) {
       percent += (user.idTypes!.length * 0.05);
+      print(user.idTypes);
     }
 
     return percent;
@@ -81,6 +82,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } else if (isPending) {
       return SvgPicture.asset(
         'assets/icons/outline/tick-circle-broken.svg',
+        color: Colors.green,
+      );
+    } else if (check! && !isPending) {
+      return SvgPicture.asset(
+        SvgAppIcons.icTickCircleFill,
         color: Colors.green,
       );
     }
@@ -451,6 +457,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // gov-id
                       CustomProfileRow(
                         firstItem: _checkType(
+                            check: userHelper.isIdDataComplete ==
+                                CriteriaState.done,
                             isPending: userHelper.isIdDataComplete ==
                                 CriteriaState.pending),
                         secondItem: Text(
@@ -874,7 +882,7 @@ class GovIDModalView extends StatelessWidget {
                   onTap: () => navigationService.navigateTo(
                     RouteName.snapDocument,
                     arguments: SnapDocumentArguments(
-                        documentType: DocumentType.driverLicense),
+                        documentType: DocumentType.internationalPassport),
                   ),
                 ),
 

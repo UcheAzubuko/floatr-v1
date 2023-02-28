@@ -65,6 +65,7 @@ class Router {
           DisplayPictureScreen(
             image: args.file,
             imageType: args.imageType,
+            documentType: args.documentType,
           ),
         );
       case RouteName.biometrics:
