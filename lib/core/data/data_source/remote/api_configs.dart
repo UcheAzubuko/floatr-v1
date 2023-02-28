@@ -17,6 +17,8 @@ class APIConfigs {
   static const loans = '/v1/loans';
   static const maritalStatusPath = '/v1/marital-status';
   static const nextOfKinPath = '/v1/users/me/next-of-kin';
+  static const passwordPath = '/v1/users/me/password';
+  static const pinPath = '/v1/users/me/pin';
   static const registerPath = '/v1/auth/register';
   static const resetPassword = '/v1/users/reset-password';
   static const saveSelfiePath = '/v1/users/me/save-selfie';

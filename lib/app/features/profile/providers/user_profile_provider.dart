@@ -1,3 +1,4 @@
+import 'package:floatr/app/features/profile/data/model/params/change_password_params.dart';
 import 'package:floatr/app/features/profile/data/model/params/employer_information_params.dart';
 import 'package:floatr/app/features/profile/data/model/params/next_of_kin_params.dart';
 import 'package:floatr/app/features/profile/data/model/params/residential_address_params.dart';
@@ -32,6 +33,33 @@ class UserProfileProvider extends BaseProvider {
   ResidentialAddressParams? get residentialAddressParams =>
       _residentialAddressParams;
 
+  ChangePasswordParams? _changePasswordParams;
+  ChangePasswordParams? get changePasswordParams => _changePasswordParams;
+
+  ChangePinParams? _changePinParams;
+  ChangePinParams? get changePinParams => _changePinParams;
+
+  LoadingState _loadingState = LoadingState.idle;
+  String _errorMsg = 'An unknown error occured';
+
+  @override
+  LoadingState get loadingState => _loadingState;
+
+  @override
+  String get errorMsg => _errorMsg;
+
+  @override
+  updateLoadingState(LoadingState loadingState) {
+    _loadingState = loadingState;
+    notifyListeners();
+  }
+
+  @override
+  updateErrorMsgState(String errorMsg) {
+    _errorMsg = errorMsg;
+    notifyListeners();
+  }
+
   updateEmployerInformationParams(EmployerInformationParams params) {
     _employerInformationParams = params;
     notifyListeners();
@@ -49,6 +77,11 @@ class UserProfileProvider extends BaseProvider {
 
   updateResidentialParams(ResidentialAddressParams params) {
     _residentialAddressParams = params;
+    notifyListeners();
+  }
+
+  updateChangePasswordParams(ChangePasswordParams params) {
+    _changePasswordParams = params;
     notifyListeners();
   }
 
@@ -105,7 +138,6 @@ class UserProfileProvider extends BaseProvider {
     var response = await _profileRepository
         .updateEmployerInformation(employerInformationParams!);
 
-
     response.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(
@@ -115,6 +147,31 @@ class UserProfileProvider extends BaseProvider {
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
       // _navigationService.navigateTo(RouteName.verifyOTP);
+    });
+  }
+
+  Future<void> changePassword() async {
+    updateLoadingState(LoadingState.busy);
+    var response =
+        await _profileRepository.changePassword(_changePasswordParams!);
+
+    response.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? 'Change password failed!');
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
+    });
+  }
+
+  Future<void> changePin() async {
+    updateLoadingState(LoadingState.busy);
+    var response = await _profileRepository.changePin(_changePinParams!);
+
+    response.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? 'Change pin failed!');
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
     });
   }
 }

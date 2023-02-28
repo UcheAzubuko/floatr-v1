@@ -183,16 +183,6 @@ class _HighlightsCardState extends State<HighlightsCard> {
         width: 335);
   }
 
-  CircleAvatar pinCircle(int mappedNum, nums) {
-    // var nums = context.read<KeyboardProvider>().inputs;
-    return CircleAvatar(
-      radius: 5,
-      backgroundColor: nums.asMap().containsKey(mappedNum)
-          ? AppColors.primaryColor
-          : AppColors.grey.withOpacity(0.5),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -295,3 +285,13 @@ class _HighlightsCardState extends State<HighlightsCard> {
     );
   }
 }
+
+CircleAvatar pinCircle(int mappedNum, nums) {
+    // var nums = context.read<KeyboardProvider>().inputs;
+    return CircleAvatar(
+      radius: 5,
+      backgroundColor: nums.asMap().containsKey(mappedNum)
+          ? AppColors.primaryColor
+          : AppColors.grey.withOpacity(0.5),
+    );
+  }
