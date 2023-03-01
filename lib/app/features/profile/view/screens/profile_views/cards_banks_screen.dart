@@ -145,6 +145,7 @@ class BanksView extends StatelessWidget {
                           bankName: banks[index].bank.name,
                           bankNumber: banks[index].accountNo,
                           isDefault: banks[index].isDefault,
+                          onCardSelected: (){},
                         ).paddingOnly(bottom: 20));
 
               case LoadingState.error:
@@ -319,7 +320,7 @@ class _CardViewState extends State<CardView> {
                   return ListView.builder(
                       itemCount: cards.length,
                       itemBuilder: (context, index) =>
-                          DebitCard(card: cards[index], showCardManagement: true,).paddingOnly(bottom: 20));
+                          DebitCard(card: cards[index], showCardManagement: true, onCardSelected: (){},).paddingOnly(bottom: 20));
 
                 case LoadingState.error:
                   return const NoBanksView();

@@ -14,6 +14,7 @@ import 'package:floatr/app/widgets/modal_pill.dart';
 import 'package:floatr/app/widgets/prompt_widget.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/navigation_service.dart';
+import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -354,6 +355,7 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    NavigationService navigationService = di<NavigationService>();
     return LoanApplicationInformationBaseView(
       applyCustomAppBar: widget.showAppBar,
       child: Column(
@@ -413,6 +415,7 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
                           itemCount: cards.length,
                           itemBuilder: (context, index) => DebitCard(
                                 card: cards[index],
+                                onCardSelected: () => navigationService.navigateTo(RouteName.selectBankScreen),
                               ).paddingOnly(bottom: 20));
 
                     default:
@@ -556,102 +559,109 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
 
 class DebitCard extends StatelessWidget {
   const DebitCard(
-      {Key? key, required this.card, this.showCardManagement = false})
+      {Key? key,
+      required this.card,
+      this.showCardManagement = false,
+      required this.onCardSelected})
       : super(key: key);
 
   final cardResponse.Card card;
   final bool showCardManagement;
+  final Function onCardSelected;
 
   @override
   Widget build(BuildContext context) {
     DateFormat dateFormat = DateFormat('MM/yy');
-    return Stack(
-      children: [
-        Container(
-          height: 194,
-          width: context.widthPx,
-          decoration: BoxDecoration(
-              color: AppColors.card, borderRadius: BorderRadius.circular(16)),
-        ),
-        SvgPicture.asset(
-          height: 194,
-          width: context.widthPx,
-          SvgImages.debitCardBackground,
-          color: AppColors.primaryColor,
-          fit: BoxFit.contain,
-          clipBehavior: Clip.hardEdge,
-        ),
-        Container(
-          height: 194,
-          width: context.widthPx,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
+    return InkWell(
+      onTap: () => onCardSelected(),
+      child: Stack(
+        children: [
+          Container(
+            height: 194,
+            width: context.widthPx,
+            decoration: BoxDecoration(
+                color: AppColors.card, borderRadius: BorderRadius.circular(16)),
           ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (showCardManagement) ...[
-                    if (!card.isDefault) ...[
-                      const IsDefaultCardOption(),
+          SvgPicture.asset(
+            height: 194,
+            width: context.widthPx,
+            SvgImages.debitCardBackground,
+            color: AppColors.primaryColor,
+            fit: BoxFit.contain,
+            clipBehavior: Clip.hardEdge,
+          ),
+          Container(
+            height: 194,
+            width: context.widthPx,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (showCardManagement) ...[
+                      if (!card.isDefault) ...[
+                        const IsDefaultCardOption(),
+                      ] else ...[
+                        const ManageCardOption(),
+                      ]
                     ] else ...[
-                      const ManageCardOption(),
-                    ]
-                  ] else ...[
-                    Container()
+                      Container()
+                    ],
+                    SvgPicture.asset(
+                      SvgImages.cardTypeVisa,
+                    ),
                   ],
-                  SvgPicture.asset(
-                    SvgImages.cardTypeVisa,
-                  ),
-                ],
-              ),
-              const VerticalSpace(
-                size: 50,
-              ),
-              Row(
-                children: [
-                  SvgPicture.asset(
-                    SvgImages.chip,
-                  ),
-                  const Spacer(),
-                  Text(
-                    '●●●● ●●●● ●●●● ${card.maskedPan.substring(card.maskedPan.length - 4)}',
-                    style: const TextStyle(
-                        color: Colors.white,
-                        letterSpacing: 2,
-                        wordSpacing: 3,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700),
-                  )
-                ],
-              ),
-              const Spacer(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    card.name,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700),
-                  ),
-                  Text(
-                    dateFormat.format(card.expiryDate),
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700),
-                  ),
-                ],
-              )
-            ],
+                ),
+                const VerticalSpace(
+                  size: 50,
+                ),
+                Row(
+                  children: [
+                    SvgPicture.asset(
+                      SvgImages.chip,
+                    ),
+                    const Spacer(),
+                    Text(
+                      '●●●● ●●●● ●●●● ${card.maskedPan.substring(card.maskedPan.length - 4)}',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          letterSpacing: 2,
+                          wordSpacing: 3,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700),
+                    )
+                  ],
+                ),
+                const Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      card.name,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700),
+                    ),
+                    Text(
+                      dateFormat.format(card.expiryDate),
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -693,7 +703,11 @@ class ManageCardOption extends StatelessWidget {
                   onPressed: () {},
                   borderRadius: 16,
                   height: 45,
-                  child: const Text('MAKE DEFAULT', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, letterSpacing: 1)),
+                  child: const Text('MAKE DEFAULT',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1)),
                 ),
               ],
             ),
@@ -805,6 +819,7 @@ class SelectBankScreen extends StatelessWidget {
                               bankName: banks[index].bank.name,
                               bankNumber: banks[index].accountNo,
                               isDefault: banks[index].isDefault,
+                              onCardSelected: () => navigationService.navigateTo(RouteName.loanSummary),
                             ).paddingOnly(bottom: 20));
                   case LoadingState.error:
                     return Center(
@@ -869,6 +884,7 @@ class SelectBank extends StatelessWidget {
       required this.color,
       required this.bankName,
       required this.bankNumber,
+      required this.onCardSelected,
       this.isDefault = false})
       : super(key: key);
 
@@ -876,74 +892,78 @@ class SelectBank extends StatelessWidget {
   final String bankName;
   final String bankNumber;
   final bool isDefault;
+  final Function onCardSelected;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 72,
-      width: context.widthPx,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          // image and container
-          SizedBox.square(
-            dimension: 42,
-            child: Image.asset(
-              AppImages.bankBuilding,
+    return InkWell(
+      onTap: () => onCardSelected(),
+      child: Container(
+        height: 72,
+        width: context.widthPx,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            // image and container
+            SizedBox.square(
+              dimension: 42,
+              child: Image.asset(
+                AppImages.bankBuilding,
+              ),
             ),
-          ),
-
-          const HorizontalSpace(
-            size: 16,
-          ),
-
-          // bank name and number column
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // bank name
-              Text(
-                bankName,
-                style: TextStyles.smallTextDark14Px,
-              ),
-
-              const VerticalSpace(
-                size: 5,
-              ),
-
-              // bank num
-              Text(
-                bankNumber,
-                style: TextStyles.smallTextGrey,
-              )
-            ],
-          ),
-
-          const Spacer(),
-
-          // show default
-          isDefault
-              ? Align(
-                  alignment: Alignment.bottomRight,
-                  child: Container(
-                    width: 60,
-                    height: 21,
-                    decoration: BoxDecoration(
-                        color: AppColors.textFieldBackground,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: const Center(
-                        child: Text(
-                      'Default',
-                      style: TextStyle(fontSize: 10),
-                    )),
-                  ),
+    
+            const HorizontalSpace(
+              size: 16,
+            ),
+    
+            // bank name and number column
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // bank name
+                Text(
+                  bankName,
+                  style: TextStyles.smallTextDark14Px,
+                ),
+    
+                const VerticalSpace(
+                  size: 5,
+                ),
+    
+                // bank num
+                Text(
+                  bankNumber,
+                  style: TextStyles.smallTextGrey,
                 )
-              : Container()
-        ],
+              ],
+            ),
+    
+            const Spacer(),
+    
+            // show default
+            isDefault
+                ? Align(
+                    alignment: Alignment.bottomRight,
+                    child: Container(
+                      width: 60,
+                      height: 21,
+                      decoration: BoxDecoration(
+                          color: AppColors.textFieldBackground,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: const Center(
+                          child: Text(
+                        'Default',
+                        style: TextStyle(fontSize: 10),
+                      )),
+                    ),
+                  )
+                : Container()
+          ],
+        ),
       ),
     );
   }
@@ -1305,7 +1325,7 @@ class LoanSummaryScreen extends StatelessWidget {
                   SelectBank(
                       color: AppColors.primaryColorLight.withOpacity(0.25),
                       bankName: 'United Bank for Africa',
-                      bankNumber: '2139872309'),
+                      bankNumber: '2139872309', onCardSelected: (){},),
                   Container(
                     height: 72,
                     width: context.widthPx,

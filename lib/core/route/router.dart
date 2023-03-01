@@ -52,9 +52,13 @@ class Router {
         return slidePageTransition(const VerifyBVNScreen());
       case RouteName.takeSelfie:
         return slidePageTransition(const TakeSelefieScreen());
-        case RouteName.cardsBanks:
+      case RouteName.cardsBanks:
         final args = settings.arguments as CardsBanksArguments;
-        return slidePageTransition(CardsBanksScreen(togglePosition: args.togglePosition,));
+        return slidePageTransition(CardsBanksScreen(
+          togglePosition: args.togglePosition,
+        ));
+      case RouteName.selectBankScreen:
+        return slidePageTransition(const SelectBankScreen());
       case RouteName.confirmDetails:
         return slidePageTransition(const ConfirmDetailsScreen());
       case RouteName.createPin:
@@ -83,6 +87,8 @@ class Router {
         ));
       case RouteName.forgotPassword:
         return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
+      case RouteName.loanSummary:
+        return MaterialPageRoute(builder: (_) => const LoanSummaryScreen());
       case RouteName.forgotPasswordOtp:
         return MaterialPageRoute(
             builder: (_) => const ForgotPasswordOtpScreen());

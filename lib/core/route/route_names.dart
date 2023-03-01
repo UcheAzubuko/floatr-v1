@@ -24,4 +24,6 @@ class RouteName {
   static const String snapDocument = 'snapDocument';
   static const String navbar = 'navbar';
   static const String cards = 'cards';
+  static const String selectBankScreen = 'selectBankScreen';
+  static const String loanSummary = 'loanSummary';
 }
