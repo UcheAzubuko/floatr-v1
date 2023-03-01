@@ -9,6 +9,8 @@ import 'package:floatr/app/features/loan/model/responses/card_response.dart'
     as cardResponse;
 import 'package:floatr/app/features/loan/providers/loan_provider.dart';
 import 'package:floatr/app/widgets/app_snackbar.dart';
+import 'package:floatr/app/widgets/dialogs.dart';
+import 'package:floatr/app/widgets/modal_pill.dart';
 import 'package:floatr/app/widgets/prompt_widget.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/navigation_service.dart';
@@ -553,11 +555,12 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
 }
 
 class DebitCard extends StatelessWidget {
-  const DebitCard({
-    Key? key,
-    required this.card,
-  }) : super(key: key);
+  const DebitCard(
+      {Key? key, required this.card, this.showCardManagement = false})
+      : super(key: key);
+
   final cardResponse.Card card;
+  final bool showCardManagement;
 
   @override
   Widget build(BuildContext context) {
@@ -588,11 +591,22 @@ class DebitCard extends StatelessWidget {
           ),
           child: Column(
             children: [
-              Align(
-                alignment: Alignment.topRight,
-                child: SvgPicture.asset(
-                  SvgImages.cardTypeVisa,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (showCardManagement) ...[
+                    if (!card.isDefault) ...[
+                      const IsDefaultCardOption(),
+                    ] else ...[
+                      const ManageCardOption(),
+                    ]
+                  ] else ...[
+                    Container()
+                  ],
+                  SvgPicture.asset(
+                    SvgImages.cardTypeVisa,
+                  ),
+                ],
               ),
               const VerticalSpace(
                 size: 50,
@@ -641,6 +655,93 @@ class DebitCard extends StatelessWidget {
     );
   }
 }
+
+class ManageCardOption extends StatelessWidget {
+  const ManageCardOption({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => AppDialog.showAppModal(
+          context,
+          Container(
+            height: 292,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
+            child: Column(
+              children: [
+                // pill
+                const ModalPill(),
+
+                const VerticalSpace(
+                  size: 42,
+                ),
+
+                // promp desc
+                const Text(
+                  '''What would you like to make this card \n                             your default card?''',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                ),
+
+                const VerticalSpace(
+                  size: 37,
+                ),
+
+                // button
+                GeneralButton(
+                  onPressed: () {},
+                  borderRadius: 16,
+                  height: 45,
+                  child: const Text('MAKE DEFAULT', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, letterSpacing: 1)),
+                ),
+              ],
+            ),
+          )),
+      child: Container(
+        width: 105,
+        height: 23,
+        padding: const EdgeInsets.only(right: 5),
+        decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(16)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            SvgPicture.asset(SvgAppIcons.icEdit),
+            const Text(
+              'Manage Card',
+              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class IsDefaultCardOption extends StatelessWidget {
+  const IsDefaultCardOption({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 60,
+      height: 21,
+      decoration: BoxDecoration(
+          color: Colors.black, borderRadius: BorderRadius.circular(16)),
+      child: const Center(
+        child: Text(
+          'Default',
+          style: TextStyle(color: Colors.white, fontSize: 10),
+        ),
+      ),
+    );
+  }
+}
+
+enum CardManagement { defaultCard, manageCard, none }
 
 class SelectBankScreen extends StatelessWidget {
   const SelectBankScreen({Key? key}) : super(key: key);

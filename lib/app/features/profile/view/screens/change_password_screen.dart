@@ -20,6 +20,7 @@ import '../../../../widgets/custom_appbar.dart';
 import '../../../../widgets/custom_keyboard.dart';
 import '../../../../widgets/dialogs.dart';
 import '../../../../widgets/general_button.dart';
+import '../../../../widgets/modal_pill.dart';
 import '../../../../widgets/text_field.dart';
 import '../../../dashboard/view/widgets/highlights_card.dart';
 
@@ -199,14 +200,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     BoxDecoration(borderRadius: BorderRadius.circular(24)),
                 child: Column(
                   children: [
-                    Container(
-                      width: 38,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: AppColors.grey.withOpacity(0.3),
-                      ),
-                    ),
+                    const ModalPill(),
 
                     const VerticalSpace(size: 25),
 
@@ -246,7 +240,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
                     // btn
                     StatefulBuilder(builder: (context, setState) {
-                      
                       return GeneralButton(
                         height: 48,
                         width: 335,
@@ -267,8 +260,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                             profileProvider.updateChangePasswordParams(
                                 _changePasswordParams);
 
-                                // force loading
-                                setState(() => isLoading = true);
+                            // force loading
+                            setState(() => isLoading = true);
 
                             profileProvider.changePassword().then((value) {
                               if (profileProvider.loadingState ==

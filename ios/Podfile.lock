@@ -85,14 +85,12 @@ PODS:
     - nanopb/encode (= 2.30909.0)
   - nanopb/decode (2.30909.0)
   - nanopb/encode (2.30909.0)
-  - path_provider_foundation (0.0.1):
+  - path_provider_ios (0.0.1):
     - Flutter
-    - FlutterMacOS
   - PromisesObjC (2.1.1)
   - Protobuf (3.21.12)
-  - shared_preferences_foundation (0.0.1):
+  - shared_preferences_ios (0.0.1):
     - Flutter
-    - FlutterMacOS
   - SocketRocket (0.6.0)
   - StompClientLib (1.4.1):
     - SocketRocket
@@ -108,8 +106,8 @@ DEPENDENCIES:
   - google_mlkit_face_detection (from `.symlinks/plugins/google_mlkit_face_detection/ios`)
   - local_auth_ios (from `.symlinks/plugins/local_auth_ios/ios`)
   - monnify_payment_sdk (from `.symlinks/plugins/monnify_payment_sdk/ios`)
-  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
-  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/ios`)
+  - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
+  - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
 
 SPEC REPOS:
   trunk:
@@ -153,10 +151,10 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/local_auth_ios/ios"
   monnify_payment_sdk:
     :path: ".symlinks/plugins/monnify_payment_sdk/ios"
-  path_provider_foundation:
-    :path: ".symlinks/plugins/path_provider_foundation/ios"
-  shared_preferences_foundation:
-    :path: ".symlinks/plugins/shared_preferences_foundation/ios"
+  path_provider_ios:
+    :path: ".symlinks/plugins/path_provider_ios/ios"
+  shared_preferences_ios:
+    :path: ".symlinks/plugins/shared_preferences_ios/ios"
 
 SPEC CHECKSUMS:
   Alamofire: 4e95d97098eacb88856099c4fc79b526a299e48c
@@ -174,7 +172,7 @@ SPEC CHECKSUMS:
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
   IQKeyboardManagerSwift: c7955c0bdbf7b2eb29bb7daaa44e3d90f55a9a85
-  local_auth_ios: 0d333dde7780f669e66f19d2ff6005f3ea84008d
+  local_auth_ios: ceb207b594b48c075f1065f97b61e3ffa00d686b
   lottie-ios: c55158d67d0629a260625cc2ded2052b829e3c3e
   MLImage: 489dfec109f21da8621b28d476401aaf7a0d4ff4
   MLKitCommon: f6da6c5659618c070b50a80db01248ebe2964175
@@ -183,10 +181,10 @@ SPEC CHECKSUMS:
   monnify_payment_sdk: afc4deeed7a7543322a2bba7ddfe1d9631c99f20
   MonnifyiOSSDK: d9019057a7bf1f3c3002ab3b5f6761e2185a725c
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
-  path_provider_foundation: 37748e03f12783f9de2cb2c4eadfaa25fe6d4852
+  path_provider_ios: 14f3d2fd28c4fdb42f44e0f751d12861c43cee02
   PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
   Protobuf: 120350fc38646e2dedc26f49ecba778184ea1de2
-  shared_preferences_foundation: 297b3ebca31b34ec92be11acd7fb0ba932c822ca
+  shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   StompClientLib: ac40390e9660c574675f1c933bec81c8e2811a4f
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
