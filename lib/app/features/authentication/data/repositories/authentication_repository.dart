@@ -111,7 +111,6 @@ class AuthenticationRepository {
   void setBiometricLogin(bool isEnabled) =>
       _prefs.setBool(StorageKeys.biometricStatusKey, isEnabled);
 
-
   bool get isBiometricLoginEnabled => _isBiometricLoginEnabled();
 
   bool _isLoggedIn() =>
@@ -364,7 +363,10 @@ class AuthenticationRepository {
       APIConfigs.forgotPassword,
     );
 
-    final body = {"phoneNumber": params.phoneNumber};
+    final body = {"phoneNumber": format(params.phoneNumber!)};
+    // print(format(params.phoneNumber!));
+
+    print(body);
 
     try {
       // final accessToken = _prefs.getString(StorageKeys.accessTokenKey);
@@ -376,6 +378,11 @@ class AuthenticationRepository {
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }
+  }
+
+  String format(String num) {
+   num = num.substring(0, 4) + " " + num.substring(4, 7) + " " + num.substring(7, 10) + " " + num.substring(10, num.length);
+    return num;
   }
 
   Future<Either<Failure, bool>> verifyForgotPasswordToken(

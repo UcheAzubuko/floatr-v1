@@ -113,7 +113,7 @@ class LoansRepository {
     }
   }
 
-  Future<Either<Failure, List<dynamic>>> addCard(AddCardParams params) async {
+  Future<Either<Failure, String>> addCard(AddCardParams params) async {
     final url = Uri.https(
       APIConfigs.baseUrl,
       APIConfigs.verifyCard,
@@ -133,7 +133,7 @@ class LoansRepository {
             ),
           body: body);
 
-      return Right(jsonDecode(response.body));
+      return Right(response.body);
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }
@@ -153,6 +153,7 @@ class LoansRepository {
         url: url,
         headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
       );
+      print(response.body);
       return Right(CardResponse.fromJson(jsonDecode(response.body)));
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));

@@ -517,9 +517,15 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
       amount: 100,
       currencyCode: 'NGN',
       customerName: '${user!.firstName} ${user.lastName}',
-      customerEmail: user.email,
+      customerEmail: 'customer@floatr.com',
       paymentReference: paymentReference,
       paymentMethods: [PaymentMethod.CARD],
+      metaData: {
+        'floatrUserUniqueId': user.uniqueId!,
+        'floatrUserName': '${user.firstName} ${user.lastName}',
+        'date': DateTime.now().toIso8601String(),
+        'reason': 'add_user_card',
+      },
     );
 
     try {

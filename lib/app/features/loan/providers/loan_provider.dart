@@ -188,7 +188,6 @@ class LoanProvider extends BaseProvider {
     updateLoadingState(LoadingState.busy);
 
     final repsonse = await _loansRepository.addCard(_addCardParams!);
-    print(_addCardParams!.transactionRef);
 
     repsonse.fold((onError) {
       updateLoadingState(LoadingState.error);

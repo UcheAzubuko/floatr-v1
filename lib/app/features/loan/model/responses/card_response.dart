@@ -58,7 +58,7 @@ class Card {
   String toRawJson() => json.encode(toJson());
 
   factory Card.fromJson(Map<String, dynamic> json) => Card(
-        id: json["id"],
+        id: json["id"] ?? '',
         uniqueId: json["uniqueId"],
         name: json["name"],
         processor: json["processor"],
@@ -70,14 +70,14 @@ class Card {
         canReuseCard: json["canReuseCard"],
         canTokenizeCard: json["canTokenizeCard"],
         userId: json["userId"],
-        bankId: json["bankId"],
+        bankId: json["bankId"] ?? '',
         isActive: json["isActive"],
         isDefault: json["isDefault"],
         meta: Meta.fromJson(json["meta"]),
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
         deletedAt: json["deletedAt"],
-        bank: Bank.fromJson(json["bank"]),
+        bank: Bank.fromJson(json["bank"] ?? {}),
       );
 
   Map<String, dynamic> toJson() => {
@@ -132,15 +132,15 @@ class Bank {
   String toRawJson() => json.encode(toJson());
 
   factory Bank.fromJson(Map<String, dynamic> json) => Bank(
-        id: json["id"],
-        name: json["name"],
+        id: json["id"] ?? '',
+        name: json["name"] ?? '',
         nipBankCode: json["nipBankCode"],
-        monnifyBankCode: json["monnifyBankCode"],
-        baseUssdCode: json["baseUssdCode"],
-        ussdTransferTemplate: json["ussdTransferTemplate"],
-        createdAt: DateTime.parse(json["createdAt"]),
-        updatedAt: DateTime.parse(json["updatedAt"]),
-        deletedAt: json["deletedAt"],
+        monnifyBankCode: json["monnifyBankCode"] ?? '',
+        baseUssdCode: json["baseUssdCode"] ?? '',
+        ussdTransferTemplate: json["ussdTransferTemplate"] ?? '',
+        createdAt: DateTime.parse(json["createdAt"] ?? DateTime.now().toIso8601String()),
+        updatedAt: DateTime.parse(json["updatedAt"] ?? DateTime.now().toIso8601String()),
+        deletedAt: json["deletedAt"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
