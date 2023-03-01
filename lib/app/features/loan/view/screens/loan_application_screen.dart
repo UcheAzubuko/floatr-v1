@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/loan/model/params/request_loan_params.dart';
 import 'package:floatr/app/features/loan/model/responses/loans_response.dart';
+import 'package:floatr/app/features/loan/providers/loan_provider.dart';
 import 'package:floatr/app/features/loan/view/screens/loan_info_screen.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/dialogs.dart';
@@ -15,6 +17,7 @@ import 'package:floatr/core/utils/images.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../../core/misc/dependency_injectors.dart';
 import '../../../../../core/route/navigation_service.dart';
@@ -73,11 +76,13 @@ class EligibleLenderView extends StatefulWidget {
 class _EligibleLenderViewState extends State<EligibleLenderView> {
   late Loan loan;
   late double amount;
+  late RequestLoanParams _requestLoanParams;
 
   @override
   void initState() {
     loan = widget.loan;
     amount = double.parse(loan.minAmount);
+    _requestLoanParams = RequestLoanParams();
     super.initState();
   }
 
@@ -316,7 +321,8 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                   }).toList(),
                   onChanged: (val) {
                     setState(() {
-                      loanTerm = int.parse(val![0]); // The first char in the string is the number to use for the calculation, so I extracted that and assigned to loanTerm. 
+                      loanTerm = int.parse(val![
+                          0]); // The first char in the string is the number to use for the calculation, so I extracted that and assigned to loanTerm.
                     });
                     // loanTerm = int.parse(val![0]);
                     // print(int.parse(val![0]));
@@ -440,28 +446,40 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                   const VerticalSpace(
                     size: 22,
                   ),
-                  GeneralButton(
-                    height: 30,
-                    borderRadius: 8,
-                    onPressed: () => AppDialog.showAppDialog(
-                        context, const CheckingEligibilityDialogContent()),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const AppText(
-                          size: 12,
-                          text: 'APPLY',
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                        ).paddingOnly(right: 8),
-                        SvgPicture.asset(
-                          'assets/icons/fill/arrow.svg',
-                          height: 8,
-                          width: 8,
-                        ),
-                      ],
-                    ),
-                  )
+                  Consumer<LoanProvider>(builder: (context, loanProvider, _) {
+                    return GeneralButton(
+                      height: 30,
+                      borderRadius: 8,
+                      onPressed: () {
+
+                        // update loan params
+                        _requestLoanParams.amount = amount.toInt().toString();
+                        _requestLoanParams.tenureInWeeks = loanTerm.toString();
+                        _requestLoanParams.loan = loan;
+                        loanProvider
+                            .updateRequestLoanParams(_requestLoanParams);
+
+                        AppDialog.showAppDialog(
+                            context, const CheckingEligibilityDialogContent());
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const AppText(
+                            size: 12,
+                            text: 'APPLY',
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ).paddingOnly(right: 8),
+                          SvgPicture.asset(
+                            'assets/icons/fill/arrow.svg',
+                            height: 8,
+                            width: 8,
+                          ),
+                        ],
+                      ),
+                    );
+                  })
                 ],
               ),
             ),

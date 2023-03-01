@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:floatr/app/features/loan/data/repositories/loans_repository.dart';
+import 'package:floatr/app/features/loan/model/params/request_loan_params.dart';
 import 'package:floatr/app/features/loan/model/params/verify_bank_params.dart';
 import 'package:floatr/app/features/loan/model/responses/card_response.dart';
 import 'package:floatr/app/features/loan/model/responses/loans_response.dart';
@@ -48,6 +49,10 @@ class LoanProvider extends BaseProvider {
   AddCardParams? _addCardParams;
 
   AddCardParams? get addCardParams => _addCardParams;
+
+  RequestLoanParams? _requestLoanParams;
+
+  RequestLoanParams? get requestLoanParams => _requestLoanParams;
 
   final ValueNotifier<VerifyBankResponse?> _verifyBankResponse =
       ValueNotifier<VerifyBankResponse?>(null);
@@ -104,6 +109,11 @@ class LoanProvider extends BaseProvider {
 
   updateAddCardParams(AddCardParams addCardParams) {
     _addCardParams = addCardParams;
+    notifyListeners();
+  }
+
+  updateRequestLoanParams(RequestLoanParams requestLoanParams) {
+    _requestLoanParams = requestLoanParams;
     notifyListeners();
   }
 
@@ -210,6 +220,19 @@ class LoanProvider extends BaseProvider {
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
       _verifyBankResponse.value = onSuccess;
+    });
+  }
+
+  Future<void> requestLoan() async {
+    updateLoadingState(LoadingState.busy);
+
+    final repsonse = await _loansRepository.requestLoan(_requestLoanParams!);
+
+    repsonse.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? ' Could not Verify bank');
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
     });
   }
 }

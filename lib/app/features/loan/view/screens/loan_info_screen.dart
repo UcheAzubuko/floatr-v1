@@ -4,6 +4,7 @@ import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:floatr/app/features/loan/model/params/add_card_params.dart';
+import 'package:floatr/app/features/loan/model/params/request_loan_params.dart';
 import 'package:floatr/app/features/loan/model/params/verify_bank_params.dart';
 import 'package:floatr/app/features/loan/model/responses/card_response.dart'
     as cardResponse;
@@ -24,6 +25,7 @@ import 'package:monnify_payment_sdk/monnify_payment_sdk.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../core/misc/dependency_injectors.dart';
+import '../../../../../core/misc/helper_functions.dart';
 import '../../../../../core/secrets.dart';
 import '../../../../../core/utils/app_colors.dart';
 import '../../../../../core/utils/app_icons.dart';
@@ -346,10 +348,16 @@ class SelectCardScreen extends StatefulWidget {
 class _SelectCardScreenState extends State<SelectCardScreen> {
   late Monnify? monnify;
   DateFormat dateFormat = DateFormat('MMM/yyyy');
+  late RequestLoanParams _requestLoanParams;
 
   @override
   void initState() {
+    var requestParams = context.read<LoanProvider>().requestLoanParams;
     _initMonnify();
+    _requestLoanParams = RequestLoanParams(
+        loan: requestParams!.loan,
+        tenureInWeeks: requestParams.tenureInWeeks,
+        amount: requestParams.amount);
     super.initState();
   }
 
@@ -393,9 +401,10 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
                 height: context.heightPx * 0.55,
                 child:
                     Consumer<LoanProvider>(builder: (context, loanProvider, _) {
-                  final cards = loanProvider.myCardsResponse == null
-                      ? []
-                      : loanProvider.myCardsResponse!.cards;
+                  final List<cardResponse.Card> cards =
+                      loanProvider.myCardsResponse == null
+                          ? []
+                          : loanProvider.myCardsResponse!.cards;
                   switch (loanProvider.loadingState) {
                     case LoadingState.busy:
                       return const Center(
@@ -414,9 +423,21 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
                       return ListView.builder(
                           itemCount: cards.length,
                           itemBuilder: (context, index) => DebitCard(
-                                card: cards[index],
-                                onCardSelected: () => navigationService.navigateTo(RouteName.selectBankScreen),
-                              ).paddingOnly(bottom: 20));
+                              card: cards[index],
+                              onCardSelected: () {
+                                // update userCardID
+                                // _requestLoanParams.userCardId =
+                                //     cards[index].uniqueId;
+
+                                loanProvider.updateRequestLoanParams(
+                                    _requestLoanParams..card = cards[index]);
+
+                                print(loanProvider
+                                    .requestLoanParams!.card!.uniqueId);
+
+                                navigationService
+                                    .navigateTo(RouteName.selectBankScreen);
+                              }).paddingOnly(bottom: 20));
 
                     default:
                       return Center(
@@ -757,8 +778,27 @@ class IsDefaultCardOption extends StatelessWidget {
 
 enum CardManagement { defaultCard, manageCard, none }
 
-class SelectBankScreen extends StatelessWidget {
+class SelectBankScreen extends StatefulWidget {
   const SelectBankScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SelectBankScreen> createState() => _SelectBankScreenState();
+}
+
+class _SelectBankScreenState extends State<SelectBankScreen> {
+  late RequestLoanParams _requestLoanParams;
+
+  @override
+  void initState() {
+    var requestParams = context.read<LoanProvider>().requestLoanParams;
+    _requestLoanParams = RequestLoanParams(
+      loan: requestParams!.loan,
+      tenureInWeeks: requestParams.tenureInWeeks,
+      amount: requestParams.amount,
+      card: requestParams.card,
+    );
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -819,7 +859,13 @@ class SelectBankScreen extends StatelessWidget {
                               bankName: banks[index].bank.name,
                               bankNumber: banks[index].accountNo,
                               isDefault: banks[index].isDefault,
-                              onCardSelected: () => navigationService.navigateTo(RouteName.loanSummary),
+                              onCardSelected: () {
+                                loanProvider.updateRequestLoanParams(
+                                    _requestLoanParams..bank = banks[index]);
+
+                                navigationService
+                                    .navigateTo(RouteName.loanSummary);
+                              },
                             ).paddingOnly(bottom: 20));
                   case LoadingState.error:
                     return Center(
@@ -915,11 +961,11 @@ class SelectBank extends StatelessWidget {
                 AppImages.bankBuilding,
               ),
             ),
-    
+
             const HorizontalSpace(
               size: 16,
             ),
-    
+
             // bank name and number column
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -929,11 +975,11 @@ class SelectBank extends StatelessWidget {
                   bankName,
                   style: TextStyles.smallTextDark14Px,
                 ),
-    
+
                 const VerticalSpace(
                   size: 5,
                 ),
-    
+
                 // bank num
                 Text(
                   bankNumber,
@@ -941,9 +987,9 @@ class SelectBank extends StatelessWidget {
                 )
               ],
             ),
-    
+
             const Spacer(),
-    
+
             // show default
             isDefault
                 ? Align(
@@ -1199,12 +1245,73 @@ class AddNewBankScreen extends StatelessWidget {
   }
 }
 
-class LoanSummaryScreen extends StatelessWidget {
+class LoanSummaryScreen extends StatefulWidget {
   const LoanSummaryScreen({Key? key}) : super(key: key);
+
+  @override
+  State<LoanSummaryScreen> createState() => _LoanSummaryScreenState();
+}
+
+class _LoanSummaryScreenState extends State<LoanSummaryScreen> {
+  late RequestLoanParams _requestLoanParams;
+
+  @override
+  void initState() {
+    var requestParams = context.read<LoanProvider>().requestLoanParams;
+    _requestLoanParams = RequestLoanParams(
+        loan: requestParams!.loan,
+        tenureInWeeks: requestParams.tenureInWeeks,
+        amount: requestParams.amount,
+        card: requestParams.card,
+        bank: requestParams.bank);
+
+    print(_requestLoanParams.toMap());
+    super.initState();
+  }
+
+  int get platformFee {
+    return (double.parse(_requestLoanParams.loan!.platformCharge) /
+            100 *
+            int.parse(_requestLoanParams.amount!)) ~/
+        1;
+  }
+
+  int get interest {
+    return (double.parse(_requestLoanParams.loan!.interestCharge) /
+            100 *
+            int.parse(_requestLoanParams.amount!)) ~/
+        1;
+  }
+
+  int get paybackAmount {
+    return (int.parse(_requestLoanParams.amount!) + interest + platformFee) ~/
+        1;
+  }
+
+  int get repaymentAmount {
+    return (paybackAmount / int.parse(_requestLoanParams.tenureInWeeks!)) ~/ 1;
+  }
+
+  int get loanAmount {
+    if (int.parse(_requestLoanParams.amount!) ~/ 1 == 30999.999999999996) {
+      return 40000;
+    }
+    if (int.parse(_requestLoanParams.amount!) ~/ 1 > 30000 &&
+        int.parse(_requestLoanParams.amount!) ~/ 1 < 32000) {
+      return 31000;
+    }
+    return int.parse(_requestLoanParams.amount!) ~/ 1;
+  }
 
   @override
   Widget build(BuildContext context) {
     NavigationService navigationService = di<NavigationService>();
+    
+    DateTime now = DateTime.now(); // current date and time
+    DateTime oneWeekLater =
+        now.add(const Duration(days: 7)); // add 7 days to current date
+
+    DateFormat dateFormat = DateFormat('dd MMM yy');
     return LoanApplicationInformationBaseView(
       child: SizedBox(
         width: context.widthPx,
@@ -1244,29 +1351,31 @@ class LoanSummaryScreen extends StatelessWidget {
                   color: AppColors.lightGrey1),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
+                children: [
                   // principal
                   LoanSummaryRow(
                     itemTitle: 'Principal',
-                    itemData: '₦20,000',
+                    itemData: '₦${formatAmount(loanAmount.toString())}',
                   ),
 
                   //interest
                   LoanSummaryRow(
                     itemTitle: 'Interest',
-                    itemData: '₦1000 (5%)',
+                    itemData:
+                        '₦${formatAmount(interest.toString())} (${doubleStringToIntString(_requestLoanParams.loan!.interestCharge)}%)',
                   ),
 
                   //platform
                   LoanSummaryRow(
                     itemTitle: 'Platform Fee',
-                    itemData: '₦4000 (20%)',
+                    itemData:
+                        '₦${formatAmount(platformFee.toString())} (${doubleStringToIntString(_requestLoanParams.loan!.platformCharge)}%)',
                   ),
 
                   // payback amount
                   LoanSummaryRow(
                     itemTitle: 'Payback Amount',
-                    itemData: '₦25,000',
+                    itemData: '₦${formatAmount(paybackAmount.toString())}',
                   ),
                 ],
               ),
@@ -1286,23 +1395,24 @@ class LoanSummaryScreen extends StatelessWidget {
                   color: AppColors.lightGrey1),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
+                children: [
                   // loan tenure
                   LoanSummaryRow(
                     itemTitle: 'Loan Tenure',
-                    itemData: '2 Weeks',
+                    itemData: '${_requestLoanParams.tenureInWeeks} Week(s)',
                   ),
 
                   //No of Payments
                   LoanSummaryRow(
                     itemTitle: 'No of Payments',
-                    itemData: '2 * ₦12,500 (Weekly)',
+                    itemData:
+                        '${_requestLoanParams.tenureInWeeks} * ₦${formatAmount(repaymentAmount.toString())} (Weekly)',
                   ),
 
                   //next payment
-                  LoanSummaryRow(
+                   LoanSummaryRow(
                     itemTitle: 'Next Payment',
-                    itemData: '21 Dec 22',
+                    itemData: dateFormat.format(oneWeekLater),
                   ),
                 ],
               ),
@@ -1323,9 +1433,11 @@ class LoanSummaryScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SelectBank(
-                      color: AppColors.primaryColorLight.withOpacity(0.25),
-                      bankName: 'United Bank for Africa',
-                      bankNumber: '2139872309', onCardSelected: (){},),
+                    color: AppColors.primaryColorLight.withOpacity(0.25),
+                    bankName: _requestLoanParams.bank!.bank.name,
+                    bankNumber: _requestLoanParams.bank!.accountNo,
+                    onCardSelected: () {},
+                  ),
                   Container(
                     height: 72,
                     width: context.widthPx,
@@ -1359,7 +1471,7 @@ class LoanSummaryScreen extends StatelessWidget {
                             children: [
                               // name
                               Text(
-                                'John Doe',
+                                _requestLoanParams.card!.name,
                                 style: TextStyles.smallTextDark14Px,
                               ),
 
@@ -1368,10 +1480,10 @@ class LoanSummaryScreen extends StatelessWidget {
                               ),
 
                               // bank num
-                              const Text(
-                                '• • • •     • • • •    • • • •    5318',
+                              Text(
+                                '• • • •     • • • •    • • • •    ${_requestLoanParams.card!.maskedPan.substring(_requestLoanParams.card!.maskedPan.length - 4)}',
                                 // style: TextStyles.smallTextGrey,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     wordSpacing: 0,
                                     color: AppColors.grey500,
                                     fontWeight: FontWeight.w600),
