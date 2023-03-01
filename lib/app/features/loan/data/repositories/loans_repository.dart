@@ -153,7 +153,6 @@ class LoansRepository {
         url: url,
         headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
       );
-      print(response.body);
       return Right(CardResponse.fromJson(jsonDecode(response.body)));
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));

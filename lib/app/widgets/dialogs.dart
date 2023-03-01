@@ -8,9 +8,6 @@ import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../core/misc/dependency_injectors.dart';
-import '../../core/route/navigation_service.dart';
-import '../../core/route/route_names.dart';
 
 class AppDialog {
   // modal
@@ -64,7 +61,6 @@ class OnSuccessDialogContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NavigationService navigationService = di<NavigationService>();
 
     return SizedBox(
       // height: (context.heightPx * 0.5),

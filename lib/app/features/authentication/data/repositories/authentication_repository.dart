@@ -366,7 +366,6 @@ class AuthenticationRepository {
     final body = {"phoneNumber": format(params.phoneNumber!)};
     // print(format(params.phoneNumber!));
 
-    print(body);
 
     try {
       // final accessToken = _prefs.getString(StorageKeys.accessTokenKey);

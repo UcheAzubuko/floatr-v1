@@ -301,7 +301,6 @@ class LoanScheduleView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    NavigationService navigationService = di<NavigationService>();
     return  Column(
       children: [
         
