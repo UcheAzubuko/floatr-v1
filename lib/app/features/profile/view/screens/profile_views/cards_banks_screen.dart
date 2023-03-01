@@ -117,62 +117,65 @@ class BanksView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const VerticalSpace(
-          size: 30,
-        ),
-
-        SizedBox(
-          height: context.heightPx * 0.55,
-          child: Consumer<LoanProvider>(builder: (context, loanProvider, _) {
-            final banks = loanProvider.myBanksResponse == null
-                ? []
-                : loanProvider.myBanksResponse!.mybanks;
-            switch (loanProvider.loadingState) {
-              case LoadingState.busy:
-                return const Center(
-                  child: CircularProgressIndicator.adaptive(),
-                );
-              case LoadingState.loaded:
-                if (banks.isEmpty) {
-                  return const NoBanksView();
-                }
-                return ListView.builder(
-                    itemCount: banks.length,
-                    itemBuilder: (context, index) => SelectBank(
-                          color: AppColors.lightGrey300,
-                          bankName: banks[index].bank.name,
-                          bankNumber: banks[index].accountNo,
-                          isDefault: banks[index].isDefault,
-                          onCardSelected: (){},
-                        ).paddingOnly(bottom: 20));
-
-              case LoadingState.error:
-                return Center(
-                  child: Text(
-                    '''An Unexpected error occured!''',
-                    style: TextStyles.normalTextDarkF800,
-                  ),
-                );
-              default:
-                return const NoBanksView();
-            }
-          }),
-        ),
-
-        // bottom
-        GeneralButton(
-          height: 42,
-          onPressed: () => di<NavigationService>().navigateTo(RouteName.cards),
-          borderRadius: 8,
-          child: const AppText(
-            text: 'ADD NEW BANK',
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Column(
+        children: [
+          const VerticalSpace(
+            size: 30,
           ),
-        )
-      ],
+
+          SizedBox(
+            height: context.heightPx * 0.55,
+            child: Consumer<LoanProvider>(builder: (context, loanProvider, _) {
+              final banks = loanProvider.myBanksResponse == null
+                  ? []
+                  : loanProvider.myBanksResponse!.mybanks;
+              switch (loanProvider.loadingState) {
+                case LoadingState.busy:
+                  return const Center(
+                    child: CircularProgressIndicator.adaptive(),
+                  );
+                case LoadingState.loaded:
+                  if (banks.isEmpty) {
+                    return const NoBanksView();
+                  }
+                  return ListView.builder(
+                      itemCount: banks.length,
+                      itemBuilder: (context, index) => SelectBank(
+                            color: AppColors.lightGrey300,
+                            bankName: banks[index].bank.name,
+                            bankNumber: banks[index].accountNo,
+                            isDefault: banks[index].isDefault,
+                            onCardSelected: (){},
+                          ).paddingOnly(bottom: 20));
+
+                case LoadingState.error:
+                  return Center(
+                    child: Text(
+                      '''An Unexpected error occured!''',
+                      style: TextStyles.normalTextDarkF800,
+                    ),
+                  );
+                default:
+                  return const NoBanksView();
+              }
+            }),
+          ),
+
+          // bottom
+          GeneralButton(
+            height: 42,
+            onPressed: () => di<NavigationService>().navigateTo(RouteName.cards),
+            borderRadius: 8,
+            child: const AppText(
+              text: 'ADD NEW BANK',
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          )
+        ],
+      ),
     );
   }
 }

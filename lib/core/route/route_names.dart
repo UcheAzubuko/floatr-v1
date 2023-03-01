@@ -25,5 +25,6 @@ class RouteName {
   static const String navbar = 'navbar';
   static const String cards = 'cards';
   static const String selectBankScreen = 'selectBankScreen';
+  static const String successfulScreen = 'successfulScreen';
   static const String loanSummary = 'loanSummary';
 }

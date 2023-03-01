@@ -89,6 +89,8 @@ class Router {
         return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
       case RouteName.loanSummary:
         return MaterialPageRoute(builder: (_) => const LoanSummaryScreen());
+      case RouteName.successfulScreen:
+        return MaterialPageRoute(builder: (_) => const LoanApplicationSuccessfulScreen());
       case RouteName.forgotPasswordOtp:
         return MaterialPageRoute(
             builder: (_) => const ForgotPasswordOtpScreen());

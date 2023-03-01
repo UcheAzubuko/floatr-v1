@@ -34,8 +34,10 @@ import '../../../../../core/utils/images.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../../widgets/app_text.dart';
 import '../../../../widgets/custom_appbar.dart';
+import '../../../../widgets/custom_keyboard.dart';
 import '../../../../widgets/general_button.dart';
 import '../../../../widgets/text_field.dart';
+import '../../../dashboard/view/widgets/highlights_card.dart';
 import '../../model/responses/banks_response.dart';
 
 class LoanApplicationInformationBaseView extends StatelessWidget {
@@ -625,7 +627,7 @@ class DebitCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     if (showCardManagement) ...[
-                      if (!card.isDefault) ...[
+                      if (card.isDefault) ...[
                         const IsDefaultCardOption(),
                       ] else ...[
                         const ManageCardOption(),
@@ -1306,7 +1308,7 @@ class _LoanSummaryScreenState extends State<LoanSummaryScreen> {
   @override
   Widget build(BuildContext context) {
     NavigationService navigationService = di<NavigationService>();
-    
+
     DateTime now = DateTime.now(); // current date and time
     DateTime oneWeekLater =
         now.add(const Duration(days: 7)); // add 7 days to current date
@@ -1410,7 +1412,7 @@ class _LoanSummaryScreenState extends State<LoanSummaryScreen> {
                   ),
 
                   //next payment
-                   LoanSummaryRow(
+                  LoanSummaryRow(
                     itemTitle: 'Next Payment',
                     itemData: dateFormat.format(oneWeekLater),
                   ),
@@ -1501,17 +1503,19 @@ class _LoanSummaryScreenState extends State<LoanSummaryScreen> {
             const VerticalSpace(
               size: 30,
             ),
-            GeneralButton(
-              height: 42,
-              onPressed: () => navigationService
-                  .navigateToRoute(const LoanApplicationSuccessfulScreen()),
-              borderRadius: 8,
-              child: const AppText(
-                text: 'CONFIRM & APPLY',
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+
+            Consumer<LoanProvider>(builder: (context, loanProvider, _) {
+              return GeneralButton(
+                height: 42,
+                onPressed: () => _showPinDialog(loanProvider),
+                borderRadius: 8,
+                child: const AppText(
+                  text: 'CONFIRM & APPLY',
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              );
+            }),
             const VerticalSpace(
               size: 30,
             ),
@@ -1519,6 +1523,123 @@ class _LoanSummaryScreenState extends State<LoanSummaryScreen> {
         ),
       ),
     );
+  }
+
+  _showPinDialog(LoanProvider loanProvider) {
+    bool isLoading = false;
+    AppDialog.showAppDialog(
+        context,
+        ChangeNotifierProvider(
+          create: (context) => KeyboardProvider()
+            ..updateControllerActiveStatus(shouldDeactivateController: true)
+            ..updateRequiredLength(6),
+          child: Consumer<KeyboardProvider>(
+            builder: (context, keyboard, _) {
+              return Container(
+                // height: 741,
+                width: context.widthPx,
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(24)),
+                child: Column(
+                  children: [
+                    const ModalPill(),
+
+                    const VerticalSpace(size: 25),
+
+                    SizedBox(
+                      height: 75,
+                      child: Column(
+                        children: [
+                          Text(
+                            'Enter Transaction Pin',
+                            style: TextStyles.normalTextDarkF800,
+                          ),
+                          const VerticalSpace(
+                            size: 20,
+                          ),
+                          SizedBox(
+                            width: 152,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                pinCircle(0, keyboard.inputs),
+                                pinCircle(1, keyboard.inputs),
+                                pinCircle(2, keyboard.inputs),
+                                pinCircle(3, keyboard.inputs),
+                                pinCircle(4, keyboard.inputs),
+                                pinCircle(5, keyboard.inputs),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+
+                    const CustomKeyboard(),
+
+                    const Spacer(),
+
+                    // btn
+                    StatefulBuilder(builder: (context, setState) {
+                      return GeneralButton(
+                        height: 48,
+                        width: 335,
+                        borderColor: keyboard.isFilled
+                            ? AppColors.primaryColor
+                            : AppColors.primaryColorLight.withOpacity(0.1),
+                        backgroundColor: keyboard.isFilled
+                            ? AppColors.primaryColor
+                            : AppColors.primaryColorLight.withOpacity(0.1),
+                        borderRadius: 12,
+                        isLoading: isLoading,
+                        onPressed: () async {
+                          if (keyboard.isFilled) {
+                            final pin =
+                                keyboard.inputs.map((n) => n.toString()).join();
+
+                            _requestLoanParams.pin = pin;
+                            loanProvider
+                                .updateRequestLoanParams(_requestLoanParams);
+
+                            // force loading
+                            setState(() => isLoading = true);
+
+                            loanProvider.requestLoan().then((value) {
+                              if (loanProvider.loadingState ==
+                                  LoadingState.error) {
+                                AppSnackBar.showErrorSnackBar(
+                                    context, loanProvider.errorMsg);
+                                di<NavigationService>().pop(); // pop dialog
+                                loanProvider.updateLoadingState(
+                                    LoadingState.loaded); // force update
+                              } else if (loanProvider.loadingState ==
+                                  LoadingState.loaded) {
+                                di<NavigationService>()
+                                  ..pushAndRemoveUntil(RouteName.navbar)
+                                  ..navigateTo(RouteName
+                                      .successfulScreen); // pop dialog and show successful screen
+
+                              }
+                            });
+                          }
+                        },
+                        child: const AppText(
+                          text: 'ENTER',
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          size: 14,
+                        ),
+                      ).paddingOnly(left: 14, right: 14, bottom: 43);
+                    }),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+        height: 541,
+        width: 335);
   }
 }
 
@@ -1554,6 +1675,7 @@ class LoanApplicationSuccessfulScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    NavigationService navigationService = di<NavigationService>();
     return LoanApplicationInformationBaseView(
       child: SizedBox(
         width: context.widthPx,
@@ -1595,7 +1717,8 @@ class LoanApplicationSuccessfulScreen extends StatelessWidget {
             ),
 
             InkWell(
-              onTap: () {},
+              onTap: () =>
+                  navigationService.pop(),
               child: Text(
                 'Back to Dashboard'.toUpperCase(),
                 style: const TextStyle(
