@@ -306,8 +306,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                     child: Selector<UserResourcesProvider, state.StateResponse>(
                         selector: (_, provider) =>
                             provider.stateResponse ??
-                            state.StateResponse(stateResponses: [
-                              const state.State(id: '0', name: 'Loading..')
+                            const state.StateResponse(stateResponses: [
+                              state.State(id: '0', name: 'Loading..')
                             ]),
                         builder: (context, _, __) {
                           return DropdownButtonFormField<state.State>(

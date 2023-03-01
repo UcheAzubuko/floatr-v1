@@ -61,7 +61,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
     if (user.idTypes!.isNotEmpty) {
       percent += (user.idTypes!.length * 0.05);
-      print(user.idTypes);
     }
 
     return percent;
