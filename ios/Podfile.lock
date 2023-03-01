@@ -4,6 +4,8 @@ PODS:
     - Flutter
   - EasyTipView (2.1.0)
   - Flutter (1.0.0)
+  - flutter_secure_storage (6.0.0):
+    - Flutter
   - fluttertoast (0.0.2):
     - Flutter
     - Toast
@@ -45,6 +47,8 @@ PODS:
     - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (1.7.2)
   - IQKeyboardManagerSwift (6.5.11)
+  - local_auth_ios (0.0.1):
+    - Flutter
   - lottie-ios (3.5.0)
   - MLImage (1.0.0-beta3)
   - MLKitCommon (8.0.0):
@@ -98,9 +102,11 @@ PODS:
 DEPENDENCIES:
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - Flutter (from `Flutter`)
+  - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - google_mlkit_commons (from `.symlinks/plugins/google_mlkit_commons/ios`)
   - google_mlkit_face_detection (from `.symlinks/plugins/google_mlkit_face_detection/ios`)
+  - local_auth_ios (from `.symlinks/plugins/local_auth_ios/ios`)
   - monnify_payment_sdk (from `.symlinks/plugins/monnify_payment_sdk/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/ios`)
@@ -135,12 +141,16 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
   Flutter:
     :path: Flutter
+  flutter_secure_storage:
+    :path: ".symlinks/plugins/flutter_secure_storage/ios"
   fluttertoast:
     :path: ".symlinks/plugins/fluttertoast/ios"
   google_mlkit_commons:
     :path: ".symlinks/plugins/google_mlkit_commons/ios"
   google_mlkit_face_detection:
     :path: ".symlinks/plugins/google_mlkit_face_detection/ios"
+  local_auth_ios:
+    :path: ".symlinks/plugins/local_auth_ios/ios"
   monnify_payment_sdk:
     :path: ".symlinks/plugins/monnify_payment_sdk/ios"
   path_provider_foundation:
@@ -153,6 +163,7 @@ SPEC CHECKSUMS:
   camera_avfoundation: 07c77549ea54ad95d8581be86617c094a46280d9
   EasyTipView: a92b6edc377b81c5ac18e9fd35d5ee78e9409488
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  flutter_secure_storage: 23fc622d89d073675f2eaa109381aefbcf5a49be
   fluttertoast: eb263d302cc92e04176c053d2385237e9f43fad0
   google_mlkit_commons: e9070f57232c3a3e4bd42fdfa621bb1f4bb3e709
   google_mlkit_face_detection: ab4c98846c4e9b0d48e5bd386cedb14feb676802
@@ -163,6 +174,7 @@ SPEC CHECKSUMS:
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
   IQKeyboardManagerSwift: c7955c0bdbf7b2eb29bb7daaa44e3d90f55a9a85
+  local_auth_ios: 0d333dde7780f669e66f19d2ff6005f3ea84008d
   lottie-ios: c55158d67d0629a260625cc2ded2052b829e3c3e
   MLImage: 489dfec109f21da8621b28d476401aaf7a0d4ff4
   MLKitCommon: f6da6c5659618c070b50a80db01248ebe2964175

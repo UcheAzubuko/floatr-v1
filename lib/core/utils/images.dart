@@ -21,5 +21,6 @@ class SvgImages {
   static const String dashboardUnAuthBackground = 'assets/images/unauth-background-frame.svg';
   static const String debitCardBackground = 'assets/icons/outline/debit-card-frame.svg';
   static const String documentSnapShotFrame = 'assets/images/document-frame.svg';
-
+  static const String biometricFaceId = 'assets/images/faceid.svg';
+  static const String biometricFingerprint = 'assets/images/fingerprint.svg';
 }

@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:floatr/app/features/authentication/data/model/params/reset_password_params.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:floatr/app/features/authentication/data/model/params/login_params.dart';
 import 'package:floatr/app/features/authentication/data/model/params/register_params.dart';
@@ -21,11 +23,15 @@ import '../../../../../core/utils/enums.dart';
 class AuthenticationRepository {
   final SharedPreferences _prefs;
   final APIService _apiService;
+  final FlutterSecureStorage _flutterSecureStorage;
 
   AuthenticationRepository(
-      {required SharedPreferences prefs, required APIService apiService})
+      {required SharedPreferences prefs,
+      required APIService apiService,
+      required FlutterSecureStorage flutterSecureStorage})
       : _prefs = prefs,
-        _apiService = apiService;
+        _apiService = apiService,
+        _flutterSecureStorage = flutterSecureStorage;
 
   /// authHeaders
   final Map<String, String> _authHeaders = {
@@ -52,6 +58,11 @@ class AuthenticationRepository {
       final accessToken = body["access_token"];
       await _prefs.setString(
           StorageKeys.accessTokenKey, accessToken); // store token
+
+      // store pass and email
+      _flutterSecureStorage
+        ..write(key: StorageKeys.emailKey, value: params.email)
+        ..write(key: StorageKeys.passKey, value: params.password);
       return Right(accessToken); // grab access_token
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
@@ -79,6 +90,11 @@ class AuthenticationRepository {
       // store token
       await _prefs.setString(StorageKeys.accessTokenKey, accessToken);
 
+      // store pass and email
+      _flutterSecureStorage
+        ..write(key: StorageKeys.emailKey, value: params.email)
+        ..write(key: StorageKeys.passKey, value: params.password);
+
       /// begin phone verification
       await beginPhoneVerification();
 
@@ -87,6 +103,15 @@ class AuthenticationRepository {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }
   }
+
+  bool _isBiometricLoginEnabled() =>
+      _prefs.containsKey(StorageKeys.biometricStatusKey) &&
+      _prefs.getBool(StorageKeys.biometricStatusKey)!;
+
+  void setBiometricLogin(bool isEnabled) =>
+      _prefs.setBool(StorageKeys.biometricStatusKey, isEnabled);
+
+  bool get isBiometricLoginEnabled => _isBiometricLoginEnabled();
 
   bool _isLoggedIn() =>
       _prefs.containsKey(StorageKeys.accessTokenKey) &&
@@ -113,6 +138,17 @@ class AuthenticationRepository {
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }
+  }
+
+  Future<Either<Failure, String>> biometricLogin() async {
+    final email = await _flutterSecureStorage.read(key: StorageKeys.emailKey);
+    final password = await _flutterSecureStorage.read(key: StorageKeys.passKey);
+    return login(LoginParams(email: email, password: password));
+  }
+
+  Future logout() async {
+    _prefs.clear();
+    _flutterSecureStorage.deleteAll();
   }
 
   /// verify phone number
@@ -265,7 +301,6 @@ class AuthenticationRepository {
             body: imageData,
             headers: imageUploadHeader);
 
-
         final putBody = {
           "id": body["id"],
           "completedParts": [
@@ -318,6 +353,85 @@ class AuthenticationRepository {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     } catch (e) {
       throw Exception(e);
+    }
+  }
+
+  Future<Either<Failure, bool>> forgotPassword(
+      ResetPasswordParams params) async {
+    final forgotPasswordUrl = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.forgotPassword,
+    );
+
+    final body = {"phoneNumber": format(params.phoneNumber!)};
+    // print(format(params.phoneNumber!));
+
+    print(body);
+
+    try {
+      // final accessToken = _prefs.getString(StorageKeys.accessTokenKey);
+      await _apiService.post(
+        url: forgotPasswordUrl,
+        body: body,
+      );
+      return const Right(true);
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    }
+  }
+
+  String format(String num) {
+   num = num.substring(0, 4) + " " + num.substring(4, 7) + " " + num.substring(7, 10) + " " + num.substring(10, num.length);
+    return num;
+  }
+
+  Future<Either<Failure, bool>> verifyForgotPasswordToken(
+      ResetPasswordParams params) async {
+    final forgotPasswordUrl = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.verifyForgotPasswordToken,
+    );
+
+    final body = {"token": params.token, "phoneNumber": params.phoneNumber};
+
+    try {
+      final accessToken = _prefs.getString(StorageKeys.accessTokenKey);
+      await _apiService.post(
+        url: forgotPasswordUrl,
+        body: body,
+        headers: _authHeaders
+          ..addAll({
+            "Authorization": "Bearer ${accessToken!}"
+          }), // add access token authorization to header
+      );
+      return const Right(true);
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    }
+  }
+
+  Future<Either<Failure, bool>> resetPassword(
+      ResetPasswordParams params) async {
+    final forgotPasswordUrl = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.resetPassword,
+    );
+
+    final body = params.toMap();
+
+    try {
+      final accessToken = _prefs.getString(StorageKeys.accessTokenKey);
+      await _apiService.post(
+        url: forgotPasswordUrl,
+        body: body,
+        headers: _authHeaders
+          ..addAll({
+            "Authorization": "Bearer ${accessToken!}"
+          }), // add access token authorization to header
+      );
+      return const Right(true);
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }
   }
 }

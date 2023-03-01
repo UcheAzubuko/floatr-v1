@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:floatr/app/features/authentication/data/model/params/login_params.dart';
+import 'package:floatr/app/features/authentication/data/model/params/reset_password_params.dart';
 import 'package:floatr/app/features/authentication/data/model/params/verify_bvn_params.dart';
 import 'package:floatr/app/features/authentication/data/model/params/verify_phone_params.dart';
 import 'package:floatr/app/features/authentication/data/model/response/user_repsonse.dart';
 import 'package:floatr/app/features/authentication/data/repositories/authentication_repository.dart';
+import 'package:floatr/app/features/authentication/data/repositories/biometric_repository.dart';
 import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
 import 'package:floatr/app/widgets/app_snackbar.dart';
 import 'package:floatr/core/misc/dependency_injectors.dart';
@@ -20,7 +22,10 @@ import '../data/model/params/register_params.dart';
 
 class AuthenticationProvider extends BaseProvider {
   final AuthenticationRepository authenticationRepository;
-  AuthenticationProvider({required this.authenticationRepository});
+  final BiometricRepository biometricRepository;
+  AuthenticationProvider(
+      {required this.authenticationRepository,
+      required this.biometricRepository});
 
   final NavigationService _navigationService = di<NavigationService>();
 
@@ -44,6 +49,10 @@ class AuthenticationProvider extends BaseProvider {
 
   UserResponse? get user => _user;
 
+  ResetPasswordParams? _resetPasswordParams;
+
+  ResetPasswordParams? get resetPasswordParams => _resetPasswordParams;
+
   File? _imagefile;
 
   File? get imagefile => _imagefile;
@@ -55,6 +64,16 @@ class AuthenticationProvider extends BaseProvider {
   String? _transactionPin;
 
   String? get transactionPin => _transactionPin;
+
+  bool _isBiometricLoginEnabled() =>
+      authenticationRepository.isBiometricLoginEnabled;
+
+  bool get isLoggedIn => _isLoggedIn();
+
+  bool get isBiometricLoginEnabled => _isBiometricLoginEnabled();
+
+  setBiometricLogin(bool isEnabled) => authenticationRepository.setBiometricLogin(isEnabled);
+
 
   updateLoginParams(LoginParams params) {
     _loginParams = params;
@@ -96,6 +115,38 @@ class AuthenticationProvider extends BaseProvider {
     notifyListeners();
   }
 
+  updateResetPasswordParams(ResetPasswordParams resetPasswordParams) {
+    _resetPasswordParams = resetPasswordParams;
+    notifyListeners();
+  }
+
+  Future<bool> canAuthenticate() => biometricRepository.canAuthenticate();
+
+  // Future<void> didAuthenticate([bool performBiometricLogin = false]) async {
+  //   // updateLoadingState(LoadingState.busy);
+  //   canAuthenticate().then((canAuthenticate) {
+  //     if (canAuthenticate) {
+  //       biometricRepository.didAuthenticate().then((didAuthenticate) async {
+  //         performBiometricLogin ? await biometricLogin() : () {};
+  //       });
+  //     }
+  //   });
+  // }
+
+  Future<void> biometricLogin() async {
+    var response = await authenticationRepository.biometricLogin();
+
+    response.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? 'A login error occured!');
+      // trigger error on ui
+      // AppSnackBar.showErrorSnackBar(context, errorMsg);
+    }, (onSuccess) async {
+      await getUser();
+      _navigationService.navigateReplacementTo(RouteName.navbar);
+    });
+  }
+
   Future<void> initiateLogin(BuildContext context) async {
     updateLoadingState(LoadingState.busy);
 
@@ -107,6 +158,7 @@ class AuthenticationProvider extends BaseProvider {
       // trigger error on ui
       AppSnackBar.showErrorSnackBar(context, errorMsg);
     }, (onSuccess) async {
+      // updateLoadingState(LoadingState.loaded);
       await getUser();
 
       if (!_user!.isPhoneVerified!) {
@@ -147,8 +199,6 @@ class AuthenticationProvider extends BaseProvider {
     return authenticationRepository.isLoggedIn;
   }
 
-  bool get isLoggedIn => _isLoggedIn();
-
   Future<void> initiateVerifyPhone(BuildContext context) async {
     updateLoadingState(LoadingState.busy);
     var response =
@@ -163,6 +213,11 @@ class AuthenticationProvider extends BaseProvider {
       updateLoadingState(LoadingState.loaded);
       _navigationService.navigateReplacementTo(RouteName.verifyBVN);
     });
+  }
+
+  void logout() {
+    authenticationRepository.logout();
+    _navigationService.pushAndRemoveUntil(RouteName.postOnboarding);
   }
 
   Future<void> initiateVerifyBVN(BuildContext context) async {
@@ -247,6 +302,43 @@ class AuthenticationProvider extends BaseProvider {
                     editProfileView: EditProfile.residentialAddress))
             : _navigationService.pushAndRemoveUntil(RouteName.navbar);
       }
+    });
+  }
+
+  Future<void> forgotPassword() async {
+    updateLoadingState(LoadingState.busy);
+    var response =
+        await authenticationRepository.forgotPassword(_resetPasswordParams!);
+    response.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(
+          onError.message ?? 'Initiating forgot password failed');
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
+    });
+  }
+
+  Future<void> verifyForgotPasswordToken() async {
+    updateLoadingState(LoadingState.busy);
+    var response = await authenticationRepository
+        .verifyForgotPasswordToken(_resetPasswordParams!);
+    response.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? 'Verifying token failed');
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
+    });
+  }
+
+  Future<void> resetPassword() async {
+    updateLoadingState(LoadingState.busy);
+    var response =
+        await authenticationRepository.resetPassword(_resetPasswordParams!);
+    response.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? 'Password reset failed');
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
     });
   }
 }

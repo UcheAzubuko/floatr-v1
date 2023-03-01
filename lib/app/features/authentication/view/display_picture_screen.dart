@@ -140,7 +140,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                 return GeneralButton(
                     height: 55,
                     onPressed: () => _handleImageUpload(
-                        authProvider, File(widget.image.path)),
+                        authProvider, File(widget.image.path), widget.documentType!),
                     isLoading: authProvider.loadingState == LoadingState.busy,
                     child: const Text(
                       'VERIFY',

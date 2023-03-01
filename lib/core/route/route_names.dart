@@ -7,8 +7,12 @@ class RouteName {
   static const String verifyOTP = 'verifyOTP';
   static const String verifyBVN = 'verifyBVN';
   static const String takeSelfie = 'takeSelfie';
+  static const String cardsBanks = 'cardsBanks';
   static const String confirmDetails = 'confirmDetails';
   static const String createPin = 'createPin';
+  static const String changePasswordScreen = 'changePasswordScreen';
+  static const String dashboardLoanDueTime = 'dashboardLoanDueTime';
+  static const String dashboardLoanDetailSchedule = 'dashboardLoanDetailSchedule';
   static const String displayPicture = 'displayPicture';
   static const String biometrics = 'biometrics';
   static const String forgotPassword = 'forgotPassword';

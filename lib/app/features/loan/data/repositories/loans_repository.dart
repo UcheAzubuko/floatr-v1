@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
 import 'package:floatr/app/features/loan/model/params/verify_bank_params.dart';
+import 'package:floatr/app/features/loan/model/responses/card_response.dart';
 import 'package:floatr/app/features/loan/model/responses/loans_response.dart';
 import 'package:floatr/app/features/loan/model/responses/my_banks_response.dart';
 import 'package:floatr/app/features/loan/model/responses/verify_bank_response.dart';
@@ -12,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../../core/data/data_source/remote/api_configs.dart';
 import '../../../../../core/data/services/api_service.dart';
 import '../../../../../core/errors/failure.dart';
+import '../../model/params/add_card_params.dart';
 import '../../model/responses/banks_response.dart';
 
 class LoansRepository {
@@ -106,6 +108,53 @@ class LoansRepository {
         headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
       );
       return Right(MyBanksResponse.fromJson(jsonDecode(response.body)));
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    }
+  }
+
+  Future<Either<Failure, String>> addCard(AddCardParams params) async {
+    final url = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.verifyCard,
+    );
+
+    final body = params.toMap();
+
+    try {
+      String? accessToken =
+          _sharedPreferences.getString(StorageKeys.accessTokenKey);
+
+      final response = await _apiService.post(
+          url: url,
+          headers: _headers
+            ..addAll(
+              {"Authorization": "Bearer ${accessToken!}"},
+            ),
+          body: body);
+
+      return Right(response.body);
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    }
+  }
+
+  Future<Either<Failure, CardResponse>> getMyCards() async {
+    final url = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.userCards,
+    );
+
+    try {
+      String? accessToken =
+          _sharedPreferences.getString(StorageKeys.accessTokenKey);
+
+      final response = await _apiService.get(
+        url: url,
+        headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
+      );
+      print(response.body);
+      return Right(CardResponse.fromJson(jsonDecode(response.body)));
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }

@@ -43,7 +43,6 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
     return Consumer<AuthenticationProvider>(
       builder: (context, authProvider, _) {
         UserHelper userHelper = UserHelper(user: authProvider.user!);
-
         return Container(
           height: 576,
           width: context.widthPx,
@@ -123,9 +122,7 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
                           context, const GovIDModalView(), Colors.transparent),
                       child: CriteriaWidget(
                         criteriaTitle: 'Government Issued ID',
-                        criteriaState: userHelper.isIdDataComplete
-                            ? CriteriaState.pending
-                            : CriteriaState.notDone,
+                        criteriaState: userHelper.isIdDataComplete,
                       ),
                     ),
 
@@ -221,22 +218,22 @@ class _DataCompletionWidgetState extends State<DataCompletionWidget> {
       _navigationService.navigateTo(RouteName.editProfile,
           arguments: EditProfileArguments(
               editProfileView: EditProfile.personalDetails));
-    } else if(!UserHelper(user: user).isIdDataComplete) {
+    } else if (UserHelper(user: user).isIdDataComplete ==
+        CriteriaState.notDone) {
       AppDialog.showAppModal(
-              context, const GovIDModalView(), Colors.transparent);
-    } else if(!UserHelper(user: user).isAddressComplete) {
+          context, const GovIDModalView(), Colors.transparent);
+    } else if (!UserHelper(user: user).isAddressComplete) {
       _navigationService.navigateTo(RouteName.editProfile,
           arguments: EditProfileArguments(
               editProfileView: EditProfile.residentialAddress));
-    
-    } else if(!UserHelper(user: user).isEmployerDetailsComplete) {
+    } else if (!UserHelper(user: user).isEmployerDetailsComplete) {
       _navigationService.navigateTo(RouteName.editProfile,
           arguments: EditProfileArguments(
               editProfileView: EditProfile.employmentDetails));
     } else {
       _navigationService.navigateTo(RouteName.editProfile,
-          arguments: EditProfileArguments(
-              editProfileView: EditProfile.nextOfKin));
+          arguments:
+              EditProfileArguments(editProfileView: EditProfile.nextOfKin));
     }
   }
 }

@@ -10,13 +10,16 @@ import 'package:floatr/app/features/authentication/view/sign_up_screen.dart';
 import 'package:floatr/app/features/authentication/view/take_selfie_screen.dart';
 import 'package:floatr/app/features/authentication/view/verify_bvn_screen.dart';
 import 'package:floatr/app/features/authentication/view/verify_otp_screen.dart';
+import 'package:floatr/app/features/dashboard/view/dashboard_loan_details.dart';
 import 'package:floatr/app/features/dashboard/view/dashboard_screen.dart';
 import 'package:floatr/app/features/loan/view/screens/loan_info_screen.dart';
 import 'package:floatr/app/features/onboarding/onboarding_screen_main.dart';
 import 'package:floatr/app/features/onboarding/post_onboarding.dart';
 import 'package:floatr/app/features/onboarding/splash_screen.dart';
+import 'package:floatr/app/features/profile/view/screens/change_password_screen.dart';
 import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
 import 'package:floatr/app/features/profile/view/screens/profile_screen.dart';
+import 'package:floatr/app/features/profile/view/screens/profile_views/cards_banks_screen.dart';
 import 'package:floatr/app/features/profile/view/screens/snap_document_screen.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +52,9 @@ class Router {
         return slidePageTransition(const VerifyBVNScreen());
       case RouteName.takeSelfie:
         return slidePageTransition(const TakeSelefieScreen());
+        case RouteName.cardsBanks:
+        final args = settings.arguments as CardsBanksArguments;
+        return slidePageTransition(CardsBanksScreen(togglePosition: args.togglePosition,));
       case RouteName.confirmDetails:
         return slidePageTransition(const ConfirmDetailsScreen());
       case RouteName.createPin:
@@ -59,10 +65,17 @@ class Router {
           DisplayPictureScreen(
             image: args.file,
             imageType: args.imageType,
+            documentType: args.documentType,
           ),
         );
       case RouteName.biometrics:
         return MaterialPageRoute(builder: (_) => const BiometricsScreen());
+      case RouteName.changePasswordScreen:
+        return MaterialPageRoute(builder: (_) => const ChangePasswordScreen());
+      case RouteName.dashboardLoanDueTime:
+        final args = settings.arguments as DashboardLoanDetailsArguments;
+        return slidePageTransition(
+            DashoardLoanDetails(dashboardLoanView: args.dashboardLoanView));
       case RouteName.editProfile:
         final args = settings.arguments as EditProfileArguments;
         return slidePageTransition(EditProfileScreen(

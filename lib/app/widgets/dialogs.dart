@@ -29,7 +29,8 @@ class AppDialog {
   }
 
   // pop dialog
-  static showAppDialog(BuildContext context, Widget widget, {double height = 387, double width = 335}) {
+  static showAppDialog(BuildContext context, Widget widget,
+      {double height = 387, double width = 335}) {
     showDialog(
       barrierColor: AppColors.black.withOpacity(0.8),
       context: context,
@@ -53,11 +54,11 @@ class AppDialog {
 
 class OnSuccessDialogContent extends StatelessWidget {
   final String subtext;
-  final bool isResetPassword;
+  final void Function() onDoneCallback;
 
   const OnSuccessDialogContent({
     required this.subtext,
-    required this.isResetPassword,
+    required this.onDoneCallback,
     Key? key,
   }) : super(key: key);
 
@@ -120,10 +121,7 @@ class OnSuccessDialogContent extends StatelessWidget {
 
               // button
               GeneralButton(
-                onPressed: () => {
-                  if (isResetPassword)
-                    {navigationService.navigateTo(RouteName.login)}
-                },
+                onPressed: onDoneCallback,
                 height: context.heightPx * 0.06,
                 width: context.widthPx * 0.35,
                 borderRadius: 10,
@@ -143,7 +141,12 @@ class OnSuccessDialogContent extends StatelessWidget {
 class OnFailDialogContent extends StatelessWidget {
   const OnFailDialogContent({
     Key? key,
+    required this.subtext,
+    required this.onDoneCallback,
   }) : super(key: key);
+
+  final String subtext;
+  final void Function() onDoneCallback;
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +197,7 @@ class OnFailDialogContent extends StatelessWidget {
 
               // text
               AppText(
-                text: '''We couldn't verify your phone number!''',
+                text: subtext,
                 color: AppColors.grey,
                 fontWeight: FontWeight.w600,
                 size: context.widthPx * 0.031,
@@ -206,7 +209,7 @@ class OnFailDialogContent extends StatelessWidget {
 
               // button
               GeneralButton(
-                onPressed: () {},
+                onPressed: onDoneCallback,
                 height: 40,
                 width: 120,
                 borderRadius: 10,

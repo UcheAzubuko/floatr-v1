@@ -239,7 +239,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   // onSaved: (String? password) => _registerParams.password = password,
                   validator: (password) {
                     if (passwordController.text != password) {
-                      return 'Both Passwords are not similar.';
+                      return 'Both Passwords are not the same.';
                     }
                     return null;
                   },

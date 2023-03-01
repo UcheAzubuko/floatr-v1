@@ -1,11 +1,15 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/extensions/validator_extension.dart';
 import 'package:floatr/app/features/authentication/data/model/params/login_params.dart';
+import 'package:floatr/app/features/authentication/data/model/response/user_repsonse.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/general_button.dart';
 import 'package:floatr/core/providers/base_provider.dart';
+import 'package:floatr/core/providers/biometric_provider.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/app_colors.dart';
@@ -14,9 +18,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
+import '../../../widgets/app_snackbar.dart';
 import '../../../widgets/custom_appbar.dart';
 import '../../../widgets/text_field.dart';
 
@@ -37,12 +43,23 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
-  final _emailValidator = ValidationBuilder().email().maxLength(50).build();
+  final _phoneValidator = ValidationBuilder().phone().maxLength(50).build();
   final _passwordValidator = ValidationBuilder().password().build();
 
   @override
   void initState() {
     _loginParams = LoginParams(email: null, password: null);
+    final authProvider = context.read<AuthenticationProvider>();
+    final biometricProvider = context.read<BiometricProvider>();
+    final isFingerPrint =
+        biometricProvider.biometricType == BiometricType.fingerprint;
+
+    if ((biometricProvider.biometricType == BiometricType.face ||
+        biometricProvider.biometricType == BiometricType.fingerprint) &&  authProvider.isBiometricLoginEnabled) {
+
+      biometricProvider.didAuthenticate(() => authProvider.biometricLogin(),
+          'Login with ${isFingerPrint ? 'Fingerprint' : 'Face ID'}');
+    }
     super.initState();
   }
 
@@ -97,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // phone number text and textfield
                 AppText(
-                  text: 'Email',
+                  text: 'Phone',
                   color: AppColors.black,
                   fontWeight: FontWeight.w600,
                   size: context.widthPx * 0.035,
@@ -114,12 +131,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  hintText: 'jen@floatr.com',
+                  hintText: '+234 987 673 6789',
                   controller: emailController,
-                  textInputType: TextInputType.emailAddress,
+                  textInputType: TextInputType.phone,
                   textInputAction: TextInputAction.unspecified,
                   onSaved: (String? email) => _loginParams.email = email!,
-                  validator: _emailValidator,
+                  validator: _phoneValidator,
                 ),
 
                 const VerticalSpace(size: 10),
@@ -164,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   return GeneralButton(
                     // onPressed: () =>
                     //     navigationService.navigateTo(RouteName.createPin),
-                    onPressed: () => _handleLogin(_),
+                    onPressed: () => _handleLogin(context, _),
                     isLoading: _.loadingState == LoadingState.busy,
                     child: const Text('Login'),
                   );
@@ -204,12 +221,42 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  _handleLogin(AuthenticationProvider authProvider) async {
+  _handleLogin(
+      BuildContext context, AuthenticationProvider authProvider) async {
     final bool isValid = _formKey.currentState!.validate();
+    // final user = authProvider.user;
     if (isValid) {
       _formKey.currentState!.save();
       authProvider.updateLoginParams(_loginParams);
       await authProvider.initiateLogin(context);
+      // if (authProvider.loadingState == LoadingState.loaded) {
+      //   await authProvider.getUser();
+      //   if (authProvider.loadingState == LoadingState.loaded) {
+      //     if (user != null) {
+      //       // add this check
+      //       _routeOnSuccess(user);
+      //     } else {
+      //       print('_user is null'); // add this line
+      //       setState(() {});
+      //     }
+      //   } else {
+      //     AppSnackBar.showErrorSnackBar(context, authProvider.errorMsg);
+      //   }
+      // } else {
+      //   AppSnackBar.showErrorSnackBar(context, authProvider.errorMsg);
+      // }
     }
   }
+
+  // _routeOnSuccess(UserResponse user) {
+  //   if (!user.isPhoneVerified!) {
+  //     navigationService.navigateTo(RouteName.verifyOTP);
+  //   } else if (!user.isBvnVerified!) {
+  //     navigationService.navigateTo(RouteName.verifyBVN);
+  //   } else if (!user.isPhotoVerified!) {
+  //     navigationService.navigateTo(RouteName.takeSelfie);
+  //   } else {
+  //     navigationService.navigateReplacementTo(RouteName.navbar);
+  //   }
+  // }
 }

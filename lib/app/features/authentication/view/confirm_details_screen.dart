@@ -2,11 +2,13 @@ import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
+import 'package:floatr/core/providers/biometric_provider.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
@@ -31,9 +33,10 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
 
   @override
   void initState() {
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => context.read<AuthenticationProvider>().getUser());
-    
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      context.read<AuthenticationProvider>().getUser();
+      await context.read<BiometricProvider>().getBiometricType();
+    });
     super.initState();
   }
 
@@ -43,8 +46,9 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
     return Scaffold(
       appBar: CustomAppBar(),
       resizeToAvoidBottomInset: false,
-      body: Consumer<AuthenticationProvider>(
-        builder: (context, authProvider, _) {
+      body: Consumer2<AuthenticationProvider, BiometricProvider>(
+        builder: (context, authProvider, biometricProvider, _) {
+          final biometricType = biometricProvider.biometricType;
           switch (authProvider.loadingState) {
             case LoadingState.busy:
               return const Center(
@@ -232,7 +236,8 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
                                 const VerticalSpace(size: 10),
 
                                 AppTextField(
-                                  hintText: user.gender!.name ?? 'Not Available',
+                                  hintText:
+                                      user.gender!.name ?? 'Not Available',
                                   controller: TextEditingController(),
                                   textInputType: TextInputType.emailAddress,
                                   textInputAction: TextInputAction.unspecified,
@@ -258,8 +263,8 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
                                 ),
                                 const VerticalSpace(size: 10),
                                 AppTextField(
-                                  hintText:
-                                      user.maritalStatus!.name ?? 'Not Available',
+                                  hintText: user.maritalStatus!.name ??
+                                      'Not Available',
                                   controller: TextEditingController(),
                                   textInputType: TextInputType.emailAddress,
                                   textInputAction: TextInputAction.unspecified,
@@ -295,7 +300,8 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
                                 const VerticalSpace(size: 10),
 
                                 AppTextField(
-                                  hintText: dateFormat.format(user.dateOfBirth!),
+                                  hintText:
+                                      dateFormat.format(user.dateOfBirth!),
                                   controller: TextEditingController(),
                                   textInputType: TextInputType.emailAddress,
                                   textInputAction: TextInputAction.unspecified,
@@ -321,8 +327,8 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
                                 ),
                                 const VerticalSpace(size: 10),
                                 AppTextField(
-                                  hintText:
-                                      user.stateOfOrigin!.name ?? 'Not Available',
+                                  hintText: user.stateOfOrigin!.name ??
+                                      'Not Available',
                                   controller: TextEditingController(),
                                   textInputType: TextInputType.emailAddress,
                                   textInputAction: TextInputAction.unspecified,
@@ -362,8 +368,16 @@ class _ConfirmDetailsScreenState extends State<ConfirmDetailsScreen> {
                       ),
 
                       GeneralButton(
-                        onPressed: () =>
-                            navigationService.pushAndRemoveUntil(RouteName.navbar),
+                        onPressed: () {
+                          if (biometricType == null) {
+                            navigationService
+                                .pushAndRemoveUntil(RouteName.navbar);
+                          } else if (biometricType == BiometricType.face ||
+                              biometricType == BiometricType.fingerprint) {
+                            navigationService
+                                .pushAndRemoveUntil(RouteName.biometrics);
+                          }
+                        },
                         buttonTextColor: Colors.white,
                         child: const Text(
                           'Confirm',

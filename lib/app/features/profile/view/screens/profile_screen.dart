@@ -2,31 +2,48 @@ import 'dart:math' as math;
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/data/model/response/user_repsonse.dart';
+import 'package:floatr/app/features/profile/data/model/params/change_password_params.dart';
 import 'package:floatr/app/features/profile/data/model/user_helper.dart';
+import 'package:floatr/app/features/profile/providers/user_profile_provider.dart';
 import 'package:floatr/app/features/profile/view/screens/edit_profile.dart';
+import 'package:floatr/app/features/profile/view/screens/profile_views/cards_banks_screen.dart';
 import 'package:floatr/app/features/profile/view/screens/snap_document_screen.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/dialogs.dart';
 import 'package:floatr/app/widgets/general_button.dart';
+import 'package:floatr/app/widgets/pageview_toggler.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/app_icons.dart';
 import 'package:floatr/core/utils/app_style.dart';
 import 'package:floatr/core/utils/enums.dart';
 import 'package:floatr/core/utils/spacing.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../core/misc/dependency_injectors.dart';
+import '../../../../../core/providers/base_provider.dart';
+import '../../../../../core/providers/biometric_provider.dart';
 import '../../../../../core/utils/app_colors.dart';
+import '../../../../widgets/app_snackbar.dart';
+import '../../../../widgets/custom_keyboard.dart';
 import '../../../authentication/providers/authentication_provider.dart';
+import '../../../dashboard/view/widgets/highlights_card.dart';
 import '../widgets/account_info_card.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
   double _profileCompletionPercentage(UserResponse user) {
     final userHelper = UserHelper(user: user);
     double percent = 0.0;
@@ -42,14 +59,32 @@ class ProfileScreen extends StatelessWidget {
     if (userHelper.isNextOfKinComplete) {
       percent += 0.2;
     }
-    if (userHelper.isIdDataComplete) {
-      percent += 0.2;
+    if (user.idTypes!.isNotEmpty) {
+      percent += (user.idTypes!.length * 0.05);
+      print(user.idTypes);
     }
+
     return percent;
   }
 
-  Widget _checkType(bool check) {
-    if (check) {
+  Widget _checkType({bool? check, bool? isPending}) {
+    if (isPending == null) {
+      if (check!) {
+        return SvgPicture.asset(
+          SvgAppIcons.icTickCircleFill,
+          color: Colors.green,
+        );
+      }
+      return SvgPicture.asset(
+        SvgAppIcons.icCaution,
+        // color: Colors.green,
+      );
+    } else if (isPending) {
+      return SvgPicture.asset(
+        'assets/icons/outline/tick-circle-broken.svg',
+        color: Colors.green,
+      );
+    } else if (check! && !isPending) {
       return SvgPicture.asset(
         SvgAppIcons.icTickCircleFill,
         color: Colors.green,
@@ -61,6 +96,188 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  late bool isBiometricActive;
+
+  late bool isBiometricAvailable;
+
+  late ChangePinParams _changePinParams;
+
+  @override
+  void initState() {
+    final biometricProvider = context.read<BiometricProvider>();
+
+    isBiometricAvailable =
+        (biometricProvider.biometricType == BiometricType.face ||
+            biometricProvider.biometricType == BiometricType.fingerprint);
+    isBiometricActive =
+        context.read<AuthenticationProvider>().isBiometricLoginEnabled;
+    super.initState();
+
+    _changePinParams = ChangePinParams();
+  }
+
+  _beginChangePin(TransactionPinState transPinState, {String? setInitialPin}) {
+    final bool isInitial = transPinState == TransactionPinState.initial;
+    // set tempPin as setInitialPin for comparison, if setInitial pin is null,
+    // it therefore means there exists no other pin to compare with.
+    String? tempPin = setInitialPin;
+    bool isLoading = false;
+    AppDialog.showAppDialog(
+        context,
+        ChangeNotifierProvider(
+          create: (context) => KeyboardProvider()
+            ..updateControllerActiveStatus(shouldDeactivateController: true)
+            ..updateRequiredLength(6),
+          child: Consumer<KeyboardProvider>(
+            builder: (context, keyboard, _) {
+              final userProfileProvider = context.read<UserProfileProvider>();
+              return Container(
+                // height: 741,
+                width: context.widthPx,
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(24)),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 38,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: AppColors.grey.withOpacity(0.3),
+                      ),
+                    ),
+
+                    const VerticalSpace(size: 25),
+
+                    SizedBox(
+                      height: 75,
+                      child: Column(
+                        children: [
+                          Text(
+                            isInitial
+                                ? 'Enter Your Current Pin'
+                                : 'Enter New Pin',
+                            style: TextStyles.normalTextDarkF800,
+                          ),
+                          const VerticalSpace(
+                            size: 20,
+                          ),
+                          SizedBox(
+                            width: 152,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                pinCircle(0, keyboard.inputs),
+                                pinCircle(1, keyboard.inputs),
+                                pinCircle(2, keyboard.inputs),
+                                pinCircle(3, keyboard.inputs),
+                                pinCircle(4, keyboard.inputs),
+                                pinCircle(5, keyboard.inputs),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+
+                    const CustomKeyboard(),
+
+                    const Spacer(),
+
+                    // btn
+                    StatefulBuilder(builder: (context, setState) {
+                      return GeneralButton(
+                        height: 48,
+                        width: 335,
+                        borderColor: keyboard.isFilled
+                            ? AppColors.primaryColor
+                            : AppColors.primaryColorLight.withOpacity(0.1),
+                        backgroundColor: keyboard.isFilled
+                            ? AppColors.primaryColor
+                            : AppColors.primaryColorLight.withOpacity(0.1),
+                        borderRadius: 12,
+                        isLoading: isLoading,
+                        onPressed: isInitial
+                            // switch to to confirm
+                            ? () {
+                                if (keyboard.isFilled) {
+                                  // list of keyboard inputs to string
+                                  final pin = keyboard.inputs
+                                      .map((n) => n.toString())
+                                      .join();
+
+                                  di<NavigationService>().pop(); // pop dialog
+                                  // call proceed again, but with the initial entered pin so you can compare against subsequent entered pin.
+                                  _beginChangePin(TransactionPinState.confirm,
+                                      setInitialPin:
+                                          pin); // show comfirm pin dialog
+                                }
+                              }
+                            // confirm pin
+                            : () async {
+                                if (keyboard.isFilled) {
+                                  final pin = keyboard.inputs
+                                      .map((n) => n.toString())
+                                      .join();
+
+                                  if (tempPin != null) {
+                                    // compare both pins
+                                    if (tempPin == pin) {
+                                      Fluttertoast.showToast(
+                                          msg:
+                                              'New pin should be different from old pin!',
+                                          backgroundColor: Colors.red);
+                                    } else {
+                                      _changePinParams.pin = tempPin;
+                                      _changePinParams.newPin = pin;
+
+                                      userProfileProvider.updateChangePinParams(
+                                          _changePinParams);
+
+                                      // force loading
+                                      setState(() => isLoading = true);
+
+                                      await userProfileProvider
+                                          .changePin()
+                                          .then((_) {
+                                        if (userProfileProvider.loadingState ==
+                                            LoadingState.error) {
+                                          di<NavigationService>()
+                                              .pop(); // pop dialog
+                                          AppSnackBar.showErrorSnackBar(context,
+                                              userProfileProvider.errorMsg);
+                                        } else if (userProfileProvider
+                                                .loadingState ==
+                                            LoadingState.loaded) {
+                                          di<NavigationService>().pop();
+                                          Fluttertoast.showToast(
+                                              msg: 'Pin Changed Successfully',
+                                              backgroundColor: Colors.blue);
+                                        }
+                                      });
+                                    }
+                                  }
+                                }
+                              },
+                        child: const AppText(
+                          text: 'ENTER',
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          size: 14,
+                        ),
+                      ).paddingOnly(left: 14, right: 14, bottom: 43);
+                    }),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+        height: 541,
+        width: 335);
+  }
+
   @override
   Widget build(BuildContext context) {
     final NavigationService navigationService = di<NavigationService>();
@@ -69,7 +286,6 @@ class ProfileScreen extends StatelessWidget {
         builder: (context, provider, _) {
           final user = provider.user;
           final userHelper = UserHelper(user: user!);
-
           return SingleChildScrollView(
             child: Column(
               children: [
@@ -220,8 +436,8 @@ class ProfileScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       CustomProfileRow(
-                        firstItem:
-                            _checkType(userHelper.isPersonalDetailsComplete),
+                        firstItem: _checkType(
+                            check: userHelper.isPersonalDetailsComplete),
                         secondItem: Text(
                           'Personal Details',
                           style: TextStyles.smallTextDark14Px,
@@ -240,7 +456,11 @@ class ProfileScreen extends StatelessWidget {
 
                       // gov-id
                       CustomProfileRow(
-                        firstItem: _checkType(userHelper.isIdDataComplete),
+                        firstItem: _checkType(
+                            check: userHelper.isIdDataComplete ==
+                                CriteriaState.done,
+                            isPending: userHelper.isIdDataComplete ==
+                                CriteriaState.pending),
                         secondItem: Text(
                           'Government Issued ID',
                           style: TextStyles.smallTextDark14Px,
@@ -258,7 +478,8 @@ class ProfileScreen extends StatelessWidget {
 
                       // address
                       CustomProfileRow(
-                        firstItem: _checkType(userHelper.isAddressComplete),
+                        firstItem:
+                            _checkType(check: userHelper.isAddressComplete),
                         secondItem: Text(
                           'Residential Address',
                           style: TextStyles.smallTextDark14Px,
@@ -278,8 +499,8 @@ class ProfileScreen extends StatelessWidget {
 
                       // employment details
                       CustomProfileRow(
-                        firstItem:
-                            _checkType(userHelper.isEmployerDetailsComplete),
+                        firstItem: _checkType(
+                            check: userHelper.isEmployerDetailsComplete),
                         secondItem: Text(
                           'Employment Details',
                           style: TextStyles.smallTextDark14Px,
@@ -299,7 +520,8 @@ class ProfileScreen extends StatelessWidget {
 
                       // next of kin
                       CustomProfileRow(
-                        firstItem: _checkType(userHelper.isNextOfKinComplete),
+                        firstItem:
+                            _checkType(check: userHelper.isNextOfKinComplete),
                         secondItem: Text(
                           'Next of Kin',
                           style: TextStyles.smallTextDark14Px,
@@ -324,27 +546,32 @@ class ProfileScreen extends StatelessWidget {
                 // security
                 AccountInfoCard(
                   infoTitle: 'Security',
-                  height: 210,
+                  height: isBiometricAvailable ? 230 : 168,
                   width: context.widthPx,
                   child: Column(
                     children: [
                       // biometric login
-                      CustomProfileRow(
-                        firstItem: SvgPicture.asset(
-                          SvgAppIcons.icFingerprint,
-                        ),
-                        secondItem: Text(
-                          'Biometric Login',
-                          style: TextStyles.smallTextDark14Px,
-                        ),
-                        thirdItem: SvgPicture.asset(
-                          'assets/icons/outline/arrow-right.svg',
-                          color: Colors.black,
-                          fit: BoxFit.scaleDown,
-                          height: 20,
-                          width: 6,
-                        ),
-                      ),
+                      isBiometricAvailable
+                          ? CustomProfileRow(
+                              firstItem: SvgPicture.asset(
+                                SvgAppIcons.icFingerprint,
+                              ),
+                              secondItem: Text(
+                                'Biometric Login',
+                                style: TextStyles.smallTextDark14Px,
+                              ),
+                              thirdItem: CupertinoSwitch(
+                                  value: isBiometricActive,
+                                  activeColor: AppColors.primaryColor,
+                                  onChanged: (isEnabled) {
+                                    setState(() {
+                                      isBiometricActive = isEnabled;
+                                      provider.setBiometricLogin(isEnabled);
+                                    });
+                                    // provider.setBiometricLogin(isEnabled);
+                                  }),
+                            )
+                          : const SizedBox(),
 
                       // change password
                       CustomProfileRow(
@@ -362,7 +589,9 @@ class ProfileScreen extends StatelessWidget {
                           height: 20,
                           width: 6,
                         ),
-                      ),
+                        onTap: () => navigationService
+                            .navigateTo(RouteName.changePasswordScreen),
+                      ).paddingOnly(bottom: 7),
 
                       // change transaction pin
                       CustomProfileRow(
@@ -380,6 +609,8 @@ class ProfileScreen extends StatelessWidget {
                           height: 20,
                           width: 6,
                         ),
+                        onTap: () =>
+                            _beginChangePin(TransactionPinState.initial),
                       ),
                     ],
                   ),
@@ -410,6 +641,10 @@ class ProfileScreen extends StatelessWidget {
                           height: 20,
                           width: 6,
                         ),
+                        onTap: () => navigationService.navigateTo(
+                            RouteName.cardsBanks,
+                            arguments: CardsBanksArguments(
+                                togglePosition: TogglePosition.left)),
                       ),
 
                       // banks
@@ -428,6 +663,10 @@ class ProfileScreen extends StatelessWidget {
                           height: 20,
                           width: 6,
                         ),
+                        onTap: () => navigationService.navigateTo(
+                            RouteName.cardsBanks,
+                            arguments: CardsBanksArguments(
+                                togglePosition: TogglePosition.right)),
                       ),
                     ],
                   ),
@@ -524,7 +763,37 @@ class ProfileScreen extends StatelessWidget {
                   height: 52,
                   backgroundColor: Colors.white,
                   borderColor: AppColors.red,
-                  onPressed: () {},
+                  onPressed: () => showDialog(
+                      context: context,
+                      barrierDismissible: true,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Logging Out?'),
+                          content: SingleChildScrollView(
+                            child: ListBody(
+                              children: const <Widget>[
+                                Text('Are you sure you want to log out?'),
+                              ],
+                            ),
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text(
+                                'CONFIRM',
+                                style: TextStyles.smallTextPrimary,
+                              ),
+                              onPressed: () => provider.logout(),
+                            ),
+                            TextButton(
+                              child: Text(
+                                'CANCEL',
+                                style: TextStyles.smallTextPrimary,
+                              ),
+                              onPressed: () => navigationService.pop(),
+                            ),
+                          ],
+                        );
+                      }),
                   borderRadius: 12,
                   child: const AppText(
                     size: 14,
@@ -613,7 +882,7 @@ class GovIDModalView extends StatelessWidget {
                   onTap: () => navigationService.navigateTo(
                     RouteName.snapDocument,
                     arguments: SnapDocumentArguments(
-                        documentType: DocumentType.driverLicense),
+                        documentType: DocumentType.internationalPassport),
                   ),
                 ),
 

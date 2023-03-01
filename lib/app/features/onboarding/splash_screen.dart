@@ -1,4 +1,6 @@
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
+import 'package:floatr/app/widgets/app_snackbar.dart';
+import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -22,13 +24,21 @@ class _SplashScreen extends State<SplashScreen> {
 
   @override
   void initState() {
-
     final auth = context.read<AuthenticationProvider>();
 
     WidgetsBinding.instance
         .addPostFrameCallback((_) => auth.getUser().then((_) {
               Future.delayed(const Duration(seconds: 1), () async {
-                di<NavigationService>().navigateTo(RouteName.onBoarding);
+                if (auth.loadingState == LoadingState.error) {
+                  if (!auth.isLoggedIn) {
+                    di<NavigationService>().navigateTo(RouteName.onBoarding);
+                  } else {
+                    AppSnackBar.showErrorSnackBar(
+                        context, auth.errorMsg, const Duration(minutes: 2));
+                  }
+                } else if (auth.loadingState == LoadingState.loaded) {
+                  di<NavigationService>().navigateTo(RouteName.onBoarding);
+                }
               });
             }));
 

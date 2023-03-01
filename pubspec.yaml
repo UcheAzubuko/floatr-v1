@@ -54,6 +54,8 @@ dependencies:
   http:
   jwt_decoder: ^2.0.1
   monnify_payment_sdk:
+  local_auth: ^2.1.4
+  flutter_secure_storage: ^8.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

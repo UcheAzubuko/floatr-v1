@@ -2,6 +2,7 @@
 
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/core/utils/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -399,7 +400,7 @@ class _EditProfileViewState extends State<EditProfileView> {
       await provider.updateUserProfiile();
       if (provider.loadingState == LoadingState.loaded) {
         await authProvider.getUser(); // update user
-        if (!UserHelper(user: authProvider.user!).isIdDataComplete) {
+        if (UserHelper(user: authProvider.user!).isIdDataComplete != CriteriaState.notDone) {
           _navigationService.pop();
           AppDialog.showAppModal(
               context, const GovIDModalView(), Colors.transparent);

@@ -16,6 +16,7 @@ class AppTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final void Function(String?)? onSaved;
   final void Function(String?)? onChanged;
+  final void Function()? onEditingComplete;
   final VoidCallback? onTap;
   final bool readOnly;
   final List<TextInputFormatter>? inputFormatters;
@@ -36,7 +37,7 @@ class AppTextField extends StatelessWidget {
       this.onChanged,
       this.readOnly = false,
       this.inputFormatters,
-      this.suffixIcon})
+      this.suffixIcon, this.onEditingComplete})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -47,6 +48,7 @@ class AppTextField extends StatelessWidget {
       keyboardType: textInputType,
       maxLines: obscureText == true ? 1 : maxLines,
       inputFormatters: inputFormatters,
+      onEditingComplete: onEditingComplete,
       style: GoogleFonts.plusJakartaSans(
         color: AppColors.black,
         fontSize: 12,

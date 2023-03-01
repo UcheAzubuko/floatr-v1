@@ -41,6 +41,18 @@ class APIService {
     return _handleResponse(response);
   }
 
+  Future<http.Response> patch({
+    required Uri url,
+    dynamic body,
+    Map<String, String>? headers,
+  }) async {
+    final response =
+        await http.patch(url, headers: headers ?? {}, body: body).catchError((_) {
+      throw ServerException('Connection Error ${_.toString()}', 0);
+    });
+    return _handleResponse(response);
+  }
+
   /// Handle response
   http.Response _handleResponse(http.Response response) {
     if (response.statusCode >= 200 && response.statusCode <= 299) {

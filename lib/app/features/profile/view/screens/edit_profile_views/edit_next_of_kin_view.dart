@@ -283,9 +283,9 @@ class _EditNextOfKinViewState extends State<EditNextOfKinView> {
                                   _nextOfKinParams.countryId = country!.id;
                                   // });
 
-                                  setState(() {
-                                    selectedState = null;
-                                  });
+                                  // setState(() {
+                                  //   selectedState = null;
+                                  // });
 
                                   context
                                       .read<UserResourcesProvider>()
