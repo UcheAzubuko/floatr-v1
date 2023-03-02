@@ -4,14 +4,18 @@ import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:floatr/app/features/loan/model/params/add_card_params.dart';
+import 'package:floatr/app/features/loan/model/params/request_loan_params.dart';
 import 'package:floatr/app/features/loan/model/params/verify_bank_params.dart';
 import 'package:floatr/app/features/loan/model/responses/card_response.dart'
     as cardResponse;
 import 'package:floatr/app/features/loan/providers/loan_provider.dart';
 import 'package:floatr/app/widgets/app_snackbar.dart';
+import 'package:floatr/app/widgets/dialogs.dart';
+import 'package:floatr/app/widgets/modal_pill.dart';
 import 'package:floatr/app/widgets/prompt_widget.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/navigation_service.dart';
+import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -21,6 +25,7 @@ import 'package:monnify_payment_sdk/monnify_payment_sdk.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../core/misc/dependency_injectors.dart';
+import '../../../../../core/misc/helper_functions.dart';
 import '../../../../../core/secrets.dart';
 import '../../../../../core/utils/app_colors.dart';
 import '../../../../../core/utils/app_icons.dart';
@@ -29,8 +34,10 @@ import '../../../../../core/utils/images.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../../widgets/app_text.dart';
 import '../../../../widgets/custom_appbar.dart';
+import '../../../../widgets/custom_keyboard.dart';
 import '../../../../widgets/general_button.dart';
 import '../../../../widgets/text_field.dart';
+import '../../../dashboard/view/widgets/highlights_card.dart';
 import '../../model/responses/banks_response.dart';
 
 class LoanApplicationInformationBaseView extends StatelessWidget {
@@ -343,15 +350,22 @@ class SelectCardScreen extends StatefulWidget {
 class _SelectCardScreenState extends State<SelectCardScreen> {
   late Monnify? monnify;
   DateFormat dateFormat = DateFormat('MMM/yyyy');
+  late RequestLoanParams _requestLoanParams;
 
   @override
   void initState() {
+    var requestParams = context.read<LoanProvider>().requestLoanParams;
     _initMonnify();
+    _requestLoanParams = RequestLoanParams(
+        loan: requestParams!.loan,
+        tenureInWeeks: requestParams.tenureInWeeks,
+        amount: requestParams.amount);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    NavigationService navigationService = di<NavigationService>();
     return LoanApplicationInformationBaseView(
       applyCustomAppBar: widget.showAppBar,
       child: Column(
@@ -389,9 +403,10 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
                 height: context.heightPx * 0.55,
                 child:
                     Consumer<LoanProvider>(builder: (context, loanProvider, _) {
-                  final cards = loanProvider.myCardsResponse == null
-                      ? []
-                      : loanProvider.myCardsResponse!.cards;
+                  final List<cardResponse.Card> cards =
+                      loanProvider.myCardsResponse == null
+                          ? []
+                          : loanProvider.myCardsResponse!.cards;
                   switch (loanProvider.loadingState) {
                     case LoadingState.busy:
                       return const Center(
@@ -410,8 +425,19 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
                       return ListView.builder(
                           itemCount: cards.length,
                           itemBuilder: (context, index) => DebitCard(
-                                card: cards[index],
-                              ).paddingOnly(bottom: 20));
+                              card: cards[index],
+                              onCardSelected: () {
+                                // update userCardID
+                                // _requestLoanParams.userCardId =
+                                //     cards[index].uniqueId;
+
+                                loanProvider.updateRequestLoanParams(
+                                    _requestLoanParams..card = cards[index]);
+
+
+                                navigationService
+                                    .navigateTo(RouteName.selectBankScreen);
+                              }).paddingOnly(bottom: 20));
 
                     default:
                       return Center(
@@ -553,97 +579,226 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
 }
 
 class DebitCard extends StatelessWidget {
-  const DebitCard({
-    Key? key,
-    required this.card,
-  }) : super(key: key);
+  const DebitCard(
+      {Key? key,
+      required this.card,
+      this.showCardManagement = false,
+      required this.onCardSelected})
+      : super(key: key);
+
   final cardResponse.Card card;
+  final bool showCardManagement;
+  final Function onCardSelected;
 
   @override
   Widget build(BuildContext context) {
     DateFormat dateFormat = DateFormat('MM/yy');
-    return Stack(
-      children: [
-        Container(
-          height: 194,
-          width: context.widthPx,
-          decoration: BoxDecoration(
-              color: AppColors.card, borderRadius: BorderRadius.circular(16)),
-        ),
-        SvgPicture.asset(
-          height: 194,
-          width: context.widthPx,
-          SvgImages.debitCardBackground,
-          color: AppColors.primaryColor,
-          fit: BoxFit.contain,
-          clipBehavior: Clip.hardEdge,
-        ),
-        Container(
-          height: 194,
-          width: context.widthPx,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
+    return InkWell(
+      onTap: () => onCardSelected(),
+      child: Stack(
+        children: [
+          Container(
+            height: 194,
+            width: context.widthPx,
+            decoration: BoxDecoration(
+                color: AppColors.card, borderRadius: BorderRadius.circular(16)),
           ),
-          child: Column(
-            children: [
-              Align(
-                alignment: Alignment.topRight,
-                child: SvgPicture.asset(
-                  SvgImages.cardTypeVisa,
+          SvgPicture.asset(
+            height: 194,
+            width: context.widthPx,
+            SvgImages.debitCardBackground,
+            color: AppColors.primaryColor,
+            fit: BoxFit.contain,
+            clipBehavior: Clip.hardEdge,
+          ),
+          Container(
+            height: 194,
+            width: context.widthPx,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (showCardManagement) ...[
+                      if (card.isDefault) ...[
+                        const IsDefaultCardOption(),
+                      ] else ...[
+                        const ManageCardOption(),
+                      ]
+                    ] else ...[
+                      Container()
+                    ],
+                    SvgPicture.asset(
+                      SvgImages.cardTypeVisa,
+                    ),
+                  ],
                 ),
-              ),
-              const VerticalSpace(
-                size: 50,
-              ),
-              Row(
-                children: [
-                  SvgPicture.asset(
-                    SvgImages.chip,
-                  ),
-                  const Spacer(),
-                  Text(
-                    '●●●● ●●●● ●●●● ${card.maskedPan.substring(card.maskedPan.length - 4)}',
-                    style: const TextStyle(
-                        color: Colors.white,
-                        letterSpacing: 2,
-                        wordSpacing: 3,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700),
-                  )
-                ],
-              ),
-              const Spacer(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    card.name,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700),
-                  ),
-                  Text(
-                    dateFormat.format(card.expiryDate),
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700),
-                  ),
-                ],
-              )
-            ],
+                const VerticalSpace(
+                  size: 50,
+                ),
+                Row(
+                  children: [
+                    SvgPicture.asset(
+                      SvgImages.chip,
+                    ),
+                    const Spacer(),
+                    Text(
+                      '●●●● ●●●● ●●●● ${card.maskedPan.substring(card.maskedPan.length - 4)}',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          letterSpacing: 2,
+                          wordSpacing: 3,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700),
+                    )
+                  ],
+                ),
+                const Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      card.name,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700),
+                    ),
+                    Text(
+                      dateFormat.format(card.expiryDate),
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
-class SelectBankScreen extends StatelessWidget {
+class ManageCardOption extends StatelessWidget {
+  const ManageCardOption({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => AppDialog.showAppModal(
+          context,
+          Container(
+            height: 292,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
+            child: Column(
+              children: [
+                // pill
+                const ModalPill(),
+
+                const VerticalSpace(
+                  size: 42,
+                ),
+
+                // promp desc
+                const Text(
+                  '''What would you like to make this card \n                             your default card?''',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                ),
+
+                const VerticalSpace(
+                  size: 37,
+                ),
+
+                // button
+                GeneralButton(
+                  onPressed: () {},
+                  borderRadius: 16,
+                  height: 45,
+                  child: const Text('MAKE DEFAULT',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1)),
+                ),
+              ],
+            ),
+          )),
+      child: Container(
+        width: 105,
+        height: 23,
+        padding: const EdgeInsets.only(right: 5),
+        decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(16)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            SvgPicture.asset(SvgAppIcons.icEdit),
+            const Text(
+              'Manage Card',
+              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class IsDefaultCardOption extends StatelessWidget {
+  const IsDefaultCardOption({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 60,
+      height: 21,
+      decoration: BoxDecoration(
+          color: Colors.black, borderRadius: BorderRadius.circular(16)),
+      child: const Center(
+        child: Text(
+          'Default',
+          style: TextStyle(color: Colors.white, fontSize: 10),
+        ),
+      ),
+    );
+  }
+}
+
+enum CardManagement { defaultCard, manageCard, none }
+
+class SelectBankScreen extends StatefulWidget {
   const SelectBankScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SelectBankScreen> createState() => _SelectBankScreenState();
+}
+
+class _SelectBankScreenState extends State<SelectBankScreen> {
+  late RequestLoanParams _requestLoanParams;
+
+  @override
+  void initState() {
+    var requestParams = context.read<LoanProvider>().requestLoanParams;
+    _requestLoanParams = RequestLoanParams(
+      loan: requestParams!.loan,
+      tenureInWeeks: requestParams.tenureInWeeks,
+      amount: requestParams.amount,
+      card: requestParams.card,
+    );
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -704,6 +859,13 @@ class SelectBankScreen extends StatelessWidget {
                               bankName: banks[index].bank.name,
                               bankNumber: banks[index].accountNo,
                               isDefault: banks[index].isDefault,
+                              onCardSelected: () {
+                                loanProvider.updateRequestLoanParams(
+                                    _requestLoanParams..bank = banks[index]);
+
+                                navigationService
+                                    .navigateTo(RouteName.loanSummary);
+                              },
                             ).paddingOnly(bottom: 20));
                   case LoadingState.error:
                     return Center(
@@ -768,6 +930,7 @@ class SelectBank extends StatelessWidget {
       required this.color,
       required this.bankName,
       required this.bankNumber,
+      required this.onCardSelected,
       this.isDefault = false})
       : super(key: key);
 
@@ -775,74 +938,78 @@ class SelectBank extends StatelessWidget {
   final String bankName;
   final String bankNumber;
   final bool isDefault;
+  final Function onCardSelected;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 72,
-      width: context.widthPx,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          // image and container
-          SizedBox.square(
-            dimension: 42,
-            child: Image.asset(
-              AppImages.bankBuilding,
+    return InkWell(
+      onTap: () => onCardSelected(),
+      child: Container(
+        height: 72,
+        width: context.widthPx,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            // image and container
+            SizedBox.square(
+              dimension: 42,
+              child: Image.asset(
+                AppImages.bankBuilding,
+              ),
             ),
-          ),
 
-          const HorizontalSpace(
-            size: 16,
-          ),
+            const HorizontalSpace(
+              size: 16,
+            ),
 
-          // bank name and number column
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // bank name
-              Text(
-                bankName,
-                style: TextStyles.smallTextDark14Px,
-              ),
+            // bank name and number column
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // bank name
+                Text(
+                  bankName,
+                  style: TextStyles.smallTextDark14Px,
+                ),
 
-              const VerticalSpace(
-                size: 5,
-              ),
+                const VerticalSpace(
+                  size: 5,
+                ),
 
-              // bank num
-              Text(
-                bankNumber,
-                style: TextStyles.smallTextGrey,
-              )
-            ],
-          ),
-
-          const Spacer(),
-
-          // show default
-          isDefault
-              ? Align(
-                  alignment: Alignment.bottomRight,
-                  child: Container(
-                    width: 60,
-                    height: 21,
-                    decoration: BoxDecoration(
-                        color: AppColors.textFieldBackground,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: const Center(
-                        child: Text(
-                      'Default',
-                      style: TextStyle(fontSize: 10),
-                    )),
-                  ),
+                // bank num
+                Text(
+                  bankNumber,
+                  style: TextStyles.smallTextGrey,
                 )
-              : Container()
-        ],
+              ],
+            ),
+
+            const Spacer(),
+
+            // show default
+            isDefault
+                ? Align(
+                    alignment: Alignment.bottomRight,
+                    child: Container(
+                      width: 60,
+                      height: 21,
+                      decoration: BoxDecoration(
+                          color: AppColors.textFieldBackground,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: const Center(
+                          child: Text(
+                        'Default',
+                        style: TextStyle(fontSize: 10),
+                      )),
+                    ),
+                  )
+                : Container()
+          ],
+        ),
       ),
     );
   }
@@ -1078,12 +1245,71 @@ class AddNewBankScreen extends StatelessWidget {
   }
 }
 
-class LoanSummaryScreen extends StatelessWidget {
+class LoanSummaryScreen extends StatefulWidget {
   const LoanSummaryScreen({Key? key}) : super(key: key);
 
   @override
+  State<LoanSummaryScreen> createState() => _LoanSummaryScreenState();
+}
+
+class _LoanSummaryScreenState extends State<LoanSummaryScreen> {
+  late RequestLoanParams _requestLoanParams;
+
+  @override
+  void initState() {
+    var requestParams = context.read<LoanProvider>().requestLoanParams;
+    _requestLoanParams = RequestLoanParams(
+        loan: requestParams!.loan,
+        tenureInWeeks: requestParams.tenureInWeeks,
+        amount: requestParams.amount,
+        card: requestParams.card,
+        bank: requestParams.bank);
+
+    super.initState();
+  }
+
+  int get platformFee {
+    return (double.parse(_requestLoanParams.loan!.platformCharge) /
+            100 *
+            int.parse(_requestLoanParams.amount!)) ~/
+        1;
+  }
+
+  int get interest {
+    return (double.parse(_requestLoanParams.loan!.interestCharge) /
+            100 *
+            int.parse(_requestLoanParams.amount!)) ~/
+        1;
+  }
+
+  int get paybackAmount {
+    return (int.parse(_requestLoanParams.amount!) + interest + platformFee) ~/
+        1;
+  }
+
+  int get repaymentAmount {
+    return (paybackAmount / int.parse(_requestLoanParams.tenureInWeeks!)) ~/ 1;
+  }
+
+  int get loanAmount {
+    if (int.parse(_requestLoanParams.amount!) ~/ 1 == 30999.999999999996) {
+      return 40000;
+    }
+    if (int.parse(_requestLoanParams.amount!) ~/ 1 > 30000 &&
+        int.parse(_requestLoanParams.amount!) ~/ 1 < 32000) {
+      return 31000;
+    }
+    return int.parse(_requestLoanParams.amount!) ~/ 1;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    NavigationService navigationService = di<NavigationService>();
+
+    DateTime now = DateTime.now(); // current date and time
+    DateTime oneWeekLater =
+        now.add(const Duration(days: 7)); // add 7 days to current date
+
+    DateFormat dateFormat = DateFormat('dd MMM yy');
     return LoanApplicationInformationBaseView(
       child: SizedBox(
         width: context.widthPx,
@@ -1123,29 +1349,31 @@ class LoanSummaryScreen extends StatelessWidget {
                   color: AppColors.lightGrey1),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
+                children: [
                   // principal
                   LoanSummaryRow(
                     itemTitle: 'Principal',
-                    itemData: '₦20,000',
+                    itemData: '₦${formatAmount(loanAmount.toString())}',
                   ),
 
                   //interest
                   LoanSummaryRow(
                     itemTitle: 'Interest',
-                    itemData: '₦1000 (5%)',
+                    itemData:
+                        '₦${formatAmount(interest.toString())} (${doubleStringToIntString(_requestLoanParams.loan!.interestCharge)}%)',
                   ),
 
                   //platform
                   LoanSummaryRow(
                     itemTitle: 'Platform Fee',
-                    itemData: '₦4000 (20%)',
+                    itemData:
+                        '₦${formatAmount(platformFee.toString())} (${doubleStringToIntString(_requestLoanParams.loan!.platformCharge)}%)',
                   ),
 
                   // payback amount
                   LoanSummaryRow(
                     itemTitle: 'Payback Amount',
-                    itemData: '₦25,000',
+                    itemData: '₦${formatAmount(paybackAmount.toString())}',
                   ),
                 ],
               ),
@@ -1165,23 +1393,24 @@ class LoanSummaryScreen extends StatelessWidget {
                   color: AppColors.lightGrey1),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
+                children: [
                   // loan tenure
                   LoanSummaryRow(
                     itemTitle: 'Loan Tenure',
-                    itemData: '2 Weeks',
+                    itemData: '${_requestLoanParams.tenureInWeeks} Week(s)',
                   ),
 
                   //No of Payments
                   LoanSummaryRow(
                     itemTitle: 'No of Payments',
-                    itemData: '2 * ₦12,500 (Weekly)',
+                    itemData:
+                        '${_requestLoanParams.tenureInWeeks} * ₦${formatAmount(repaymentAmount.toString())} (Weekly)',
                   ),
 
                   //next payment
                   LoanSummaryRow(
                     itemTitle: 'Next Payment',
-                    itemData: '21 Dec 22',
+                    itemData: dateFormat.format(oneWeekLater),
                   ),
                 ],
               ),
@@ -1202,9 +1431,11 @@ class LoanSummaryScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SelectBank(
-                      color: AppColors.primaryColorLight.withOpacity(0.25),
-                      bankName: 'United Bank for Africa',
-                      bankNumber: '2139872309'),
+                    color: AppColors.primaryColorLight.withOpacity(0.25),
+                    bankName: _requestLoanParams.bank!.bank.name,
+                    bankNumber: _requestLoanParams.bank!.accountNo,
+                    onCardSelected: () {},
+                  ),
                   Container(
                     height: 72,
                     width: context.widthPx,
@@ -1238,7 +1469,7 @@ class LoanSummaryScreen extends StatelessWidget {
                             children: [
                               // name
                               Text(
-                                'John Doe',
+                                _requestLoanParams.card!.name,
                                 style: TextStyles.smallTextDark14Px,
                               ),
 
@@ -1247,10 +1478,10 @@ class LoanSummaryScreen extends StatelessWidget {
                               ),
 
                               // bank num
-                              const Text(
-                                '• • • •     • • • •    • • • •    5318',
+                              Text(
+                                '• • • •     • • • •    • • • •    ${_requestLoanParams.card!.maskedPan.substring(_requestLoanParams.card!.maskedPan.length - 4)}',
                                 // style: TextStyles.smallTextGrey,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     wordSpacing: 0,
                                     color: AppColors.grey500,
                                     fontWeight: FontWeight.w600),
@@ -1268,17 +1499,19 @@ class LoanSummaryScreen extends StatelessWidget {
             const VerticalSpace(
               size: 30,
             ),
-            GeneralButton(
-              height: 42,
-              onPressed: () => navigationService
-                  .navigateToRoute(const LoanApplicationSuccessfulScreen()),
-              borderRadius: 8,
-              child: const AppText(
-                text: 'CONFIRM & APPLY',
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+
+            Consumer<LoanProvider>(builder: (context, loanProvider, _) {
+              return GeneralButton(
+                height: 42,
+                onPressed: () => _showPinDialog(loanProvider),
+                borderRadius: 8,
+                child: const AppText(
+                  text: 'CONFIRM & APPLY',
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              );
+            }),
             const VerticalSpace(
               size: 30,
             ),
@@ -1286,6 +1519,123 @@ class LoanSummaryScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _showPinDialog(LoanProvider loanProvider) {
+    bool isLoading = false;
+    AppDialog.showAppDialog(
+        context,
+        ChangeNotifierProvider(
+          create: (context) => KeyboardProvider()
+            ..updateControllerActiveStatus(shouldDeactivateController: true)
+            ..updateRequiredLength(6),
+          child: Consumer<KeyboardProvider>(
+            builder: (context, keyboard, _) {
+              return Container(
+                // height: 741,
+                width: context.widthPx,
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(24)),
+                child: Column(
+                  children: [
+                    const ModalPill(),
+
+                    const VerticalSpace(size: 25),
+
+                    SizedBox(
+                      height: 75,
+                      child: Column(
+                        children: [
+                          Text(
+                            'Enter Transaction Pin',
+                            style: TextStyles.normalTextDarkF800,
+                          ),
+                          const VerticalSpace(
+                            size: 20,
+                          ),
+                          SizedBox(
+                            width: 152,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                pinCircle(0, keyboard.inputs),
+                                pinCircle(1, keyboard.inputs),
+                                pinCircle(2, keyboard.inputs),
+                                pinCircle(3, keyboard.inputs),
+                                pinCircle(4, keyboard.inputs),
+                                pinCircle(5, keyboard.inputs),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+
+                    const CustomKeyboard(),
+
+                    const Spacer(),
+
+                    // btn
+                    StatefulBuilder(builder: (context, setState) {
+                      return GeneralButton(
+                        height: 48,
+                        width: 335,
+                        borderColor: keyboard.isFilled
+                            ? AppColors.primaryColor
+                            : AppColors.primaryColorLight.withOpacity(0.1),
+                        backgroundColor: keyboard.isFilled
+                            ? AppColors.primaryColor
+                            : AppColors.primaryColorLight.withOpacity(0.1),
+                        borderRadius: 12,
+                        isLoading: isLoading,
+                        onPressed: () async {
+                          if (keyboard.isFilled) {
+                            final pin =
+                                keyboard.inputs.map((n) => n.toString()).join();
+
+                            _requestLoanParams.pin = pin;
+                            loanProvider
+                                .updateRequestLoanParams(_requestLoanParams);
+
+                            // force loading
+                            setState(() => isLoading = true);
+
+                            loanProvider.requestLoan().then((value) {
+                              if (loanProvider.loadingState ==
+                                  LoadingState.error) {
+                                AppSnackBar.showErrorSnackBar(
+                                    context, loanProvider.errorMsg);
+                                di<NavigationService>().pop(); // pop dialog
+                                loanProvider.updateLoadingState(
+                                    LoadingState.loaded); // force update
+                              } else if (loanProvider.loadingState ==
+                                  LoadingState.loaded) {
+                                di<NavigationService>()
+                                  ..pushAndRemoveUntil(RouteName.navbar)
+                                  ..navigateTo(RouteName
+                                      .successfulScreen); // pop dialog and show successful screen
+
+                              }
+                            });
+                          }
+                        },
+                        child: const AppText(
+                          text: 'ENTER',
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          size: 14,
+                        ),
+                      ).paddingOnly(left: 14, right: 14, bottom: 43);
+                    }),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+        height: 541,
+        width: 335);
   }
 }
 
@@ -1321,6 +1671,7 @@ class LoanApplicationSuccessfulScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    NavigationService navigationService = di<NavigationService>();
     return LoanApplicationInformationBaseView(
       child: SizedBox(
         width: context.widthPx,
@@ -1362,7 +1713,8 @@ class LoanApplicationSuccessfulScreen extends StatelessWidget {
             ),
 
             InkWell(
-              onTap: () {},
+              onTap: () =>
+                  navigationService.pop(),
               child: Text(
                 'Back to Dashboard'.toUpperCase(),
                 style: const TextStyle(

@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:clipboard/clipboard.dart';
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/data/model/response/user_repsonse.dart';
@@ -60,30 +61,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       percent += 0.2;
     }
     if (user.idTypes!.isNotEmpty) {
-      percent += (user.idTypes!.length * 0.05);
+      // percent += (user.idTypes!.length * 0.05); // chcck individual id
+      // percent += 0.05;
     }
 
     return percent;
   }
 
-  Widget _checkType({bool? check, bool? isPending}) {
-    if (isPending == null) {
-      if (check!) {
-        return SvgPicture.asset(
-          SvgAppIcons.icTickCircleFill,
-          color: Colors.green,
-        );
-      }
-      return SvgPicture.asset(
-        SvgAppIcons.icCaution,
-        // color: Colors.green,
-      );
-    } else if (isPending) {
+  Widget _checkType({bool check = false, bool isPending = false}) {
+    if (isPending && check == false) {
       return SvgPicture.asset(
         'assets/icons/outline/tick-circle-broken.svg',
         color: Colors.green,
       );
-    } else if (check! && !isPending) {
+    } else if (check && isPending == false) {
       return SvgPicture.asset(
         SvgAppIcons.icTickCircleFill,
         color: Colors.green,
@@ -398,7 +389,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 softWrap: false,
                                 style: TextStyles.smallTextDark,
                               ).paddingOnly(right: 5),
-                              SvgPicture.asset('assets/icons/outline/copy.svg'),
+                              InkWell(
+                                  onTap: () {
+                                    FlutterClipboard.copy(user.phoneNumber!)
+                                        .then((_) => Fluttertoast.showToast(
+                                            msg:
+                                                'Phone number copied to clipboard'));
+                                  },
+                                  child: SvgPicture.asset(
+                                      'assets/icons/outline/copy.svg')),
                             ],
                           ),
                         ],
@@ -416,7 +415,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 '${user.uniqueId!.length > 10 ? user.uniqueId!.substring(0, 10) : user.uniqueId}...',
                                 style: TextStyles.smallTextDark,
                               ).paddingOnly(right: 5),
-                              SvgPicture.asset('assets/icons/outline/copy.svg'),
+                              InkWell(
+                                  onTap: () {
+                                    FlutterClipboard.copy(user.uniqueId!)
+                                        .then((_) => Fluttertoast.showToast(
+                                            msg:
+                                                'Customer ID copied to clipboard'));
+                                  },
+                                  child: SvgPicture.asset(
+                                      'assets/icons/outline/copy.svg')),
                             ],
                           ),
                         ],
@@ -456,8 +463,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // gov-id
                       CustomProfileRow(
                         firstItem: _checkType(
-                            check: userHelper.isIdDataComplete ==
-                                CriteriaState.done,
+                            // check: userHelper.isIdDataComplete ==
+                            //     CriteriaState.done,
                             isPending: userHelper.isIdDataComplete ==
                                 CriteriaState.pending),
                         secondItem: Text(

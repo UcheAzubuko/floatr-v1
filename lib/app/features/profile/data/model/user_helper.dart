@@ -36,9 +36,11 @@ class UserHelper {
   CriteriaState _isIdDataComplete() {
     if(_user.idTypes!.isEmpty) {
       return CriteriaState.notDone;
-    } else if(_user.idTypes!.length == 4) {
-      return CriteriaState.done;
-    } else {
+    } 
+    // else if(_user.idTypes!.length == 4) {
+    //   return CriteriaState.done;
+    // } 
+    else {
       return CriteriaState.pending;
     }
   }

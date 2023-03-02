@@ -528,6 +528,7 @@ class LoanDetailsView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SelectBank(
+                onCardSelected: (){},
                   color: AppColors.primaryColorLight.withOpacity(0.25),
                   bankName: 'United Bank for Africa',
                   bankNumber: '2139872309'),

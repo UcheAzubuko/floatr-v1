@@ -96,7 +96,7 @@ class _CardsBanksScreenHolderState extends State<CardsBanksScreenHolder> {
               viewName: const ['Cards', 'Banks'],
             )),
         const VerticalSpace(
-          size: 24,
+          size: 50,
         ),
         togglePosition == TogglePosition.left
             ? const CardView()
@@ -117,61 +117,62 @@ class BanksView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const VerticalSpace(
-          size: 30,
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Column(
+        children: [
+          SizedBox(
+            height: context.heightPx * 0.55,
+            child: Consumer<LoanProvider>(builder: (context, loanProvider, _) {
+              final banks = loanProvider.myBanksResponse == null
+                  ? []
+                  : loanProvider.myBanksResponse!.mybanks;
+              switch (loanProvider.loadingState) {
+                case LoadingState.busy:
+                  return const Center(
+                    child: CircularProgressIndicator.adaptive(),
+                  );
+                case LoadingState.loaded:
+                  if (banks.isEmpty) {
+                    return const NoBanksView();
+                  }
+                  return ListView.builder(
+                      itemCount: banks.length,
+                      itemBuilder: (context, index) => SelectBank(
+                            color: AppColors.lightGrey300,
+                            bankName: banks[index].bank.name,
+                            bankNumber: banks[index].accountNo,
+                            isDefault: banks[index].isDefault,
+                            onCardSelected: () {},
+                          ).paddingOnly(bottom: 20));
 
-        SizedBox(
-          height: context.heightPx * 0.55,
-          child: Consumer<LoanProvider>(builder: (context, loanProvider, _) {
-            final banks = loanProvider.myBanksResponse == null
-                ? []
-                : loanProvider.myBanksResponse!.mybanks;
-            switch (loanProvider.loadingState) {
-              case LoadingState.busy:
-                return const Center(
-                  child: CircularProgressIndicator.adaptive(),
-                );
-              case LoadingState.loaded:
-                if (banks.isEmpty) {
+                case LoadingState.error:
+                  return Center(
+                    child: Text(
+                      '''An Unexpected error occured!''',
+                      style: TextStyles.normalTextDarkF800,
+                    ),
+                  );
+                default:
                   return const NoBanksView();
-                }
-                return ListView.builder(
-                    itemCount: banks.length,
-                    itemBuilder: (context, index) => SelectBank(
-                          color: AppColors.lightGrey300,
-                          bankName: banks[index].bank.name,
-                          bankNumber: banks[index].accountNo,
-                          isDefault: banks[index].isDefault,
-                        ).paddingOnly(bottom: 20));
-
-              case LoadingState.error:
-                return Center(
-                  child: Text(
-                    '''An Unexpected error occured!''',
-                    style: TextStyles.normalTextDarkF800,
-                  ),
-                );
-              default:
-                return const NoBanksView();
-            }
-          }),
-        ),
-
-        // bottom
-        GeneralButton(
-          height: 42,
-          onPressed: () => di<NavigationService>().navigateTo(RouteName.cards),
-          borderRadius: 8,
-          child: const AppText(
-            text: 'ADD NEW BANK',
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
+              }
+            }),
           ),
-        )
-      ],
+
+          // bottom
+          GeneralButton(
+            height: 42,
+            onPressed: () =>
+                di<NavigationService>().navigateTo(RouteName.cards),
+            borderRadius: 8,
+            child: const AppText(
+              text: 'ADD NEW BANK',
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          )
+        ],
+      ),
     );
   }
 }
@@ -293,56 +294,58 @@ class _CardViewState extends State<CardView> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const VerticalSpace(
-          size: 30,
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Column(
+        children: [
+          SizedBox(
+            height: context.heightPx * 0.55,
+            child: Consumer<LoanProvider>(builder: (context, loanProvider, _) {
+              final cards = loanProvider.myCardsResponse == null
+                  ? []
+                  : loanProvider.myCardsResponse!.cards;
+              switch (loanProvider.loadingState) {
+                case LoadingState.busy:
+                  return const Center(
+                    child: CircularProgressIndicator.adaptive(),
+                  );
+                case LoadingState.loaded:
+                  if (cards.isEmpty) {
+                    return const NoBanksView();
+                  }
+                  return ListView.builder(
+                      itemCount: cards.length,
+                      itemBuilder: (context, index) => DebitCard(
+                            card: cards[index],
+                            showCardManagement: true,
+                            onCardSelected: () {},
+                          ).paddingOnly(bottom: 20));
 
-        SizedBox(
-          height: context.heightPx * 0.55,
-          child: Consumer<LoanProvider>(builder: (context, loanProvider, _) {
-            final cards = loanProvider.myCardsResponse == null
-                ? []
-                : loanProvider.myCardsResponse!.cards;
-            switch (loanProvider.loadingState) {
-              case LoadingState.busy:
-                return const Center(
-                  child: CircularProgressIndicator.adaptive(),
-                );
-              case LoadingState.loaded:
-                if (cards.isEmpty) {
+                case LoadingState.error:
                   return const NoBanksView();
-                }
-                return ListView.builder(
-                    itemCount: cards.length,
-                    itemBuilder: (context, index) =>
-                        DebitCard(card: cards[index]).paddingOnly(bottom: 20));
-
-              case LoadingState.error:
-                return const NoBanksView();
-              default:
-                return const NoBanksView();
-            }
-          }),
-        ),
-
-        const VerticalSpace(
-          size: 30,
-        ),
-
-        // bottom
-        GeneralButton(
-          height: 42,
-          onPressed: () => onInitializePayment(),
-          borderRadius: 8,
-          child: const AppText(
-            text: 'ADD NEW CARD',
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
+                default:
+                  return const NoBanksView();
+              }
+            }),
           ),
-        )
-      ],
+
+          const VerticalSpace(
+            size: 30,
+          ),
+
+          // bottom
+          GeneralButton(
+            height: 42,
+            onPressed: () => onInitializePayment(),
+            borderRadius: 8,
+            child: const AppText(
+              text: 'ADD NEW CARD',
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          )
+        ],
+      ),
     );
   }
 }
