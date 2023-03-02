@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.USE_BIOMETRIC"/> <!-- for biometrics e.g fingerprint -->
    <application
-        android:label="floatr"
+        android:label="Floatr"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
