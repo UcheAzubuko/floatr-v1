@@ -195,7 +195,7 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
               style: TextStyles.smallTextDark14Px,
             ),
             Text(
-              'N${formatAmount(loanAmount.toString())}',
+              '₦${formatAmount(loanAmount.toString())}',
               style: TextStyles.largeTextDark,
             ),
           ],
@@ -212,11 +212,11 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'from N${formatAmount(doubleStringToIntString(loan.minAmount)!)}',
+                  'from ₦${formatAmount(doubleStringToIntString(loan.minAmount)!)}',
                   style: TextStyles.smallerTextDark10px,
                 ),
                 Text(
-                  'to N${formatAmount(doubleStringToIntString(loan.maxAmount)!)}',
+                  'to ₦${formatAmount(doubleStringToIntString(loan.maxAmount)!)}',
                   style: TextStyles.smallerTextDark10px,
                 ),
               ],

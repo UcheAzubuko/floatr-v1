@@ -33,10 +33,12 @@ class _BottomNavigationState extends State<BottomNavigation> {
         case 0:
           return const DashboardScreen();
         case 1:
-          return  Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 60),
-            child: EligibleLenderView(
-              loan: loan.loansResponse!.loans[2],
+          return  SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 60),
+              child: EligibleLenderView(
+                loan: loan.loansResponse!.loans[2],
+              ),
             ),
           );
         case 2:
