@@ -87,7 +87,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                           // name
                           Text(
-                            '${user!.firstName} ${user.lastName}',
+                            '${user!.firstName}',
                             style: TextStyles.largeTextDark,
                           ),
                         ],
