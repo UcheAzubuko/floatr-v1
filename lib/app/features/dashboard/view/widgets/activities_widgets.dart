@@ -88,10 +88,10 @@ class ActivityItem extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  '₦10,000',
-                  style: TextStyles.smallTextDark,
-                ).paddingOnly(bottom: 10),
+                // Text(
+                //   '₦10,000',
+                //   style: TextStyles.smallTextDark,
+                // ).paddingOnly(bottom: 10),
                 Container(
                   height: 21,
                   width: 65,

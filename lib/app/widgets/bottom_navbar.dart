@@ -1,12 +1,17 @@
+import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
-import 'package:floatr/app/features/loan/view/screens/loan_info_screen.dart';
-import 'package:floatr/app/features/loan/view/screens/nav_loan_application_screen.dart';
+import 'package:floatr/app/features/loan/providers/loan_provider.dart';
+import 'package:floatr/app/features/loan/view/screens/loan_application_screen.dart';
+// import 'package:floatr/app/features/loan/view/screens/nav_loan_application_screen.dart';
 import 'package:floatr/app/features/profile/data/model/user_helper.dart';
+import 'package:floatr/app/features/profile/view/screens/profile_views/cards_banks_screen.dart';
+import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/utils/app_colors.dart';
+import '../../core/utils/app_style.dart';
 import '../features/dashboard/view/dashboard_screen.dart';
 import '../features/profile/view/screens/profile_screen.dart';
 
@@ -22,14 +27,60 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    final loan = context.read<LoanProvider>();
     Widget getViewForIndex(int index) {
       switch (index) {
         case 0:
           return const DashboardScreen();
         case 1:
-          return const NavLoanApplicationScreen();
+          return  Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 60),
+            child: EligibleLenderView(
+              loan: loan.loansResponse!.loans[2],
+            ),
+          );
         case 2:
-          return const NavBarCardScreen();
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const VerticalSpace(
+                size: 100,
+              ),
+              Row(
+                children: [
+                  SvgPicture.asset(
+                    "assets/images/main-logo.svg",
+                    height: 30,
+                    fit: BoxFit.fill,
+                  ),
+
+                  Text(
+                    'floatr',
+                    style: TextStyles.normalTextDarkF800,
+                  ),
+
+                  // tit;
+                ],
+              ).paddingOnly(left: 15),
+
+              // title
+              Text(
+                'My Cards',
+                style: TextStyles.largeTextDark,
+              ).paddingOnly(left: 15),
+
+              const VerticalSpace(
+                size: 9,
+              ),
+
+              Text(
+                'Choose your default card and make changes\nto your card.',
+                style: TextStyles.smallTextGrey14Px,
+              ).paddingOnly(left: 15),
+
+              const CardView().paddingSymmetric(horizontal: 5),
+            ],
+          );
         case 3:
           return const ProfileScreen();
 

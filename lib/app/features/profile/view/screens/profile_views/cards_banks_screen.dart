@@ -96,7 +96,7 @@ class _CardsBanksScreenHolderState extends State<CardsBanksScreenHolder> {
               viewName: const ['Cards', 'Banks'],
             )),
         const VerticalSpace(
-          size: 24,
+          size: 50,
         ),
         togglePosition == TogglePosition.left
             ? const CardView()
@@ -121,10 +121,6 @@ class BanksView extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Column(
         children: [
-          const VerticalSpace(
-            size: 30,
-          ),
-
           SizedBox(
             height: context.heightPx * 0.55,
             child: Consumer<LoanProvider>(builder: (context, loanProvider, _) {
@@ -147,7 +143,7 @@ class BanksView extends StatelessWidget {
                             bankName: banks[index].bank.name,
                             bankNumber: banks[index].accountNo,
                             isDefault: banks[index].isDefault,
-                            onCardSelected: (){},
+                            onCardSelected: () {},
                           ).paddingOnly(bottom: 20));
 
                 case LoadingState.error:
@@ -166,7 +162,8 @@ class BanksView extends StatelessWidget {
           // bottom
           GeneralButton(
             height: 42,
-            onPressed: () => di<NavigationService>().navigateTo(RouteName.cards),
+            onPressed: () =>
+                di<NavigationService>().navigateTo(RouteName.cards),
             borderRadius: 8,
             child: const AppText(
               text: 'ADD NEW BANK',
@@ -301,10 +298,6 @@ class _CardViewState extends State<CardView> {
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Column(
         children: [
-          const VerticalSpace(
-            size: 30,
-          ),
-
           SizedBox(
             height: context.heightPx * 0.55,
             child: Consumer<LoanProvider>(builder: (context, loanProvider, _) {
@@ -322,8 +315,11 @@ class _CardViewState extends State<CardView> {
                   }
                   return ListView.builder(
                       itemCount: cards.length,
-                      itemBuilder: (context, index) =>
-                          DebitCard(card: cards[index], showCardManagement: true, onCardSelected: (){},).paddingOnly(bottom: 20));
+                      itemBuilder: (context, index) => DebitCard(
+                            card: cards[index],
+                            showCardManagement: true,
+                            onCardSelected: () {},
+                          ).paddingOnly(bottom: 20));
 
                 case LoadingState.error:
                   return const NoBanksView();

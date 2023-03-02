@@ -434,8 +434,6 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
                                 loanProvider.updateRequestLoanParams(
                                     _requestLoanParams..card = cards[index]);
 
-                                print(loanProvider
-                                    .requestLoanParams!.card!.uniqueId);
 
                                 navigationService
                                     .navigateTo(RouteName.selectBankScreen);
@@ -1267,7 +1265,6 @@ class _LoanSummaryScreenState extends State<LoanSummaryScreen> {
         card: requestParams.card,
         bank: requestParams.bank);
 
-    print(_requestLoanParams.toMap());
     super.initState();
   }
 
@@ -1307,7 +1304,6 @@ class _LoanSummaryScreenState extends State<LoanSummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    NavigationService navigationService = di<NavigationService>();
 
     DateTime now = DateTime.now(); // current date and time
     DateTime oneWeekLater =
