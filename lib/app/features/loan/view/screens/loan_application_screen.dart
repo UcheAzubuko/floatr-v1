@@ -216,7 +216,7 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                   style: TextStyles.smallerTextDark10px,
                 ),
                 Text(
-                  'to ₦${formatAmount(doubleStringToIntString(loan.maxAmount)!)}',
+                  'to ₦${formatAmount(doubleStringToIntString(loan.maxAmount.toString())!)}',
                   style: TextStyles.smallerTextDark10px,
                 ),
               ],
@@ -262,10 +262,10 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
               //     ),
               //   ),
               // ),
-              child: Slider.adaptive(
+              child: Slider(
                 value: amount,
                 min: double.parse(doubleStringToIntString(loan.minAmount)!),
-                max: double.parse(doubleStringToIntString(loan.maxAmount)!),
+                max: double.parse(doubleStringToIntString(loan.maxAmount.toString())!),
                 divisions: 10,
                 label: amount.toString(),
                 activeColor: AppColors.primaryColor,

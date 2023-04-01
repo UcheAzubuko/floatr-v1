@@ -64,7 +64,7 @@ class HighlightsInfoCard extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              '₦${formatAmount(doubleStringToIntString(loan.maxAmount)!)}',
+                              '₦${formatAmount(doubleStringToIntString(loan.maxAmount.toString())!)}',
                               style: TextStyles.normalTextDarkF600,
                             ).paddingOnly(right: 6),
                             Container(

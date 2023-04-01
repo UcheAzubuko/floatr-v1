@@ -46,8 +46,9 @@ class APIService {
     dynamic body,
     Map<String, String>? headers,
   }) async {
-    final response =
-        await http.patch(url, headers: headers ?? {}, body: body).catchError((_) {
+    final response = await http
+        .patch(url, headers: headers ?? {}, body: body)
+        .catchError((_) {
       throw ServerException('Connection Error ${_.toString()}', 0);
     });
     return _handleResponse(response);
@@ -63,7 +64,7 @@ class APIService {
 
     if (errorBody is Map && errorBody.containsKey("errors")) {
       errorMessage = errorBody["errors"].values.join('.\n');
-    } else if (errorBody is Map && errorBody.containsKey('message')){
+    } else if (errorBody is Map && errorBody.containsKey('message')) {
       errorMessage = errorBody["message"];
     }
     log('Handler $errorMessage');

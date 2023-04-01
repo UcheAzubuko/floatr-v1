@@ -37,52 +37,12 @@ class _BottomNavigationState extends State<BottomNavigation> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 60),
               child: EligibleLenderView(
-                loan: loan.loansResponse!.loans[2],
+                loan: loan.loansResponse!.loans[0],
               ),
             ),
           );
         case 2:
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const VerticalSpace(
-                size: 100,
-              ),
-              Row(
-                children: [
-                  SvgPicture.asset(
-                    "assets/images/main-logo.svg",
-                    height: 30,
-                    fit: BoxFit.fill,
-                  ),
-
-                  Text(
-                    'floatr',
-                    style: TextStyles.normalTextDarkF800,
-                  ),
-
-                  // tit;
-                ],
-              ).paddingOnly(left: 15),
-
-              // title
-              Text(
-                'My Cards',
-                style: TextStyles.largeTextDark,
-              ).paddingOnly(left: 15),
-
-              const VerticalSpace(
-                size: 9,
-              ),
-
-              Text(
-                'Choose your default card and make changes\nto your card.',
-                style: TextStyles.smallTextGrey14Px,
-              ).paddingOnly(left: 15),
-
-              const CardView().paddingSymmetric(horizontal: 5),
-            ],
-          );
+          return const BottomNavCardView();
         case 3:
           return const ProfileScreen();
 
@@ -196,6 +156,63 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 );
               },
             )));
+  }
+}
+
+class BottomNavCardView extends StatelessWidget {
+  const BottomNavCardView({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const VerticalSpace(
+            size: 100,
+          ),
+          Row(
+            children: [
+              SvgPicture.asset(
+                "assets/images/main-logo.svg",
+                height: 30,
+                fit: BoxFit.fill,
+              ),
+    
+              Text(
+                'floatr',
+                style: TextStyles.normalTextDarkF800,
+              ),
+    
+              // tit;
+            ],
+          ).paddingOnly(left: 15),
+    
+          // title
+          Text(
+            'My Cards',
+            style: TextStyles.largeTextDark,
+          ).paddingOnly(left: 15),
+    
+          const VerticalSpace(
+            size: 9,
+          ),
+    
+          Text(
+            'Choose your default card and make changes\nto your card.',
+            style: TextStyles.smallTextGrey14Px,
+          ).paddingOnly(left: 15),
+    
+          const CardView().paddingSymmetric(horizontal: 5),
+
+          const VerticalSpace(
+            size: 9,
+          ),
+        ],
+      ),
+    );
   }
 }
 

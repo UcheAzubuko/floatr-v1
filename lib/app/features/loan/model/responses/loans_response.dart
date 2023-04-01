@@ -36,7 +36,7 @@ class Loan {
   final String uniqueId;
   final String name;
   final String minAmount;
-  final String maxAmount;
+  final int maxAmount;
   final String interestChargeType;
   final String interestCharge;
   final String platformChargeType;

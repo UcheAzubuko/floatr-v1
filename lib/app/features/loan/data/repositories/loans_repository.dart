@@ -143,7 +143,7 @@ class LoansRepository {
   Future<Either<Failure, CardResponse>> getMyCards() async {
     final url = Uri.https(
       APIConfigs.baseUrl,
-      APIConfigs.userCards,
+      APIConfigs.userCards(),
     );
 
     try {
@@ -155,6 +155,32 @@ class LoansRepository {
         headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
       );
       return Right(CardResponse.fromJson(jsonDecode(response.body)));
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    }
+  }
+
+  Future<Either<Failure, String>> makeCardDefault(
+      {required String cardUniqueId, required bool isDefault}) async {
+    final url = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.userCards(cardUniqueId),
+    );
+
+    final Map<String, dynamic> body = {'isDefault': true};
+
+    try {
+      String? accessToken =
+          _sharedPreferences.getString(StorageKeys.accessTokenKey);
+
+      final response = await _apiService.patch(
+        url: url,
+        body: body,
+        headers: _headers
+          ..addAll({"Authorization": "Bearer ${accessToken!}"})
+          ..remove("Content-Type"),
+      );
+      return Right(response.body);
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }

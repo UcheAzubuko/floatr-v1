@@ -251,22 +251,25 @@ class _HighlightsCardState extends State<HighlightsCard> {
                       }
                       return SizedBox(
                         height: 150,
-                        child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (_, index) => HighlightsInfoCard(
-                                  loan: provider.loansResponse!.loans[index],
-                                ).paddingOnly(
-                                  left: index == 0 ? 25 : 10,
-                                  right: index ==
-                                          provider.loansResponse!.loans.length -
-                                              1
-                                      ? 25
-                                      : 0,
-                                ), // this gives the first item more padding on the left and last item more padding on the right
-                            separatorBuilder: (_, __) => const SizedBox(
-                                  width: 0,
-                                ),
-                            itemCount: provider.loansResponse!.loans.length),
+                        child:  HighlightsInfoCard(
+                                  loan: provider.loansResponse!.loans.first,
+                                )
+                        // ListView.separated(
+                        //     scrollDirection: Axis.horizontal,
+                        //     itemBuilder: (_, index) => HighlightsInfoCard(
+                        //           loan: provider.loansResponse!.loans[index],
+                        //         ).paddingOnly(
+                        //           // left: index == 0 ? 25 : 10,
+                        //           // right: index ==
+                        //           //         provider.loansResponse!.loans.length -
+                        //           //             1
+                        //           //     ? 25
+                        //           //     : 0,
+                        //         ), // this gives the first item more padding on the left and last item more padding on the right
+                        //     separatorBuilder: (_, __) => const SizedBox(
+                        //           width: 0,
+                        //         ),
+                        //     itemCount: provider.loansResponse!.loans.length),
                       );
                     default:
                       return const SizedBox(

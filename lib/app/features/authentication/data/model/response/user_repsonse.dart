@@ -36,6 +36,7 @@ class UserResponse {
     required this.nextOfKin,
     required this.employment,
     required this.hasSetPin,
+    required this.loan,
     required this.isPhotoVerified,
     required this.photo,
     required this.isGovernmentIdVerified,
@@ -71,6 +72,7 @@ class UserResponse {
   final NextOfKin? nextOfKin;
   final Employment? employment;
   final bool? hasSetPin;
+  final Loan? loan;
   final bool? isPhotoVerified;
   final Photo? photo;
   final bool? isGovernmentIdVerified;
@@ -124,6 +126,7 @@ class UserResponse {
                 .toMap()),
         employment: Employment.fromJson(json["employment"] ?? {}),
         hasSetPin: json["hasSetPin"],
+        loan: Loan.fromJson(json["loan"] ?? {}),
         isPhotoVerified: json["isPhotoVerified"],
         photo: Photo.fromJson(json["photo"] ?? {}),
         isGovernmentIdVerified: json["isGovernmentIdVerified"],
@@ -162,6 +165,7 @@ class UserResponse {
         "nextOfKin": nextOfKin!.toMap(),
         "employment": employment!.toJson(),
         "hasSetPin": hasSetPin,
+        "loan": loan,
         "isPhotoVerified": isPhotoVerified,
         "photo": photo!.toJson(),
         "isGovernmentIdVerified": isGovernmentIdVerified,
@@ -353,10 +357,9 @@ class Loan {
   factory Loan.fromRawJson(String str) => Loan.fromJson(json.decode(str));
 
   factory Loan.fromJson(Map<String, dynamic> json) => Loan(
-    hasPendingApplication: json["hasPendingApplication"],
-    hasActiveApplication: json["hasActiveApplication"],
-    hasSettlingLoan: json["hasSettlingLoan"]
-  );
+      hasPendingApplication: json["hasPendingApplication"],
+      hasActiveApplication: json["hasActiveApplication"],
+      hasSettlingLoan: json["hasSettlingLoan"]);
 }
 
 class Photo {

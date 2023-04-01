@@ -7,7 +7,7 @@ import 'package:floatr/app/features/loan/model/params/add_card_params.dart';
 import 'package:floatr/app/features/loan/model/params/request_loan_params.dart';
 import 'package:floatr/app/features/loan/model/params/verify_bank_params.dart';
 import 'package:floatr/app/features/loan/model/responses/card_response.dart'
-    as cardResponse;
+    as userCard;
 import 'package:floatr/app/features/loan/providers/loan_provider.dart';
 import 'package:floatr/app/widgets/app_snackbar.dart';
 import 'package:floatr/app/widgets/dialogs.dart';
@@ -403,7 +403,7 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
                 height: context.heightPx * 0.55,
                 child:
                     Consumer<LoanProvider>(builder: (context, loanProvider, _) {
-                  final List<cardResponse.Card> cards =
+                  final List<userCard.Card> cards =
                       loanProvider.myCardsResponse == null
                           ? []
                           : loanProvider.myCardsResponse!.cards;
@@ -433,7 +433,6 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
 
                                 loanProvider.updateRequestLoanParams(
                                     _requestLoanParams..card = cards[index]);
-
 
                                 navigationService
                                     .navigateTo(RouteName.selectBankScreen);
@@ -586,7 +585,7 @@ class DebitCard extends StatelessWidget {
       required this.onCardSelected})
       : super(key: key);
 
-  final cardResponse.Card card;
+  final userCard.Card card;
   final bool showCardManagement;
   final Function onCardSelected;
 
@@ -628,7 +627,7 @@ class DebitCard extends StatelessWidget {
                       if (card.isDefault) ...[
                         const IsDefaultCardOption(),
                       ] else ...[
-                        const ManageCardOption(),
+                        ManageCardOption(card: card),
                       ]
                     ] else ...[
                       Container()
@@ -690,10 +689,14 @@ class DebitCard extends StatelessWidget {
 class ManageCardOption extends StatelessWidget {
   const ManageCardOption({
     Key? key,
+    required this.card,
   }) : super(key: key);
+
+  final userCard.Card card;
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.read<LoanProvider>();
     return InkWell(
       onTap: () => AppDialog.showAppModal(
           context,
@@ -721,8 +724,9 @@ class ManageCardOption extends StatelessWidget {
 
                 // button
                 GeneralButton(
-                  onPressed: () {},
+                  onPressed: () => _handleMakeDefault(provider, card, context),
                   borderRadius: 16,
+                  isLoading: provider.loadingState == LoadingState.busy,
                   height: 45,
                   child: const Text('MAKE DEFAULT',
                       style: TextStyle(
@@ -751,6 +755,19 @@ class ManageCardOption extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _handleMakeDefault(LoanProvider provider, userCard.Card card, BuildContext context) {
+    provider
+        .makeCardDefault(
+            cardUniqueId: card.uniqueId, isDefault: !card.isDefault)
+        .then((_) {
+      if (provider.loadingState == LoadingState.error) {
+        provider.updateLoadingState(LoadingState.loaded); // force loaded
+        di<NavigationService>().pop();
+        AppSnackBar.showErrorSnackBar(context, provider.errorMsg);
+      }
+    });
   }
 }
 
@@ -1304,7 +1321,6 @@ class _LoanSummaryScreenState extends State<LoanSummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     DateTime now = DateTime.now(); // current date and time
     DateTime oneWeekLater =
         now.add(const Duration(days: 7)); // add 7 days to current date
@@ -1615,7 +1631,6 @@ class _LoanSummaryScreenState extends State<LoanSummaryScreen> {
                                   ..pushAndRemoveUntil(RouteName.navbar)
                                   ..navigateTo(RouteName
                                       .successfulScreen); // pop dialog and show successful screen
-
                               }
                             });
                           }
@@ -1713,8 +1728,7 @@ class LoanApplicationSuccessfulScreen extends StatelessWidget {
             ),
 
             InkWell(
-              onTap: () =>
-                  navigationService.pop(),
+              onTap: () => navigationService.pop(),
               child: Text(
                 'Back to Dashboard'.toUpperCase(),
                 style: const TextStyle(

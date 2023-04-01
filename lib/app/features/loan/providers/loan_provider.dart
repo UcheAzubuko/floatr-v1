@@ -194,6 +194,23 @@ class LoanProvider extends BaseProvider {
     });
   }
 
+  Future<void> makeCardDefault(
+      {required String cardUniqueId, required bool isDefault}) async {
+    updateLoadingState(LoadingState.busy);
+
+    final repsonse = await _loansRepository.makeCardDefault(
+        cardUniqueId: cardUniqueId, isDefault: isDefault);
+
+    repsonse.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? 'Could not complete request');
+      print(onError.message);
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
+      getMyCards();
+    });
+  }
+
   Future<void> addCard() async {
     updateLoadingState(LoadingState.busy);
 
@@ -202,8 +219,10 @@ class LoanProvider extends BaseProvider {
     repsonse.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? ' Could not add card');
+      print(onError.message);
     }, (onSuccess) {
-      updateLoadingState(LoadingState.loaded);
+      getMyCards();
+
       log("Added Card successfully");
     });
   }

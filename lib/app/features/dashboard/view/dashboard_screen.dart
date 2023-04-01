@@ -3,6 +3,7 @@ import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:floatr/app/features/dashboard/providers/dashboard_provider.dart';
 import 'package:floatr/app/features/dashboard/view/widgets/activities_widgets.dart';
+import 'package:floatr/app/features/dashboard/view/widgets/debt_card.dart';
 import 'package:floatr/app/features/profile/data/model/user_helper.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/navigation_service.dart';
@@ -136,7 +137,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const HighlightsCard(),
+
+                          if(user.loan!.hasSettlingLoan!)...[
+                            const DebtCard()
+                          ] else ...[
+                            const HighlightsCard(),
+                          ],
+                          //  else if()...[]
+                          
                           const VerticalSpace(size: 40),
 
                           // dashboard options

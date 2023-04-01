@@ -27,7 +27,7 @@ class APIConfigs {
   static states(String code) => '/v1/country/$code/states';
   static const user = '/v1/users/me';
   static const userBanks = 'v1/users/me/banks';
-  static const userCards = 'v1/users/me/cards';
+  static userCards([String cardId = '']) => 'v1/users/me/cards/$cardId';
   static const userFullPath = 'https://${baseUrl}/v1/users/me?mask=false';
   static const verifyAccount = '/v1/banks/verify-account';
   static const verifyBVNPath = '/v1/users/me/verify-bvn';

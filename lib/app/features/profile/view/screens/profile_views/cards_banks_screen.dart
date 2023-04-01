@@ -185,6 +185,7 @@ class NoBanksView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // error image
         Container(
@@ -267,6 +268,12 @@ class _CardViewState extends State<CardView> {
       customerEmail: user.email,
       paymentReference: paymentReference,
       paymentMethods: [PaymentMethod.CARD],
+      metaData: {
+        'floatrUserUniqueId': user.uniqueId!,
+        'floatrUserName': '${user.firstName} ${user.lastName}',
+        'date': DateTime.now().toIso8601String(),
+        'reason': 'add_user_card',
+      },
     );
 
     try {
@@ -275,10 +282,11 @@ class _CardViewState extends State<CardView> {
 
       loan.updateAddCardParams(
           AddCardParams(transactionRef: response!.transactionReference));
-      loan.addCard().then((_) {
+
+      await loan.addCard().then((_) {
         if (loan.loadingState == LoadingState.loaded) {
           loan.getMyCards();
-        } else {
+        } else if (loan.loadingState == LoadingState.error) {
           loan.updateLoadingState(
               LoadingState.loaded); // force loading state to go back to loaded
         }
@@ -311,20 +319,21 @@ class _CardViewState extends State<CardView> {
                   );
                 case LoadingState.loaded:
                   if (cards.isEmpty) {
-                    return const NoBanksView();
+                    return const NoCardsView();
                   }
                   return ListView.builder(
-                      itemCount: cards.length,
-                      itemBuilder: (context, index) => DebitCard(
-                            card: cards[index],
-                            showCardManagement: true,
-                            onCardSelected: () {},
-                          ).paddingOnly(bottom: 20));
+                    itemCount: cards.length,
+                    itemBuilder: (context, index) => DebitCard(
+                      card: cards[index],
+                      showCardManagement: true,
+                      onCardSelected: () {},
+                    ).paddingOnly(bottom: 20),
+                  );
 
                 case LoadingState.error:
-                  return const NoBanksView();
+                  return const CardErrorView();
                 default:
-                  return const NoBanksView();
+                  return const NoCardsView();
               }
             }),
           ),
@@ -350,6 +359,50 @@ class _CardViewState extends State<CardView> {
   }
 }
 
+class CardErrorView extends StatelessWidget {
+  const CardErrorView({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // error image
+        Container(
+          height: 131,
+          width: 127,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage(AppImages.walletSad), fit: BoxFit.cover),
+          ),
+        ),
+
+        const VerticalSpace(
+          size: 53,
+        ),
+
+        // error text
+        Text(
+          '''Couldn't get cards''',
+          style: TextStyles.normalTextDarkF800,
+        ),
+
+        const VerticalSpace(
+          size: 17,
+        ),
+
+        // comple profile text
+        Text(
+          '''Please check your internet connection!''',
+          style: TextStyles.smallTextGrey,
+        ),
+      ],
+    );
+  }
+}
+
 class NoCardsView extends StatelessWidget {
   const NoCardsView({
     Key? key,
@@ -358,6 +411,7 @@ class NoCardsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // error image
         Container(
