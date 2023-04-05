@@ -228,6 +228,7 @@ class _HighlightsCardState extends State<HighlightsCard> {
               const VerticalSpace(size: 48),
               Consumer<LoanProvider>(
                 builder: (context, provider, _) {
+                  final loans = provider.loansResponse!.loans;
                   switch (provider.loadingState) {
                     // loading
                     case LoadingState.busy:
@@ -240,7 +241,7 @@ class _HighlightsCardState extends State<HighlightsCard> {
 
                     // loaded
                     case LoadingState.loaded:
-                      // final loans = provider.loansResponse!.loans;
+                      // final loans = loans;
                       if (provider.loansResponse == null) {
                         const SizedBox(
                           height: 150,
@@ -251,25 +252,26 @@ class _HighlightsCardState extends State<HighlightsCard> {
                       }
                       return SizedBox(
                         height: 150,
-                        child:  HighlightsInfoCard(
-                                  loan: provider.loansResponse!.loans.first,
-                                )
-                        // ListView.separated(
-                        //     scrollDirection: Axis.horizontal,
-                        //     itemBuilder: (_, index) => HighlightsInfoCard(
-                        //           loan: provider.loansResponse!.loans[index],
-                        //         ).paddingOnly(
-                        //           // left: index == 0 ? 25 : 10,
-                        //           // right: index ==
-                        //           //         provider.loansResponse!.loans.length -
-                        //           //             1
-                        //           //     ? 25
-                        //           //     : 0,
-                        //         ), // this gives the first item more padding on the left and last item more padding on the right
-                        //     separatorBuilder: (_, __) => const SizedBox(
-                        //           width: 0,
-                        //         ),
-                        //     itemCount: provider.loansResponse!.loans.length),
+                        child: loans.length == 1
+                            ? HighlightsInfoCard(
+                                loan: loans.first,
+                              )
+                            : ListView.separated(
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (_, index) => HighlightsInfoCard(
+                                      loan: loans[index],
+                                    ).paddingOnly(
+                                        left: index == 0 ? 25 : 10,
+                                        right: index ==
+                                                loans.length -
+                                                    1
+                                            ? 25
+                                            : 0,
+                                        ), // this gives the first item more padding on the left and last item more padding on the right
+                                separatorBuilder: (_, __) => const SizedBox(
+                                      width: 0,
+                                    ),
+                                itemCount: loans.length),
                       );
                     default:
                       return const SizedBox(
@@ -290,11 +292,11 @@ class _HighlightsCardState extends State<HighlightsCard> {
 }
 
 CircleAvatar pinCircle(int mappedNum, nums) {
-    // var nums = context.read<KeyboardProvider>().inputs;
-    return CircleAvatar(
-      radius: 5,
-      backgroundColor: nums.asMap().containsKey(mappedNum)
-          ? AppColors.primaryColor
-          : AppColors.grey.withOpacity(0.5),
-    );
-  }
+  // var nums = context.read<KeyboardProvider>().inputs;
+  return CircleAvatar(
+    radius: 5,
+    backgroundColor: nums.asMap().containsKey(mappedNum)
+        ? AppColors.primaryColor
+        : AppColors.grey.withOpacity(0.5),
+  );
+}
