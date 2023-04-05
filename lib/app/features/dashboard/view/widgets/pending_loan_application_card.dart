@@ -1,11 +1,15 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
+import 'package:floatr/app/features/dashboard/view/dashboard_loan_details.dart';
 import 'package:floatr/app/widgets/general_button.dart';
+import 'package:floatr/core/route/navigation_service.dart';
+import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../core/misc/dependency_injectors.dart';
 import '../../../../../core/utils/app_colors.dart';
 import '../../../../../core/utils/app_style.dart';
 import '../../../../../core/utils/images.dart';
@@ -18,6 +22,7 @@ class PendingLoanApplicationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final navigationService = di<NavigationService>();
     final user = context.read<AuthenticationProvider>().user;
     return Container(
       height: 416,
@@ -63,7 +68,11 @@ class PendingLoanApplicationCard extends StatelessWidget {
                   ),
                   Center(
                       child: GeneralButton(
-                    onPressed: () {},
+                    onPressed: () => navigationService.navigateTo(
+                        RouteName.dashboardLoanDueTime,
+                        arguments: DashboardLoanDetailsArguments(
+                            dashboardLoanView:
+                                DashboardLoanView.loanDetailSchedule)),
                     width: 180,
                     height: 35,
                     borderRadius: 10,

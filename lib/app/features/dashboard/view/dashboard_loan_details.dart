@@ -1,9 +1,15 @@
 import 'package:floatr/app/extensions/sized_context.dart';
+import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
+import 'package:floatr/app/features/loan/providers/loan_provider.dart';
+import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/misc/dependency_injectors.dart';
+import '../../../../core/misc/helper_functions.dart';
 import '../../../../core/route/navigation_service.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_style.dart';
@@ -267,25 +273,84 @@ class DashboardLoanDetailSchedule extends StatefulWidget {
 class _DashboardLoanDetailScheduleState
     extends State<DashboardLoanDetailSchedule> {
   TogglePosition togglePosition = TogglePosition.left;
+
+  @override
+  void initState() {
+    final loanId = context
+        .read<AuthenticationProvider>()
+        .user!
+        .loan!
+        .pendingLoanApplicationId;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      context.read<LoanProvider>().getUserSubscribedLoan(loanId!);
+    });
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        InkWell(
-            onTap: () => setState(() {
-                  togglePosition = toggle;
-                }),
-            child: PageViewToggler(
-              togglePosition: togglePosition,
-              viewName: const ['Details', 'Schedule'],
-            )),
-        const VerticalSpace(
-          size: 24,
-        ),
-        togglePosition == TogglePosition.left
-            ? const LoanDetailsView()
-            : const LoanScheduleView()
-      ],
+    return Consumer<LoanProvider>(
+      builder: (context, loanProvider, _) {
+        final loanId = context
+            .read<AuthenticationProvider>()
+            .user!
+            .loan!
+            .pendingLoanApplicationId;
+        switch (loanProvider.loadingState) {
+          case LoadingState.busy:
+            return const Center(
+              child: CircularProgressIndicator.adaptive(),
+            );
+
+          case LoadingState.error:
+            return Center(
+              child: Row(
+                children: [
+                  const AppText(
+                    text: 'Could not get your loan!',
+                    color: AppColors.black,
+                    fontWeight: FontWeight.w600,
+                    size: 20,
+                  ),
+                  InkWell(
+                    onTap: () => loanProvider.getUserSubscribedLoan(loanId!),
+                    child: const AppText(
+                      text: 'Reload',
+                      color: AppColors.primaryColor,
+                      fontWeight: FontWeight.w600,
+                      size: 20,
+                    ),
+                  ),
+                ],
+              ),
+            );
+
+          case LoadingState.loaded:
+            return Column(
+              children: [
+                InkWell(
+                    onTap: () => setState(() {
+                          togglePosition = toggle;
+                        }),
+                    child: PageViewToggler(
+                      togglePosition: togglePosition,
+                      viewName: const ['Details', 'Schedule'],
+                    )),
+                const VerticalSpace(
+                  size: 24,
+                ),
+                togglePosition == TogglePosition.left
+                    ? const LoanDetailsView()
+                    : const LoanScheduleView()
+              ],
+            );
+
+          default:
+            return Container();
+        }
+      },
     );
   }
 
@@ -301,9 +366,15 @@ class LoanScheduleView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Column(
+    final userSubscribedLoan =
+        context.read<LoanProvider>().userSubscribedLoanResponse;
+
+    DateFormat dateFormat = DateFormat('dd MMM yy');
+
+    int weeks = (userSubscribedLoan!.maxTenureInDays / 7).floor();
+
+    return Column(
       children: [
-        
         CircularPercentIndicator(
           radius: 110.0,
           backgroundColor: Colors.white,
@@ -343,7 +414,6 @@ class LoanScheduleView extends StatelessWidget {
             ],
           ),
         ),
-        
 
         // loan info box A
         Container(
@@ -355,29 +425,33 @@ class LoanScheduleView extends StatelessWidget {
               color: AppColors.lightGrey1),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
+            children: [
               // principal
               LoanSummaryRow(
                 itemTitle: 'Principal',
-                itemData: '₦20,000',
+                itemData:
+                    '₦${formatAmount(doubleStringToIntString(userSubscribedLoan.amount)!)}',
               ),
 
               //interest
               LoanSummaryRow(
                 itemTitle: 'Interest',
-                itemData: '₦1000 (5%)',
+                itemData:
+                    '₦ ${formatAmount(percent(amount: int.parse(doubleStringToIntString(userSubscribedLoan.interestCharge)!), percentage: int.parse(doubleStringToIntString(userSubscribedLoan.amount)!)).toString())} (${formatAmount(doubleStringToIntString(userSubscribedLoan.interestCharge)!)}%) ',
               ),
 
               //platform
               LoanSummaryRow(
                 itemTitle: 'Platform Fee',
-                itemData: '₦4000 (20%)',
+                itemData:
+                    '₦ ${formatAmount(percent(amount: int.parse(doubleStringToIntString(userSubscribedLoan.platformCharge)!), percentage: int.parse(doubleStringToIntString(userSubscribedLoan.amount)!)).toString())} (${formatAmount(doubleStringToIntString(userSubscribedLoan.platformCharge)!)}%) ',
               ),
 
               // payback amount
               LoanSummaryRow(
                 itemTitle: 'Payback Amount',
-                itemData: '₦25,000',
+                itemData:
+                    '₦${formatAmount(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!)}',
               ),
             ],
           ),
@@ -398,21 +472,22 @@ class LoanScheduleView extends StatelessWidget {
               color: AppColors.lightGrey1),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
+            children: [
               // loan tenure
               LoanSummaryRow(
                 itemTitle: 'Loan Tenure',
-                itemData: '2 Weeks',
+                itemData: weeks == 1 ? '$weeks Week' : '$weeks Weeks',
               ),
 
               //No of Payments
               LoanSummaryRow(
                 itemTitle: 'No of Payments',
-                itemData: '2 * ₦12,500 (Weekly)',
+                itemData:
+                    '$weeks * ₦${formatAmount((int.parse(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!) ~/ weeks).toString())}',
               ),
 
               //next payment
-              LoanSummaryRow(
+              const LoanSummaryRow(
                 itemTitle: 'Next Payment',
                 itemData: '21 Dec 22',
               ),
@@ -433,36 +508,35 @@ class LoanScheduleView extends StatelessWidget {
               color: AppColors.lightGrey1),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              // loan tenure
+            children: [
+              // Ammount paid
               LoanSummaryRow(
-                itemTitle: 'Loan Tenure',
-                itemData: '2 Weeks',
+                itemTitle: 'Amount Paid',
+                itemData:
+                    '₦${formatAmount(doubleStringToIntString(userSubscribedLoan.totalPaidBackAmount)!)}',
               ),
 
-              //No of Payments
+              // Amount due
               LoanSummaryRow(
-                itemTitle: 'No of Payments',
-                itemData: '2 * ₦12,500 (Weekly)',
+                itemTitle: 'Amount Due',
+                itemData:
+                    '₦${formatAmount((int.parse(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!) - int.parse(doubleStringToIntString(userSubscribedLoan.totalPaidBackAmount)!)).toString())}', // subtract amount to pay - amount paid
               ),
 
-              //next payment
+              //due date
               LoanSummaryRow(
-                itemTitle: 'Next Payment',
-                itemData: '21 Dec 22',
+                itemTitle: 'Due Date',
+                itemData: dateFormat.format(userSubscribedLoan.dueDate),
               ),
             ],
           ),
         ),
 
-        
         const VerticalSpace(
           size: 30,
         ),
       ],
     );
- 
-    
   }
 }
 
@@ -473,6 +547,8 @@ class LoanDetailsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userSubscribedLoan =
+        context.read<LoanProvider>().userSubscribedLoanResponse;
     return Column(
       children: [
         // loan info box A
@@ -485,29 +561,33 @@ class LoanDetailsView extends StatelessWidget {
               color: AppColors.lightGrey1),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
+            children: [
               // principal
               LoanSummaryRow(
                 itemTitle: 'Principal',
-                itemData: '₦20,000',
+                itemData:
+                    '₦${formatAmount(doubleStringToIntString(userSubscribedLoan!.amount)!)}',
               ),
 
               //interest
               LoanSummaryRow(
                 itemTitle: 'Interest',
-                itemData: '₦1000 (5%)',
+                itemData:
+                    '₦${formatAmount(percent(amount: int.parse(doubleStringToIntString(userSubscribedLoan.interestCharge)!), percentage: int.parse(doubleStringToIntString(userSubscribedLoan.amount)!)).toString())} (${formatAmount(doubleStringToIntString(userSubscribedLoan.interestCharge)!)}%) ',
               ),
 
               //platform
               LoanSummaryRow(
                 itemTitle: 'Platform Fee',
-                itemData: '₦4000 (20%)',
+                itemData:
+                    '₦${formatAmount(percent(amount: int.parse(doubleStringToIntString(userSubscribedLoan.platformCharge)!), percentage: int.parse(doubleStringToIntString(userSubscribedLoan.amount)!)).toString())} (${formatAmount(doubleStringToIntString(userSubscribedLoan.platformCharge)!)}%) ',
               ),
 
               // payback amount
               LoanSummaryRow(
                 itemTitle: 'Payback Amount',
-                itemData: '₦25,000',
+                itemData:
+                    '₦${formatAmount(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!)}',
               ),
             ],
           ),
@@ -528,10 +608,10 @@ class LoanDetailsView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SelectBank(
-                onCardSelected: (){},
+                  onCardSelected: () {},
                   color: AppColors.primaryColorLight.withOpacity(0.25),
-                  bankName: 'United Bank for Africa',
-                  bankNumber: '2139872309'),
+                  bankName: userSubscribedLoan.bank.bank.name,
+                  bankNumber: userSubscribedLoan.bank.accountNo),
               Container(
                 height: 72,
                 width: context.widthPx,
@@ -565,7 +645,7 @@ class LoanDetailsView extends StatelessWidget {
                         children: [
                           // name
                           Text(
-                            'John Doe',
+                            userSubscribedLoan.card.name,
                             style: TextStyles.smallTextDark14Px,
                           ),
 
@@ -574,10 +654,10 @@ class LoanDetailsView extends StatelessWidget {
                           ),
 
                           // bank num
-                          const Text(
-                            '• • • •     • • • •    • • • •    5318',
+                          Text(
+                            '• • • •     • • • •    • • • •    ${userSubscribedLoan.card.panLast4}',
                             // style: TextStyles.smallTextGrey,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 wordSpacing: 0,
                                 color: AppColors.grey500,
                                 fontWeight: FontWeight.w600),
@@ -595,4 +675,3 @@ class LoanDetailsView extends StatelessWidget {
     );
   }
 }
-

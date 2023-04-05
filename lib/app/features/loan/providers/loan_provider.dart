@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import '../model/params/add_card_params.dart';
 import '../model/responses/banks_response.dart' as bank;
 import '../model/responses/my_banks_response.dart';
+import '../model/responses/user_subscribed_loan_response.dart';
 
 class LoanProvider extends BaseProvider {
   final LoansRepository _loansRepository;
@@ -37,6 +38,11 @@ class LoanProvider extends BaseProvider {
           MyBanksResponse(mybanks: List<MyBank>.empty()));
 
   MyBanksResponse? get myBanksResponse => _myBanksResponse.value;
+
+  UserSubscribedLoanResponse? _userSubscribedLoanResponse;
+
+  UserSubscribedLoanResponse? get userSubscribedLoanResponse =>
+      _userSubscribedLoanResponse;
 
   BankParams? _bankParams;
 
@@ -252,6 +258,20 @@ class LoanProvider extends BaseProvider {
       updateErrorMsgState(onError.message ?? ' Could not Verify bank');
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
+    });
+  }
+
+  Future<void> getUserSubscribedLoan(String loanId) async {
+    updateLoadingState(LoadingState.busy);
+
+    final repsonse = await _loansRepository.getSubscribedLoan(loanId);
+
+    repsonse.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? ' Could not your subscribed loan');
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
+      _userSubscribedLoanResponse = onSuccess;
     });
   }
 }

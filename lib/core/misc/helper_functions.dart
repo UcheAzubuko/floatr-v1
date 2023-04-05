@@ -22,6 +22,8 @@ String formatAmount(String amount) {
   return priceInText.trim();
 }
 
+int percent({required int percentage, required int amount}) => ((percentage / 100) * amount).toInt();
+
 String get periodOfDay {
   final dateTime = DateTime.now();
 

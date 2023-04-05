@@ -16,6 +16,7 @@ import '../../../../../core/data/services/api_service.dart';
 import '../../../../../core/errors/failure.dart';
 import '../../model/params/add_card_params.dart';
 import '../../model/responses/banks_response.dart';
+import '../../model/responses/user_subscribed_loan_response.dart';
 
 class LoansRepository {
   final SharedPreferences _sharedPreferences;
@@ -227,6 +228,25 @@ class LoansRepository {
         headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
       );
       return Right(jsonDecode(response.body));
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    }
+  }
+
+  Future<Either<Failure, UserSubscribedLoanResponse>> getSubscribedLoan(String loanId) async {
+    final url = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.userSubscribedLoan(loanId),
+    );
+
+    try {
+      String? accessToken =
+          _sharedPreferences.getString(StorageKeys.accessTokenKey);
+      final response = await _apiService.get(
+        url: url,
+        headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
+      );
+      return Right(UserSubscribedLoanResponse.fromJson(jsonDecode(response.body)));
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }

@@ -717,7 +717,7 @@ class IneligibleLenderView extends StatelessWidget {
               color: Colors.white,
               fontWeight: FontWeight.w700,
             ),
-          )
+          ),
         ],
       ],
     );

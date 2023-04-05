@@ -16,6 +16,7 @@ class APIConfigs {
   static const loginPath = '/v1/auth/login';
   static const loans = '/v1/loans';
   static const userLoans = '/v1/users/me/loans';
+  static userSubscribedLoan(String loanId) => '/v1/users/me/loans/application/$loanId';
   static const maritalStatusPath = '/v1/marital-status';
   static const nextOfKinPath = '/v1/users/me/next-of-kin';
   static const passwordPath = '/v1/users/me/password';
