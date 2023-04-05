@@ -28,17 +28,23 @@ class _BottomNavigationState extends State<BottomNavigation> {
   @override
   Widget build(BuildContext context) {
     final loan = context.read<LoanProvider>();
+    final user = context.read<AuthenticationProvider>().user;
+    final isUserEligible =
+        !(user!.loan!.hasPendingApplication! || user.loan!.hasSettlingLoan!);
     Widget getViewForIndex(int index) {
       switch (index) {
         case 0:
           return const DashboardScreen();
         case 1:
-          return  SingleChildScrollView(
+          return SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 60),
-              child: EligibleLenderView(
-                loan: loan.loansResponse!.loans[0],
-              ),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 60),
+              child: isUserEligible
+                  ? EligibleLenderView(
+                      loan: loan.loansResponse!.loans[0],
+                    )
+                  : const IneligibleLenderView(),
             ),
           );
         case 2:
@@ -180,31 +186,31 @@ class BottomNavCardView extends StatelessWidget {
                 height: 30,
                 fit: BoxFit.fill,
               ),
-    
+
               Text(
                 'floatr',
                 style: TextStyles.normalTextDarkF800,
               ),
-    
+
               // tit;
             ],
           ).paddingOnly(left: 15),
-    
+
           // title
           Text(
             'My Cards',
             style: TextStyles.largeTextDark,
           ).paddingOnly(left: 15),
-    
+
           const VerticalSpace(
             size: 9,
           ),
-    
+
           Text(
             'Choose your default card and make changes\nto your card.',
             style: TextStyles.smallTextGrey14Px,
           ).paddingOnly(left: 15),
-    
+
           const CardView().paddingSymmetric(horizontal: 5),
 
           const VerticalSpace(

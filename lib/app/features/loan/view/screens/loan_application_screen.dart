@@ -23,6 +23,7 @@ import '../../../../../core/misc/dependency_injectors.dart';
 import '../../../../../core/route/navigation_service.dart';
 import '../../../../widgets/custom_appbar.dart';
 import '../../../../widgets/prompt_widget.dart';
+import '../../../authentication/providers/authentication_provider.dart';
 
 class LoanApplicationScreen extends StatelessWidget {
   const LoanApplicationScreen({
@@ -265,7 +266,8 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
               child: Slider(
                 value: amount,
                 min: double.parse(doubleStringToIntString(loan.minAmount)!),
-                max: double.parse(doubleStringToIntString(loan.maxAmount.toString())!),
+                max: double.parse(
+                    doubleStringToIntString(loan.maxAmount.toString())!),
                 divisions: 10,
                 label: amount.toString(),
                 activeColor: AppColors.primaryColor,
@@ -451,7 +453,6 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                       height: 30,
                       borderRadius: 8,
                       onPressed: () {
-
                         // update loan params
                         _requestLoanParams.amount = amount.toInt().toString();
                         _requestLoanParams.tenureInWeeks = loanTerm.toString();
@@ -617,29 +618,55 @@ class IneligibleLenderView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.read<AuthenticationProvider>().user;
+    final userAppliedForLoan =
+        !(user!.loan!.hasPendingApplication! || user.loan!.hasSettlingLoan!);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const VerticalSpace(
           size: 55,
         ),
+
         // prompt
-        PromptWidget(
-          row: Row(
-            children: [
-              SvgPicture.asset(SvgAppIcons.icCaution),
-              const HorizontalSpace(
-                size: 8,
-              ),
-              const Text(
-                'Update your profile to unlock all features!',
-                style: TextStyle(
-                  color: AppColors.primaryColor,
+        if (userAppliedForLoan) ...[
+          // user has not completed profile
+          PromptWidget(
+            row: Row(
+              children: [
+                SvgPicture.asset(SvgAppIcons.icCaution),
+                const HorizontalSpace(
+                  size: 8,
                 ),
-              ),
-            ],
+                const Text(
+                  'Update your profile to unlock all features!',
+                  style: TextStyle(
+                    color: AppColors.primaryColor,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+        ] else ...[
+          // user applied for loan
+          PromptWidget(
+            row: Row(
+              children: [
+                SvgPicture.asset(SvgAppIcons.icCaution),
+                const HorizontalSpace(
+                  size: 8,
+                ),
+                const Text(
+                  'You have already applied for a loan!',
+                  style: TextStyle(
+                    color: AppColors.primaryColor,
+                  ),
+                ),
+              ],
+            ),
+          ).paddingOnly(bottom: 40),
+        ],
 
         const VerticalSpace(
           size: 78,
@@ -669,27 +696,29 @@ class IneligibleLenderView extends StatelessWidget {
           size: 17,
         ),
 
-        // comple profile text
-        Text(
-          '''To apply for a loan, you need to complete \n                                        your profile.''',
-          style: TextStyles.smallTextGrey,
-        ),
-
-        const VerticalSpace(
-          size: 73,
-        ),
-
-        // bottom
-        GeneralButton(
-          height: 42,
-          onPressed: () {},
-          borderRadius: 8,
-          child: const AppText(
-            text: 'UPDATE PROFILE',
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
+        if (userAppliedForLoan) ...[
+          // comple profile text
+          Text(
+            '''To apply for a loan, you need to complete \n                                        your profile.''',
+            style: TextStyles.smallTextGrey,
           ),
-        )
+
+          const VerticalSpace(
+            size: 73,
+          ),
+
+          // bottom
+          GeneralButton(
+            height: 42,
+            onPressed: () {},
+            borderRadius: 8,
+            child: const AppText(
+              text: 'UPDATE PROFILE',
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          )
+        ],
       ],
     );
   }
