@@ -348,18 +348,21 @@ class Loan {
     this.hasActiveApplication,
     this.hasPendingApplication,
     this.hasSettlingLoan,
+    this.pendingLoanApplicationId,
   });
 
   final bool? hasActiveApplication;
   final bool? hasSettlingLoan;
   final bool? hasPendingApplication;
+  final String? pendingLoanApplicationId;
 
   factory Loan.fromRawJson(String str) => Loan.fromJson(json.decode(str));
 
   factory Loan.fromJson(Map<String, dynamic> json) => Loan(
       hasPendingApplication: json["hasPendingApplication"],
       hasActiveApplication: json["hasActiveApplication"],
-      hasSettlingLoan: json["hasSettlingLoan"]);
+      hasSettlingLoan: json["hasSettlingLoan"],
+      pendingLoanApplicationId: json["pendingLoanApplicationId"]);
 }
 
 class Photo {

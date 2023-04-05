@@ -16,11 +16,13 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
+import '../../../../core/misc/helper_functions.dart';
 import '../../../../core/route/route_names.dart';
 import '../../../widgets/prompt_widget.dart';
 import 'widgets/data_completion_widget.dart';
 import 'widgets/highlights_card.dart';
 import 'widgets/options_card.dart';
+import 'widgets/pending_loan_application_card.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -30,17 +32,6 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  final _dateTime = DateTime.now();
-
-  String get _periodOfDay {
-    if (_dateTime.hour >= 16 && _dateTime.hour <= 23) {
-      return 'GOOD EVENING';
-    } else if (_dateTime.hour >= 12 && _dateTime.hour <= 15) {
-      return 'GOOD AFTERNOON';
-    }
-    return 'GOOD MORNING';
-  }
-
   @override
   void initState() {
     super.initState();
@@ -79,7 +70,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               const HorizontalSpace(
                                 size: 10,
                               ),
-                              Text(_periodOfDay,
+                              Text(periodOfDay,
                                   style: TextStyles.smallTextPrimary)
                             ],
                           ),
@@ -96,8 +87,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                       // profile pic
                       InkWell(
-                        onTap: () => UserHelper(user: user).isFullyOnboarded ?
-                            navigationService.navigateTo(RouteName.profile) : (){},
+                        onTap: () => UserHelper(user: user).isFullyOnboarded
+                            ? navigationService.navigateTo(RouteName.profile)
+                            : () {},
                         child: CircleAvatar(
                           radius: 23,
                           backgroundImage: NetworkImage(user.photo!.url!),
@@ -137,14 +129,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-
-                          if(user.loan!.hasSettlingLoan!)...[
+                          if (user.loan!.hasSettlingLoan!) ...[
                             const DebtCard()
+                          ] else if (user.loan!.hasPendingApplication!) ...[
+                            const PendingLoanApplicationCard(),
                           ] else ...[
                             const HighlightsCard(),
                           ],
-                          //  else if()...[]
-                          
+                         
+
                           const VerticalSpace(size: 40),
 
                           // dashboard options
@@ -191,15 +184,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
 
                           Consumer<DashboardProvider>(
-                              builder: (context, provider, _) {
-                                return SizedBox(
-                                  height: 256,
-                                  width: context.widthPx,
-                                  child: _showActitvity(provider),
-                                );
-                              },
-                            ),
-                          
+                            builder: (context, provider, _) {
+                              return SizedBox(
+                                height: 256,
+                                width: context.widthPx,
+                                child: _showActitvity(provider),
+                              );
+                            },
+                          ),
                         ],
                       ),
 
@@ -231,7 +223,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           );
         }
       }
-    } 
+    }
     return const Center(
       child: Text('Could not get activities'),
     );
