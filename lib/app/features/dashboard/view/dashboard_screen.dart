@@ -18,7 +18,9 @@ import 'package:provider/provider.dart';
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/misc/helper_functions.dart';
 import '../../../../core/route/route_names.dart';
+import '../../../widgets/pageview_toggler.dart';
 import '../../../widgets/prompt_widget.dart';
+import '../../profile/view/screens/profile_views/cards_banks_screen.dart';
 import 'widgets/data_completion_widget.dart';
 import 'widgets/highlights_card.dart';
 import 'widgets/options_card.dart';
@@ -136,7 +138,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ] else ...[
                             const HighlightsCard(),
                           ],
-                         
 
                           const VerticalSpace(size: 40),
 
@@ -145,22 +146,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             width: context.widthPx,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: const [
+                              children: [
                                 OptionsCard(
                                   itemName: 'Banks',
                                   assetPath: 'assets/icons/fill/bank-icon.svg',
+                                  onPressed: () => navigationService.navigateTo(
+                                      RouteName.cardsBanks,
+                                      arguments: CardsBanksArguments(
+                                        bottomScreenName: 'Dashboard',
+                                          togglePosition:
+                                              TogglePosition.right)),
                                 ),
                                 OptionsCard(
-                                  itemName: 'Cards',
-                                  assetPath:
-                                      'assets/icons/fill/credit-card.svg',
-                                ),
-                                OptionsCard(
+                                    itemName: 'Cards',
+                                    assetPath:
+                                        'assets/icons/fill/credit-card.svg',
+                                    onPressed: () => navigationService
+                                        .navigateTo(RouteName.cardsBanks,
+                                            arguments: CardsBanksArguments(
+                                              bottomScreenName: 'Dashboard',
+                                                togglePosition:
+                                                    TogglePosition.left))),
+                                const OptionsCard(
                                   itemName: 'Schedule',
                                   assetPath:
                                       'assets/icons/fill/time-schedule.svg',
                                 ),
-                                OptionsCard(
+                                const OptionsCard(
                                   itemName: 'More',
                                   assetPath: 'assets/icons/fill/more-icon.svg',
                                 ),

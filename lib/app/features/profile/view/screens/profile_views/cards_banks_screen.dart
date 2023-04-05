@@ -30,9 +30,11 @@ class CardsBanksScreen extends StatelessWidget {
   const CardsBanksScreen({
     super.key,
     required this.togglePosition,
+    required this.bottomScreenName,
   });
 
   final TogglePosition togglePosition;
+  final String bottomScreenName;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +57,8 @@ class CardsBanksScreen extends StatelessWidget {
 }
 
 class CardsBanksArguments {
-  CardsBanksArguments({required this.togglePosition});
+  CardsBanksArguments({required this.togglePosition, required this.bottomScreenName});
+  final String bottomScreenName;
   final TogglePosition togglePosition;
 }
 

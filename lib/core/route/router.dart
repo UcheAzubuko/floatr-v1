@@ -56,6 +56,7 @@ class Router {
         final args = settings.arguments as CardsBanksArguments;
         return slidePageTransition(CardsBanksScreen(
           togglePosition: args.togglePosition,
+          bottomScreenName: args.bottomScreenName,
         ));
       case RouteName.selectBankScreen:
         return slidePageTransition(const SelectBankScreen());

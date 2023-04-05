@@ -650,6 +650,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onTap: () => navigationService.navigateTo(
                             RouteName.cardsBanks,
                             arguments: CardsBanksArguments(
+                              bottomScreenName: 'Profile',
                                 togglePosition: TogglePosition.left)),
                       ),
 
@@ -672,6 +673,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onTap: () => navigationService.navigateTo(
                             RouteName.cardsBanks,
                             arguments: CardsBanksArguments(
+                              bottomScreenName: 'Profile',
                                 togglePosition: TogglePosition.right)),
                       ),
                     ],
