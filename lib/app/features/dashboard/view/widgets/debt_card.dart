@@ -2,20 +2,50 @@ import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../../core/utils/app_colors.dart';
 import '../../../../../core/utils/app_style.dart';
 import '../../../../../core/utils/images.dart';
 import '../../../../../core/utils/spacing.dart';
+import '../../../authentication/providers/authentication_provider.dart';
+import '../../../loan/providers/loan_provider.dart';
 import 'due_debt_info_card.dart';
 
-class DebtCard extends StatelessWidget {
+class DebtCard extends StatefulWidget {
   const DebtCard({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<DebtCard> createState() => _DebtCardState();
+}
+
+class _DebtCardState extends State<DebtCard> {
+  
+  @override
+  void initState() {
+    final loanId = context
+        .read<AuthenticationProvider>()
+        .user!
+        .loan!
+        .pendingLoanApplicationId;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      context.read<LoanProvider>().getUserSubscribedLoan(loanId!);
+    });
+
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
+    final userSubscribedLoan =
+        context.read<LoanProvider>().userSubscribedLoanResponse;
+
+    Duration difference = userSubscribedLoan!.dueDate.difference(DateTime.now());
+    int differenceInDays = difference.inDays < 0 ? 0 : difference.inDays;
+
+
     return Container(
       height: 416,
       // color: AppColors.primaryColor,
@@ -45,7 +75,7 @@ class DebtCard extends StatelessWidget {
                       CircularPercentIndicator(
                         radius: 110.0,
                         backgroundColor: Colors.white,
-                        percent: .7,
+                        percent: (userSubscribedLoan.minTenureInDays - differenceInDays) / userSubscribedLoan.minTenureInDays,
                         lineWidth: 10,
                         backgroundWidth: 15,
                         progressColor: AppColors.primaryColor,
@@ -73,7 +103,7 @@ class DebtCard extends StatelessWidget {
                                 style: TextStyles.largeTextDark,
                                 children: <TextSpan>[
                                   TextSpan(
-                                      text: ' 10 days',
+                                      text: ' $differenceInDays days',
                                       style: TextStyles.largeTextPrimary),
                                   // TextSpan(text: ' world!'),
                                 ],

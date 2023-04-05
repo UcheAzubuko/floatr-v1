@@ -372,13 +372,15 @@ class LoanScheduleView extends StatelessWidget {
     DateFormat dateFormat = DateFormat('dd MMM yy');
 
     int weeks = (userSubscribedLoan!.maxTenureInDays / 7).floor();
+    Duration difference = userSubscribedLoan.dueDate.difference(DateTime.now());
+    int differenceInDays = difference.inDays < 0 ? 0 : difference.inDays;
 
     return Column(
       children: [
         CircularPercentIndicator(
           radius: 110.0,
           backgroundColor: Colors.white,
-          percent: .7,
+          percent:  (userSubscribedLoan.minTenureInDays - differenceInDays) / userSubscribedLoan.minTenureInDays,
           lineWidth: 10,
           backgroundWidth: 15,
           progressColor: AppColors.primaryColor,
@@ -406,7 +408,7 @@ class LoanScheduleView extends StatelessWidget {
                   style: TextStyles.largeTextDark,
                   children: <TextSpan>[
                     TextSpan(
-                        text: ' 10 days', style: TextStyles.largeTextPrimary),
+                        text: ' $differenceInDays days', style: TextStyles.largeTextPrimary),
                     // TextSpan(text: ' world!'),
                   ],
                 ),
