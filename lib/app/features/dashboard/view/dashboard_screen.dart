@@ -13,6 +13,7 @@ import 'package:floatr/core/utils/app_style.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
@@ -167,14 +168,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                               bottomScreenName: 'Dashboard',
                                                 togglePosition:
                                                     TogglePosition.left))),
-                                const OptionsCard(
+                                 OptionsCard(
                                   itemName: 'Schedule',
                                   assetPath:
                                       'assets/icons/fill/time-schedule.svg',
+                                      onPressed: () => Fluttertoast.showToast(msg: "Coming soon!"),
                                 ),
-                                const OptionsCard(
+                                 OptionsCard(
                                   itemName: 'More',
                                   assetPath: 'assets/icons/fill/more-icon.svg',
+                                  onPressed: () => Fluttertoast.showToast(msg: "Coming soon!"),
                                 ),
                               ],
                             ),
