@@ -59,25 +59,28 @@ class _DebtCardState extends State<DebtCard> {
             );
 
           case LoadingState.error:
-            return Center(
-              child: Row(
-                children: [
-                  const AppText(
-                    text: 'Could not get your loan!',
-                    color: AppColors.black,
-                    fontWeight: FontWeight.w600,
-                    size: 10,
-                  ),
-                  InkWell(
-                    onTap: () => loanProvider.getUserSubscribedLoan(loanId!),
-                    child: const AppText(
-                      text: ' Please try again.',
-                      color: AppColors.primaryColor,
+            return SizedBox(
+               height: 416,
+              child: Center(
+                child: Row(
+                  children: [
+                    const AppText(
+                      text: 'Could not get your loan!',
+                      color: AppColors.black,
                       fontWeight: FontWeight.w600,
                       size: 10,
                     ),
-                  ),
-                ],
+                    InkWell(
+                      onTap: () => loanProvider.getUserSubscribedLoan(loanId!),
+                      child: const AppText(
+                        text: ' Please try again.',
+                        color: AppColors.primaryColor,
+                        fontWeight: FontWeight.w600,
+                        size: 10,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
 
