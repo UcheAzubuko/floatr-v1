@@ -5,13 +5,17 @@ import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../../core/misc/dependency_injectors.dart';
+import '../../../../../core/misc/helper_functions.dart';
 import '../../../../../core/utils/app_colors.dart';
 import '../../../../../core/utils/app_style.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../../widgets/app_text.dart';
 import '../../../../widgets/general_button.dart';
+import '../../../loan/providers/loan_provider.dart';
 
 class DueDebtInfoCard extends StatelessWidget {
   const DueDebtInfoCard({
@@ -20,7 +24,13 @@ class DueDebtInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final userSubscribedLoan =
+        context.read<LoanProvider>().userSubscribedLoanResponse;
+        
     NavigationService navigationService = di<NavigationService>();
+
+    DateFormat dateFormat = DateFormat('dd MMM yyyy');
     return Container(
       height: 144,
       width: 288,
@@ -57,7 +67,7 @@ class DueDebtInfoCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          '₦10,000',
+                          '₦${formatAmount(doubleStringToIntString(userSubscribedLoan!.amount)!)}',
                           style: TextStyles.normalTextDarkF600,
                         ).paddingOnly(right: 6),
                         Container(
@@ -109,7 +119,7 @@ class DueDebtInfoCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          '11 Oct 2022',
+                          dateFormat.format(userSubscribedLoan.dueDate),
                           style: TextStyles.normalTextDarkF600,
                         ),
                       ],

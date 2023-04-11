@@ -269,6 +269,7 @@ class LoanProvider extends BaseProvider {
     repsonse.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? ' Could not your subscribed loan');
+      updateLoadingState(LoadingState.loaded);
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
       _userSubscribedLoanResponse = onSuccess;

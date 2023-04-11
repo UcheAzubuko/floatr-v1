@@ -5,12 +5,15 @@ import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:monnify_payment_sdk/monnify_payment_sdk.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/misc/helper_functions.dart';
 import '../../../../core/route/navigation_service.dart';
+import '../../../../core/secrets.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_style.dart';
 import '../../../../core/utils/images.dart';
@@ -62,191 +65,89 @@ class DashboardLoanDetailsArguments {
   DashboardLoanDetailsArguments({required this.dashboardLoanView});
 }
 
-class DashboardLoanDueTime extends StatelessWidget {
+class DashboardLoanDueTime extends StatefulWidget {
   const DashboardLoanDueTime({Key? key}) : super(key: key);
 
   @override
+  State<DashboardLoanDueTime> createState() => _DashboardLoanDueTimeState();
+}
+
+class _DashboardLoanDueTimeState extends State<DashboardLoanDueTime> {
+  late Monnify? monnify;
+  DateFormat dateFormat = DateFormat('MMM/yyyy');
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _initMonnify();
+    });
+
+    super.initState();
+  }
+
+  _initMonnify() async {
+    monnify = await Monnify.initialize(
+      applicationMode: ApplicationMode.LIVE,
+      apiKey: monnifyAPILiveKey,
+      contractCode: contractKey,
+    );
+  }
+
+  void onInitializePayment() async {
+    final paymentReference = DateTime.now().millisecondsSinceEpoch.toString();
+    final user = context.read<AuthenticationProvider>().user;
+    final loan = context.read<LoanProvider>();
+
+    // Initia
+    final transaction = TransactionDetails().copyWith(
+      amount: double.parse(loan.userSubscribedLoanResponse!.totalPayBackAmount),
+      currencyCode: 'NGN',
+      customerName: '${user!.firstName} ${user.lastName}',
+      customerEmail: user.email,
+      paymentReference: paymentReference,
+      paymentMethods: [
+        PaymentMethod.CARD,
+        PaymentMethod.ACCOUNT_TRANSFER,
+        PaymentMethod.USSD,
+        PaymentMethod.PHONE_NUMBER
+      ],
+      metaData: {
+        'floatrUserUniqueId': user.uniqueId!,
+        'floatrUserName': '${user.firstName} ${user.lastName}',
+        'date': DateTime.now().toIso8601String(),
+        'reason': 'add_user_card',
+      },
+    );
+
+    try {
+      final response =
+          await monnify?.initializePayment(transaction: transaction);
+
+      Fluttertoast.showToast(msg: response.toString());
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    NavigationService navigationService = di<NavigationService>();
+    // NavigationService navigationService = di<NavigationService>();
     return Column(
       children: [
         const VerticalSpace(
           size: 20,
         ),
-        CircularPercentIndicator(
-          radius: 110.0,
-          backgroundColor: Colors.white,
-          percent: .7,
-          lineWidth: 10,
-          backgroundWidth: 15,
-          progressColor: AppColors.primaryColor,
-          fillColor: Colors.transparent,
-          circularStrokeCap: CircularStrokeCap.round,
-          arcBackgroundColor: AppColors.grey.withOpacity(0.4),
-          arcType: ArcType.CUSTOM,
-          center: Column(
-            children: [
-              const VerticalSpace(size: 48),
-              SvgPicture.asset(
-                "assets/images/main-logo.svg",
-                height: 24,
-                // fit: BoxFit.cover,
-              ),
-              const VerticalSpace(size: 10),
-              Text(
-                'Your next payment is due',
-                style: TextStyles.smallTextDark,
-              ),
-              const VerticalSpace(size: 7),
-              RichText(
-                text: TextSpan(
-                  text: 'in',
-                  style: TextStyles.largeTextDark,
-                  children: <TextSpan>[
-                    TextSpan(
-                        text: ' 10 days', style: TextStyles.largeTextPrimary),
-                    // TextSpan(text: ' world!'),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Text(
-          'Loan Details',
-          style: TextStyles.normalTextDarkF600,
-        ),
-        const VerticalSpace(
-          size: 5,
-        ),
-        Text(
-          'Details of existing loan',
-          style: TextStyles.smallTextGrey,
-        ),
-
-        const VerticalSpace(
-          size: 15,
-        ),
-
-        // loan info box A
-        Container(
-          height: 184,
-          width: context.widthPx,
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: AppColors.lightGrey1),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              // principal
-              LoanSummaryRow(
-                itemTitle: 'Principal',
-                itemData: '₦20,000',
-              ),
-
-              //interest
-              LoanSummaryRow(
-                itemTitle: 'Interest',
-                itemData: '₦1000 (5%)',
-              ),
-
-              //platform
-              LoanSummaryRow(
-                itemTitle: 'Platform Fee',
-                itemData: '₦4000 (20%)',
-              ),
-
-              // payback amount
-              LoanSummaryRow(
-                itemTitle: 'Payback Amount',
-                itemData: '₦25,000',
-              ),
-            ],
-          ),
-        ),
-
-        // loan info box B
-        const VerticalSpace(
-          size: 18,
-        ),
-
-        // loan info box B
-        Container(
-          height: 144,
-          width: context.widthPx,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: AppColors.lightGrey1),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              // loan tenure
-              LoanSummaryRow(
-                itemTitle: 'Loan Tenure',
-                itemData: '2 Weeks',
-              ),
-
-              //No of Payments
-              LoanSummaryRow(
-                itemTitle: 'No of Payments',
-                itemData: '2 * ₦12,500 (Weekly)',
-              ),
-
-              //next payment
-              LoanSummaryRow(
-                itemTitle: 'Next Payment',
-                itemData: '21 Dec 22',
-              ),
-            ],
-          ),
-        ),
-
-        const VerticalSpace(
-          size: 18,
-        ),
-
-        Container(
-          height: 144,
-          width: context.widthPx,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: AppColors.lightGrey1),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              // loan tenure
-              LoanSummaryRow(
-                itemTitle: 'Loan Tenure',
-                itemData: '2 Weeks',
-              ),
-
-              //No of Payments
-              LoanSummaryRow(
-                itemTitle: 'No of Payments',
-                itemData: '2 * ₦12,500 (Weekly)',
-              ),
-
-              //next payment
-              LoanSummaryRow(
-                itemTitle: 'Next Payment',
-                itemData: '21 Dec 22',
-              ),
-            ],
-          ),
-        ),
-
+        const LoanScheduleView(),
         const VerticalSpace(
           size: 30,
         ),
         GeneralButton(
           height: 42,
-          onPressed: () => navigationService.navigateTo(
-              RouteName.dashboardLoanDueTime,
-              arguments: DashboardLoanDetailsArguments(
-                  dashboardLoanView: DashboardLoanView.loanDetailSchedule)),
+          onPressed: () => onInitializePayment(),
+          // onPressed: () => navigationService.navigateTo(
+          //     RouteName.dashboardLoanDueTime,
+          //     arguments: DashboardLoanDetailsArguments(
+          //         dashboardLoanView: DashboardLoanView.loanDetailSchedule)),
           borderRadius: 8,
           child: const AppText(
             text: 'REPAY LOAN',
@@ -276,11 +177,10 @@ class _DashboardLoanDetailScheduleState
 
   @override
   void initState() {
-    final loanId = context
-        .read<AuthenticationProvider>()
-        .user!
-        .loan!
-        .pendingLoanApplicationId;
+    final loan = context.read<AuthenticationProvider>().user!.loan!;
+
+    final loanId =
+        loan.pendingLoanApplicationId ?? loan.settlingLoanApplicationId;
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       context.read<LoanProvider>().getUserSubscribedLoan(loanId!);
@@ -293,11 +193,11 @@ class _DashboardLoanDetailScheduleState
   Widget build(BuildContext context) {
     return Consumer<LoanProvider>(
       builder: (context, loanProvider, _) {
-        final loanId = context
-            .read<AuthenticationProvider>()
-            .user!
-            .loan!
-            .pendingLoanApplicationId;
+        final loan = context.read<AuthenticationProvider>().user!.loan!;
+
+        final loanId =
+            loan.pendingLoanApplicationId ?? loan.settlingLoanApplicationId;
+
         switch (loanProvider.loadingState) {
           case LoadingState.busy:
             return const Center(
@@ -312,15 +212,15 @@ class _DashboardLoanDetailScheduleState
                     text: 'Could not get your loan!',
                     color: AppColors.black,
                     fontWeight: FontWeight.w600,
-                    size: 20,
+                    size: 15,
                   ),
                   InkWell(
                     onTap: () => loanProvider.getUserSubscribedLoan(loanId!),
                     child: const AppText(
-                      text: 'Reload',
+                      text: ' Please try again.',
                       color: AppColors.primaryColor,
                       fontWeight: FontWeight.w600,
-                      size: 20,
+                      size: 15,
                     ),
                   ),
                 ],
@@ -328,6 +228,34 @@ class _DashboardLoanDetailScheduleState
             );
 
           case LoadingState.loaded:
+            if (loanProvider.userSubscribedLoanResponse == null) {
+              return SizedBox(
+                height: context.heightPx * 0.7,
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const AppText(
+                        text: 'Could not get your loan!',
+                        color: AppColors.black,
+                        fontWeight: FontWeight.w600,
+                        size: 12,
+                      ),
+                      InkWell(
+                        onTap: () =>
+                            loanProvider.getUserSubscribedLoan(loanId!),
+                        child: const AppText(
+                          text: ' Please try again.',
+                          color: AppColors.primaryColor,
+                          fontWeight: FontWeight.w600,
+                          size: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
             return Column(
               children: [
                 InkWell(
@@ -380,7 +308,8 @@ class LoanScheduleView extends StatelessWidget {
         CircularPercentIndicator(
           radius: 110.0,
           backgroundColor: Colors.white,
-          percent:  (userSubscribedLoan.minTenureInDays - differenceInDays) / userSubscribedLoan.minTenureInDays,
+          percent: (userSubscribedLoan.minTenureInDays - differenceInDays) /
+              userSubscribedLoan.minTenureInDays,
           lineWidth: 10,
           backgroundWidth: 15,
           progressColor: AppColors.primaryColor,
@@ -408,7 +337,8 @@ class LoanScheduleView extends StatelessWidget {
                   style: TextStyles.largeTextDark,
                   children: <TextSpan>[
                     TextSpan(
-                        text: ' $differenceInDays days', style: TextStyles.largeTextPrimary),
+                        text: ' $differenceInDays days',
+                        style: TextStyles.largeTextPrimary),
                     // TextSpan(text: ' world!'),
                   ],
                 ),
@@ -489,9 +419,9 @@ class LoanScheduleView extends StatelessWidget {
               ),
 
               //next payment
-              const LoanSummaryRow(
+              LoanSummaryRow(
                 itemTitle: 'Next Payment',
-                itemData: '21 Dec 22',
+                itemData: dateFormat.format(userSubscribedLoan.dueDate),
               ),
             ],
           ),
@@ -551,6 +481,7 @@ class LoanDetailsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final userSubscribedLoan =
         context.read<LoanProvider>().userSubscribedLoanResponse;
+
     return Column(
       children: [
         // loan info box A
