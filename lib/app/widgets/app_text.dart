@@ -34,7 +34,7 @@ class AppText extends StatelessWidget {
         fontSize: size,
         fontWeight: fontWeight,
         letterSpacing: letterSpacing,
-        textStyle: Theme.of(context).textTheme.bodyText1,
+        textStyle: Theme.of(context).textTheme.bodyLarge,
       ),
     );
   }

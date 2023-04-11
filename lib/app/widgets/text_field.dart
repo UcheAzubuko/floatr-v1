@@ -65,7 +65,7 @@ class AppTextField extends StatelessWidget {
           color: AppColors.grey,
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          textStyle: Theme.of(context).textTheme.bodyText1,
+          textStyle: Theme.of(context).textTheme.bodyLarge,
         ),
 
         // const TextStyle(

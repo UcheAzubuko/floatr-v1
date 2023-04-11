@@ -210,7 +210,6 @@ class LoanProvider extends BaseProvider {
     repsonse.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? 'Could not complete request');
-      print(onError.message);
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
       getMyCards();
@@ -225,7 +224,6 @@ class LoanProvider extends BaseProvider {
     repsonse.fold((onError) {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? ' Could not add card');
-      print(onError.message);
     }, (onSuccess) {
       getMyCards();
 

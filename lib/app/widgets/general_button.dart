@@ -44,7 +44,7 @@ class GeneralButton extends StatelessWidget {
         color: buttonTextColor,
         fontSize: context.widthPx * 0.045,
         fontWeight: FontWeight.w700,
-        textStyle: Theme.of(context).textTheme.bodyText1,
+        textStyle: Theme.of(context).textTheme.bodyLarge,
       ),
       shape: RoundedRectangleBorder(
         side: BorderSide(color: borderColor),

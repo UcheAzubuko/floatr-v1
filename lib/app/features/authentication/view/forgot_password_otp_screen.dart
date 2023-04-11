@@ -134,7 +134,7 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
                           color: AppColors.black,
                           fontSize: context.widthPx * 0.075,
                           fontWeight: FontWeight.w600,
-                          textStyle: Theme.of(context).textTheme.bodyText1,
+                          textStyle: Theme.of(context).textTheme.bodyLarge,
                         ),
                         onChanged: (str) {
                           if (str.length == 4) {

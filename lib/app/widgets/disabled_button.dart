@@ -33,7 +33,7 @@ class DisabledButton extends StatelessWidget {
       foregroundColor: foregroundColor,
       backgroundColor: backgroundColor,
       textStyle: GoogleFonts.plusJakartaSans(
-        textStyle: Theme.of(context).textTheme.bodyText1,
+        textStyle: Theme.of(context).textTheme.bodyLarge,
         color: buttonTextColor,
         fontSize: context.widthPx * 0.045,
         fontWeight: FontWeight.w700,
