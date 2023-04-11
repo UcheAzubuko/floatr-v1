@@ -67,7 +67,7 @@ class DueDebtInfoCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          '₦${formatAmount(doubleStringToIntString(userSubscribedLoan!.amount)!)}',
+                          '₦${formatAmount(doubleStringToIntString(userSubscribedLoan!.totalPayBackAmount)!)}',
                           style: TextStyles.normalTextDarkF600,
                         ).paddingOnly(right: 6),
                         Container(
