@@ -4,6 +4,7 @@ import 'package:floatr/app/features/loan/data/repositories/loans_repository.dart
 import 'package:floatr/app/features/loan/model/params/request_loan_params.dart';
 import 'package:floatr/app/features/loan/model/params/verify_bank_params.dart';
 import 'package:floatr/app/features/loan/model/responses/card_response.dart';
+import 'package:floatr/app/features/loan/model/responses/loan_balance_response.dart';
 import 'package:floatr/app/features/loan/model/responses/loans_response.dart';
 import 'package:floatr/app/features/loan/model/responses/verify_bank_response.dart';
 import 'package:floatr/core/providers/base_provider.dart';
@@ -43,6 +44,10 @@ class LoanProvider extends BaseProvider {
 
   UserSubscribedLoanResponse? get userSubscribedLoanResponse =>
       _userSubscribedLoanResponse;
+
+  LoanBalanceResponse? _loanBalanceReponse;
+
+  LoanBalanceResponse? get loanBalanceResponse => _loanBalanceReponse;
 
   BankParams? _bankParams;
 
@@ -266,11 +271,26 @@ class LoanProvider extends BaseProvider {
 
     repsonse.fold((onError) {
       updateLoadingState(LoadingState.error);
-      updateErrorMsgState(onError.message ?? ' Could not your subscribed loan');
+      updateErrorMsgState(onError.message ?? ' Could not get your subscribed loan');
       updateLoadingState(LoadingState.loaded);
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
       _userSubscribedLoanResponse = onSuccess;
+    });
+  }
+
+  Future<void> getLoanBalance(String loanId) async {
+    updateLoadingState(LoadingState.busy);
+
+    final repsonse = await _loansRepository.getLoanBalance(loanId);
+
+    repsonse.fold((onError) {
+      updateLoadingState(LoadingState.error);
+      updateErrorMsgState(onError.message ?? ' Could not get your loan balance');
+      
+    }, (onSuccess) {
+      updateLoadingState(LoadingState.loaded);
+      _loanBalanceReponse = onSuccess;
     });
   }
 }

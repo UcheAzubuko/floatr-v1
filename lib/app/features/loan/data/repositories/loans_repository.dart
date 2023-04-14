@@ -5,6 +5,7 @@ import 'package:dartz/dartz.dart';
 import 'package:floatr/app/features/loan/model/params/request_loan_params.dart';
 import 'package:floatr/app/features/loan/model/params/verify_bank_params.dart';
 import 'package:floatr/app/features/loan/model/responses/card_response.dart';
+import 'package:floatr/app/features/loan/model/responses/loan_balance_response.dart';
 import 'package:floatr/app/features/loan/model/responses/loans_response.dart';
 import 'package:floatr/app/features/loan/model/responses/my_banks_response.dart';
 import 'package:floatr/app/features/loan/model/responses/verify_bank_response.dart';
@@ -233,7 +234,8 @@ class LoansRepository {
     }
   }
 
-  Future<Either<Failure, UserSubscribedLoanResponse>> getSubscribedLoan(String loanId) async {
+  Future<Either<Failure, UserSubscribedLoanResponse>> getSubscribedLoan(
+      String loanId) async {
     final url = Uri.https(
       APIConfigs.baseUrl,
       APIConfigs.userSubscribedLoan(loanId),
@@ -246,7 +248,29 @@ class LoansRepository {
         url: url,
         headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
       );
-      return Right(UserSubscribedLoanResponse.fromJson(jsonDecode(response.body)));
+      return Right(
+          UserSubscribedLoanResponse.fromJson(jsonDecode(response.body)));
+    } on ServerException catch (_) {
+      return Left(ServerFailure(code: _.code.toString(), message: _.message));
+    }
+  }
+
+  Future<Either<Failure, LoanBalanceResponse>> getLoanBalance(
+      String loanId) async {
+    final url = Uri.https(
+      APIConfigs.baseUrl,
+      APIConfigs.userLoanBalance(loanId),
+    );
+    try {
+      String? accessToken =
+          _sharedPreferences.getString(StorageKeys.accessTokenKey);
+
+      final response = await _apiService.get(
+        url: url,
+        headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
+      );
+
+      return Right(LoanBalanceResponse.fromJson(jsonDecode(response.body)));
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }

@@ -63,6 +63,7 @@ class _DebtCardState extends State<DebtCard> {
                height: 416,
               child: Center(
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const AppText(
                       text: 'Could not get your loan!',
