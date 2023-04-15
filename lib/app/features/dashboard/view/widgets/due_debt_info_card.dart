@@ -132,7 +132,7 @@ class DueDebtInfoCard extends StatelessWidget {
           GeneralButton(
             width: 245,
             height: 30,
-            onPressed: () => navigationService.navigateTo(RouteName.dashboardLoanDueTime, arguments: DashboardLoanDetailsArguments(dashboardLoanView: DashboardLoanView.loanDueTime)),
+            onPressed: () => navigationService.navigateTo(RouteName.dashboardLoanDueTime, arguments: DashboardLoanDetailsArguments(dashboardLoanView: DashboardLoanView.loanDetailSchedule)),
             borderRadius: 8,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

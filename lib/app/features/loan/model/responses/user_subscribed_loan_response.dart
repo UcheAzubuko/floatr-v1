@@ -73,7 +73,7 @@ class UserSubscribedLoanResponse {
   final UserSubscribedLoanResponseBank bank;
   final ApprovedBy? approvedBy;
   final UserSubscribedLoanResponseLoan loan;
-  final List<dynamic> paymentSchedules;
+  final List<PaymentSchedule> paymentSchedules;
   final User user;
   final List<dynamic> additions;
 
@@ -117,7 +117,7 @@ class UserSubscribedLoanResponse {
         approvedBy: ApprovedBy.fromJson(json["approvedBy"] ?? {}),
         loan: UserSubscribedLoanResponseLoan.fromJson(json["loan"]),
         paymentSchedules:
-            List<dynamic>.from(json["paymentSchedules"].map((x) => x)),
+            List<PaymentSchedule>.from(json["paymentSchedules"].map((x) => PaymentSchedule.fromJson(x))),
         user: User.fromJson(json["user"]),
         additions: List<dynamic>.from(json["additions"].map((x) => x)),
       );
@@ -590,6 +590,70 @@ class MetaLoan {
         "defaultDailyCharge": defaultDailyCharge,
         "interestChargeType": interestChargeType,
         "platformChargeType": platformChargeType,
+      };
+}
+
+class PaymentSchedule {
+  PaymentSchedule({
+    this.id,
+    this.uniqueId,
+    this.amount,
+    this.status,
+    this.retryCount,
+    this.userCardId,
+    this.userLoanApplicationId,
+    this.userId,
+    this.dueDate,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
+  });
+
+  final String? id;
+  final String? uniqueId;
+  final String? amount;
+  final String? status;
+  final int? retryCount;
+  final String? userCardId;
+  final String? userLoanApplicationId;
+  final String? userId;
+  final DateTime? dueDate;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final dynamic deletedAt;
+
+  factory PaymentSchedule.fromJson(Map<String, dynamic> json) =>
+      PaymentSchedule(
+        id: json["id"],
+        uniqueId: json["uniqueId"],
+        amount: json["amount"],
+        status: json["status"],
+        retryCount: json["retryCount"],
+        userCardId: json["userCardId"],
+        userLoanApplicationId: json["userLoanApplicationId"],
+        userId: json["userId"],
+        dueDate:
+            DateTime.parse(json["dueDate"] ?? DateTime.now().toIso8601String()),
+        createdAt: DateTime.parse(
+            json["createdAt"] ?? DateTime.now().toIso8601String()),
+        updatedAt: DateTime.parse(
+            json["updatedAt"] ?? DateTime.now().toIso8601String()),
+        deletedAt: json["deletedAt"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "uniqueId": uniqueId,
+        "amount": amount,
+        "status": status,
+        "retryCount": retryCount,
+        "userCardId": userCardId,
+        "userLoanApplicationId": userLoanApplicationId,
+        "userId": userId,
+        "dueDate": dueDate!.toIso8601String(),
+        "createdAt": createdAt!.toIso8601String(),
+        "updatedAt": updatedAt!.toIso8601String(),
+        "deletedAt": deletedAt,
       };
 }
 

@@ -149,33 +149,33 @@ class _DashboardLoanDueTimeState extends State<DashboardLoanDueTime> {
   Widget build(BuildContext context) {
     // NavigationService navigationService = di<NavigationService>();
     return Column(
-      children: [
-        const VerticalSpace(
+      children: const [
+        VerticalSpace(
           size: 20,
         ),
-        const LoanScheduleView(),
-        const VerticalSpace(
-          size: 30,
-        ),
-        GeneralButton(
-          height: 42,
-          onPressed: () => onInitializePayment(),
-          // onPressed: () => navigationService.navigateTo(
-          //     RouteName.dashboardLoanDueTime,
-          //     arguments: DashboardLoanDetailsArguments(
-          //         dashboardLoanView: DashboardLoanView.loanDetailSchedule)),
-          borderRadius: 8,
-          isLoading:
-              context.watch<LoanProvider>().loadingState == LoadingState.busy,
-          child: const AppText(
-            text: 'REPAY LOAN',
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const VerticalSpace(
-          size: 30,
-        ),
+        LoanScheduleView(),
+        // const VerticalSpace(
+        //   size: 30,
+        // ),
+        // GeneralButton(
+        //   height: 42,
+        //   onPressed: () => onInitializePayment(),
+        //   // onPressed: () => navigationService.navigateTo(
+        //   //     RouteName.dashboardLoanDueTime,
+        //   //     arguments: DashboardLoanDetailsArguments(
+        //   //         dashboardLoanView: DashboardLoanView.loanDetailSchedule)),
+        //   borderRadius: 8,
+        //   isLoading:
+        //       context.watch<LoanProvider>().loadingState == LoadingState.busy,
+        //   child: const AppText(
+        //     text: 'REPAY LOAN',
+        //     color: Colors.white,
+        //     fontWeight: FontWeight.w700,
+        //   ),
+        // ),
+        // const VerticalSpace(
+        //   size: 30,
+        // ),
       ],
     );
   }
@@ -218,8 +218,9 @@ class _DashboardLoanDetailScheduleState
 
         switch (loanProvider.loadingState) {
           case LoadingState.busy:
-            return const Center(
-              child: CircularProgressIndicator.adaptive(),
+            return Center(
+              child: const CircularProgressIndicator.adaptive()
+                  .paddingOnly(top: 30),
             );
 
           case LoadingState.error:
@@ -305,10 +306,88 @@ class _DashboardLoanDetailScheduleState
       : TogglePosition.left;
 }
 
-class LoanScheduleView extends StatelessWidget {
+class LoanScheduleView extends StatefulWidget {
   const LoanScheduleView({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<LoanScheduleView> createState() => _LoanScheduleViewState();
+}
+
+class _LoanScheduleViewState extends State<LoanScheduleView> {
+  late Monnify? monnify;
+  DateFormat dateFormat = DateFormat('MMM/yyyy');
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _initMonnify();
+    });
+
+    super.initState();
+  }
+
+  _initMonnify() async {
+    monnify = await Monnify.initialize(
+      applicationMode: ApplicationMode.LIVE,
+      apiKey: monnifyAPILiveKey,
+      contractCode: contractKey,
+    );
+  }
+
+  void onInitializePayment({bool isFullPayment = true}) async {
+    final paymentReference = DateTime.now().millisecondsSinceEpoch.toString();
+    final user = context.read<AuthenticationProvider>().user;
+    final loan = context.read<LoanProvider>();
+
+    await loan
+        .getLoanBalance(user!.loan!.settlingLoanApplicationId!)
+        .catchError((_) => Exception('Could not get amount to be paid'));
+
+    // Initia
+    final transaction = TransactionDetails().copyWith(
+      amount: double.parse(isFullPayment
+          ? loan.loanBalanceResponse!.amount.toString()
+          : loan.loanBalanceResponse!.pendingSchedules.first.amount),
+      currencyCode: 'NGN',
+      customerName: '${user.firstName} ${user.lastName}',
+      customerEmail: user.email,
+      paymentReference: paymentReference,
+      paymentMethods: [
+        PaymentMethod.CARD,
+        PaymentMethod.ACCOUNT_TRANSFER,
+        PaymentMethod.USSD,
+        PaymentMethod.PHONE_NUMBER
+      ],
+      metaData: isFullPayment
+          ? {
+              'loanApplicationUniqueId': loan.loanBalanceResponse!.uniqueId,
+              'floatrUserUniqueId': user.uniqueId!,
+              'floatrUserName': '${user.firstName} ${user.lastName}',
+              'date': DateTime.now().toIso8601String(),
+              'reason': 'full_loan_payment',
+            }
+          : {
+              'loanApplicationUniqueId': loan.loanBalanceResponse!.uniqueId,
+              'paymentScheduleUniqueId':
+                  loan.loanBalanceResponse!.pendingSchedules.first.uniqueId,
+              'floatrUserUniqueId': user.uniqueId!,
+              'floatrUserName': '${user.firstName} ${user.lastName}',
+              'date': DateTime.now().toIso8601String(),
+              'reason': 'part_loan_payment',
+            },
+    );
+
+    try {
+      final response =
+          await monnify?.initializePayment(transaction: transaction);
+
+      Fluttertoast.showToast(msg: response.toString());
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -491,126 +570,254 @@ class LoanScheduleView extends StatelessWidget {
             ),
           ),
 
-          // loan info box A
           Container(
-            height: 184,
             width: context.widthPx,
-            padding: const EdgeInsets.all(18),
+            height: 135,
+            padding: const EdgeInsets.all(25),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: AppColors.lightGrey1),
+                color: AppColors.lightGrey1,
+                borderRadius: BorderRadius.circular(16)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // principal
-                LoanSummaryRow(
-                  itemTitle: 'Principal',
-                  itemData:
-                      '₦${formatAmount(doubleStringToIntString(userSubscribedLoan.amount)!)}',
-                ),
-
-                //interest
-                LoanSummaryRow(
-                  itemTitle: 'Interest',
-                  itemData:
-                      '₦ ${formatAmount(percent(amount: int.parse(doubleStringToIntString(userSubscribedLoan.interestCharge)!), percentage: int.parse(doubleStringToIntString(userSubscribedLoan.amount)!)).toString())} (${formatAmount(doubleStringToIntString(userSubscribedLoan.interestCharge)!)}%) ',
-                ),
-
-                //platform
-                LoanSummaryRow(
-                  itemTitle: 'Platform Fee',
-                  itemData:
-                      '₦ ${formatAmount(percent(amount: int.parse(doubleStringToIntString(userSubscribedLoan.platformCharge)!), percentage: int.parse(doubleStringToIntString(userSubscribedLoan.amount)!)).toString())} (${formatAmount(doubleStringToIntString(userSubscribedLoan.platformCharge)!)}%) ',
-                ),
-
-                // payback amount
-                LoanSummaryRow(
-                  itemTitle: 'Payback Amount',
-                  itemData:
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      dateFormat.format(userSubscribedLoan.dueDate),
+                      style: TextStyles.smallTextGrey14Px,
+                    ),
+                    Text(
                       '₦${formatAmount(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!)}',
+                      style: TextStyles.normalTextDarkF800,
+                    ),
+                    Container(
+                      height: 21,
+                      width: 65,
+                      decoration: BoxDecoration(
+                          color: AppColors.lightGreen,
+                          borderRadius: BorderRadius.circular(30)),
+                      child: const Center(
+                        child: AppText(
+                          text: 'Pending',
+                          color: Colors.green,
+                          size: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
+                GeneralButton(
+                  height: 40,
+                  onPressed: () {},
+                  backgroundColor: Colors.black,
+                  borderColor: Colors.black,
+                  borderRadius: 10,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const AppText(
+                        size: 12,
+                        text: 'REPAY NOW',
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ).paddingOnly(right: 8),
+                      SvgPicture.asset('assets/icons/fill/arrow.svg',
+                          height: 8, width: 8),
+                    ],
+                  ),
+                )
               ],
             ),
           ),
 
-          // loan info box B
           const VerticalSpace(
-            size: 18,
+            size: 20,
           ),
 
-          // loan info box B
           Container(
-            height: 144,
             width: context.widthPx,
-            padding: const EdgeInsets.all(16),
+            height: 75,
+            padding: const EdgeInsets.all(25),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: AppColors.lightGrey1),
+                color: AppColors.lightGrey1,
+                borderRadius: BorderRadius.circular(16)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // loan tenure
-                LoanSummaryRow(
-                  itemTitle: 'Loan Tenure',
-                  itemData: weeks == 1 ? '$weeks Week' : '$weeks Weeks',
-                ),
-
-                //No of Payments
-                LoanSummaryRow(
-                  itemTitle: 'No of Payments',
-                  itemData:
-                      '$weeks * ₦${formatAmount((int.parse(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!) ~/ weeks).toString())}',
-                ),
-
-                //next payment
-                LoanSummaryRow(
-                  itemTitle: 'Next Payment',
-                  itemData: dateFormat.format(userSubscribedLoan.dueDate),
-                ),
-              ],
-            ),
-          ),
-
-          const VerticalSpace(
-            size: 18,
-          ),
-
-          Container(
-            height: 144,
-            width: context.widthPx,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: AppColors.lightGrey1),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Ammount paid
-                LoanSummaryRow(
-                  itemTitle: 'Amount Paid',
-                  itemData:
-                      '₦${formatAmount(doubleStringToIntString(userSubscribedLoan.totalPaidBackAmount)!)}',
-                ),
-
-                // Amount due
-                LoanSummaryRow(
-                  itemTitle: 'Amount Due',
-                  itemData:
-                      '₦${formatAmount((int.parse(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!) - int.parse(doubleStringToIntString(userSubscribedLoan.totalPaidBackAmount)!)).toString())}', // subtract amount to pay - amount paid
-                ),
-
-                //due date
-                LoanSummaryRow(
-                  itemTitle: 'Due Date',
-                  itemData: dateFormat.format(userSubscribedLoan.dueDate),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      dateFormat.format(userSubscribedLoan.dueDate),
+                      style: TextStyles.smallTextGrey14Px,
+                    ),
+                    Text(
+                      '₦${formatAmount(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!)}',
+                      style: TextStyles.normalTextDarkF800,
+                    ),
+                    Container(
+                      height: 21,
+                      width: 65,
+                      decoration: BoxDecoration(
+                          color: AppColors.lightGreen,
+                          borderRadius: BorderRadius.circular(30)),
+                      child: const Center(
+                        child: AppText(
+                          text: 'Pending',
+                          color: Colors.green,
+                          size: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
 
           const VerticalSpace(
-            size: 30,
+            size: 90,
           ),
+
+          InkWell(
+            onTap: () => onInitializePayment(),
+            child: const Text(
+              'REPAY ALL NOW',
+              style: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  decoration: TextDecoration.underline),
+            ),
+          ),
+
+          const VerticalSpace(
+            size: 50,
+          ),
+
+          // loan info box A
+          // Container(
+          //   height: 184,
+          //   width: context.widthPx,
+          //   padding: const EdgeInsets.all(18),
+          //   decoration: BoxDecoration(
+          //       borderRadius: BorderRadius.circular(16),
+          //       color: AppColors.lightGrey1),
+          //   child: Column(
+          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //     children: [
+          //       // principal
+          // LoanSummaryRow(
+          //   itemTitle: 'Principal',
+          //   itemData:
+          //       '₦${formatAmount(doubleStringToIntString(userSubscribedLoan.amount)!)}',
+          // ),
+
+          //       //interest
+          //       LoanSummaryRow(
+          //         itemTitle: 'Interest',
+          //         itemData:
+          //             '₦ ${formatAmount(percent(amount: int.parse(doubleStringToIntString(userSubscribedLoan.interestCharge)!), percentage: int.parse(doubleStringToIntString(userSubscribedLoan.amount)!)).toString())} (${formatAmount(doubleStringToIntString(userSubscribedLoan.interestCharge)!)}%) ',
+          //       ),
+
+          //       //platform
+          //       LoanSummaryRow(
+          //         itemTitle: 'Platform Fee',
+          //         itemData:
+          //             '₦ ${formatAmount(percent(amount: int.parse(doubleStringToIntString(userSubscribedLoan.platformCharge)!), percentage: int.parse(doubleStringToIntString(userSubscribedLoan.amount)!)).toString())} (${formatAmount(doubleStringToIntString(userSubscribedLoan.platformCharge)!)}%) ',
+          //       ),
+
+          //       // payback amount
+          //       LoanSummaryRow(
+          //         itemTitle: 'Payback Amount',
+          //         itemData:
+          //             '₦${formatAmount(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!)}',
+          //       ),
+          //     ],
+          //   ),
+          // ),
+
+          // // loan info box B
+          // const VerticalSpace(
+          //   size: 18,
+          // ),
+
+          // // loan info box B
+          // Container(
+          //   height: 144,
+          //   width: context.widthPx,
+          //   padding: const EdgeInsets.all(16),
+          //   decoration: BoxDecoration(
+          //       borderRadius: BorderRadius.circular(16),
+          //       color: AppColors.lightGrey1),
+          //   child: Column(
+          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //     children: [
+          //       // loan tenure
+          //       LoanSummaryRow(
+          //         itemTitle: 'Loan Tenure',
+          //         itemData: weeks == 1 ? '$weeks Week' : '$weeks Weeks',
+          //       ),
+
+          //       //No of Payments
+          //       LoanSummaryRow(
+          //         itemTitle: 'No of Payments',
+          //         itemData:
+          //             '$weeks * ₦${formatAmount((int.parse(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!) ~/ weeks).toString())}',
+          //       ),
+
+          //       //next payment
+          //       LoanSummaryRow(
+          //         itemTitle: 'Next Payment',
+          //         itemData: dateFormat.format(userSubscribedLoan.dueDate),
+          //       ),
+          //     ],
+          //   ),
+          // ),
+
+          // const VerticalSpace(
+          //   size: 18,
+          // ),
+
+          // Container(
+          //   height: 144,
+          //   width: context.widthPx,
+          //   padding: const EdgeInsets.all(16),
+          //   decoration: BoxDecoration(
+          //       borderRadius: BorderRadius.circular(16),
+          //       color: AppColors.lightGrey1),
+          //   child: Column(
+          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //     children: [
+          //       // Ammount paid
+          //       LoanSummaryRow(
+          //         itemTitle: 'Amount Paid',
+          //         itemData:
+          //             '₦${formatAmount(doubleStringToIntString(userSubscribedLoan.totalPaidBackAmount)!)}',
+          //       ),
+
+          //       // Amount due
+          //       LoanSummaryRow(
+          //         itemTitle: 'Amount Due',
+          //         itemData:
+          //             '₦${formatAmount((int.parse(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!) - int.parse(doubleStringToIntString(userSubscribedLoan.totalPaidBackAmount)!)).toString())}', // subtract amount to pay - amount paid
+          //       ),
+
+          //       //due date
+          //       LoanSummaryRow(
+          //         itemTitle: 'Due Date',
+          //         itemData: dateFormat.format(userSubscribedLoan.dueDate),
+          //       ),
+          //     ],
+          //   ),
+          // ),
+
+          // const VerticalSpace(
+          //   size: 30,
+          // ),
         ],
       ],
     );

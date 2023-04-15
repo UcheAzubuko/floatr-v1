@@ -26,10 +26,10 @@ class DebtCard extends StatefulWidget {
 class _DebtCardState extends State<DebtCard> {
   @override
   void initState() {
-    final loan = context.read<AuthenticationProvider>().user!.loan!;
+    final loan = context.read<AuthenticationProvider>().user?.loan;
 
     final loanId =
-        loan.pendingLoanApplicationId ?? loan.settlingLoanApplicationId;
+        loan?.pendingLoanApplicationId ?? loan?.settlingLoanApplicationId;
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       context.read<LoanProvider>().getUserSubscribedLoan(loanId!);
@@ -44,10 +44,10 @@ class _DebtCardState extends State<DebtCard> {
 
     return Consumer<LoanProvider>(
       builder: (context, loanProvider, _) {
-        final loan = context.read<AuthenticationProvider>().user!.loan!;
+        final loan = context.read<AuthenticationProvider>().user?.loan;
 
         final loanId =
-            loan.pendingLoanApplicationId ?? loan.settlingLoanApplicationId;
+            loan?.pendingLoanApplicationId ?? loan?.settlingLoanApplicationId;
 
         switch (loanProvider.loadingState) {
           case LoadingState.busy:
