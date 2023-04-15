@@ -59,7 +59,7 @@ class UserSubscribedLoanResponse {
   final int minTenureInDays;
   final int maxTenureInDays;
   final bool? wasAutoRespondedTo;
-  final String status;
+  final LoanAppLicationStatus status;
   final DateTime dueDate;
   final DateTime approvedAt;
   final dynamic deniedAt;
@@ -101,7 +101,7 @@ class UserSubscribedLoanResponse {
         minTenureInDays: json["minTenureInDays"],
         maxTenureInDays: json["maxTenureInDays"],
         wasAutoRespondedTo: json["wasAutoRespondedTo"],
-        status: json["status"],
+        status: getLoanApplicationStatus(json["status"]),
         dueDate: DateTime.parse(json["dueDate"]),
         approvedAt: DateTime.parse(
             json["approvedAt"] ?? DateTime.now().toIso8601String()),
@@ -767,4 +767,34 @@ class Photo {
         "deletedAt": deletedAt,
         "url": url,
       };
+}
+
+LoanAppLicationStatus getLoanApplicationStatus(String status) {
+  switch (status) {
+    case 'approved':
+      return LoanAppLicationStatus.approved;
+    case 'denied':
+      return LoanAppLicationStatus.denied;
+    case 'pending-approval':
+      return LoanAppLicationStatus.pendingApproval;
+
+    case 'pending-disbursement':
+      return LoanAppLicationStatus.pendingDisbursment;
+    case 'fully-settled':
+      return LoanAppLicationStatus.fullySettled;
+    case 'settling':
+      return LoanAppLicationStatus.settling;
+
+    default:
+      return LoanAppLicationStatus.denied;
+  }
+}
+
+enum LoanAppLicationStatus {
+  approved,
+  denied,
+  pendingApproval,
+  pendingDisbursment,
+  fullySettled,
+  settling;
 }

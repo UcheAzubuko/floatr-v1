@@ -1,5 +1,7 @@
+import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
+import 'package:floatr/app/features/loan/model/responses/user_subscribed_loan_response.dart';
 import 'package:floatr/app/features/loan/providers/loan_provider.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:flutter/material.dart';
@@ -163,7 +165,8 @@ class _DashboardLoanDueTimeState extends State<DashboardLoanDueTime> {
           //     arguments: DashboardLoanDetailsArguments(
           //         dashboardLoanView: DashboardLoanView.loanDetailSchedule)),
           borderRadius: 8,
-          isLoading: context.watch<LoanProvider>().loadingState == LoadingState.busy,
+          isLoading:
+              context.watch<LoanProvider>().loadingState == LoadingState.busy,
           child: const AppText(
             text: 'REPAY LOAN',
             color: Colors.white,
@@ -322,26 +325,129 @@ class LoanScheduleView extends StatelessWidget {
     return Column(
       children: [
         if (user!.loan!.hasPendingApplication!) ...[
-          Center(
+          Column(
             // child: Text(
             //   '''Your application is currently \npending approval!''',
             //   style: TextStyles.largeTextDarkPoppins,
             // ),
 
-            child: RichText(
-              text: TextSpan(
-                style: TextStyles.largeTextDarkPoppins,
-                children: const [
-                  TextSpan(
-                      text: 'Your application is currently',
-                      style: TextStyle(color: AppColors.black)),
-                  TextSpan(
-                      text: ' pending approval!',
-                      style: TextStyle(color: AppColors.primaryColor)),
-                ],
+            children: [
+              const VerticalSpace(
+                size: 50,
               ),
+              Text(
+                '''Hi ${user.firstName},''',
+                style: TextStyles.normalTextDarkPoppins600,
+              ),
+              const VerticalSpace(
+                size: 20,
+              ),
+              Text(
+                '''There's no active schedule''',
+                style: TextStyles.normalTextDarkPoppins600,
+              ),
+              const VerticalSpace(
+                size: 10,
+              ),
+              Text(
+                '''becuase this loan is currently ''',
+                style: TextStyles.normalTextDarkPoppins600,
+              ),
+              const VerticalSpace(
+                size: 10,
+              ),
+            ],
+          ),
+          // pending approval
+
+          if (userSubscribedLoan.status ==
+              LoanAppLicationStatus.pendingApproval) ...[
+            Column(
+              children: [
+                RichText(
+                  text: const TextSpan(
+                    text: ' pending approval!',
+                    style: TextStyle(
+                        color: AppColors.primaryColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ),
+                const VerticalSpace(
+                  size: 30,
+                ),
+                GeneralButton(
+                  onPressed: () {},
+                  width: 200,
+                  height: 28,
+                  borderRadius: 8,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'VIEW DETAILS',
+                        style: TextStyle(fontSize: 11.0),
+                      ).paddingOnly(right: 10),
+                      SvgPicture.asset('assets/icons/fill/arrow.svg',
+                          height: 8, width: 8),
+                    ],
+                  ),
+                )
+              ],
             ),
-          )
+          ]
+
+          // pending disbursement
+          else if (userSubscribedLoan.status ==
+              LoanAppLicationStatus.pendingDisbursment) ...[
+            Column(
+              children: [
+                RichText(
+                  text: const TextSpan(
+                      text: ' pending disbursement!',
+                      style: TextStyle(
+                          color: AppColors.primaryColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600)),
+                ),
+                const VerticalSpace(
+                  size: 30,
+                ),
+                GeneralButton(
+                  onPressed: () {},
+                  width: 200,
+                  height: 28,
+                  borderRadius: 8,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'VIEW DETAILS',
+                        style: TextStyle(fontSize: 11.0),
+                      ).paddingOnly(right: 10),
+                      SvgPicture.asset(
+                        'assets/icons/fill/arrow.svg',
+                        height: 8,
+                        width: 8,
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ]
+
+          // edge case
+          else ...[
+            RichText(
+              text: const TextSpan(
+                  text: ' pending!',
+                  style: TextStyle(
+                      color: AppColors.primaryColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600)),
+            ),
+          ],
         ] else ...[
           CircularPercentIndicator(
             radius: 110.0,

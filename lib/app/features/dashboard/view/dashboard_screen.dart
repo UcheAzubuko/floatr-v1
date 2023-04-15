@@ -132,9 +132,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (user.loan!.hasSettlingLoan!) ...[
+                          if (user.loan!.hasSettlingLoan! &&
+                              user.loan!.hasActiveApplication!) ...[
                             const DebtCard()
-                          ] else if (user.loan!.hasPendingApplication!) ...[
+                          ] else if (user.loan!.hasPendingApplication! &&
+                              user.loan!.hasActiveApplication!) ...[
                             const PendingLoanApplicationCard(),
                           ] else ...[
                             const HighlightsCard(),
@@ -154,7 +156,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   onPressed: () => navigationService.navigateTo(
                                       RouteName.cardsBanks,
                                       arguments: CardsBanksArguments(
-                                        bottomScreenName: 'Dashboard',
+                                          bottomScreenName: 'Dashboard',
                                           togglePosition:
                                               TogglePosition.right)),
                                 ),
@@ -165,19 +167,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     onPressed: () => navigationService
                                         .navigateTo(RouteName.cardsBanks,
                                             arguments: CardsBanksArguments(
-                                              bottomScreenName: 'Dashboard',
+                                                bottomScreenName: 'Dashboard',
                                                 togglePosition:
                                                     TogglePosition.left))),
-                                 OptionsCard(
+                                OptionsCard(
                                   itemName: 'Schedule',
                                   assetPath:
                                       'assets/icons/fill/time-schedule.svg',
-                                      onPressed: () => Fluttertoast.showToast(msg: "Coming soon!"),
+                                  onPressed: () => Fluttertoast.showToast(
+                                      msg: "Coming soon!"),
                                 ),
-                                 OptionsCard(
+                                OptionsCard(
                                   itemName: 'More',
                                   assetPath: 'assets/icons/fill/more-icon.svg',
-                                  onPressed: () => Fluttertoast.showToast(msg: "Coming soon!"),
+                                  onPressed: () => Fluttertoast.showToast(
+                                      msg: "Coming soon!"),
                                 ),
                               ],
                             ),
