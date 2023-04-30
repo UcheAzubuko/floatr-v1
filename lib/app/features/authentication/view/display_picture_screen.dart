@@ -140,7 +140,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                 return GeneralButton(
                     height: 55,
                     onPressed: () => _handleImageUpload(
-                        authProvider, File(widget.image.path), widget.documentType!),
+                        authProvider, File(widget.image.path), widget.documentType ?? DocumentType.unknown),
                     isLoading: authProvider.loadingState == LoadingState.busy,
                     child: const Text(
                       'VERIFY',
@@ -156,7 +156,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
   }
 
   _handleImageUpload(
-      AuthenticationProvider authProvider, File imageFile, [DocumentType documentType = DocumentType.driverLicense]) async {
+      AuthenticationProvider authProvider, File imageFile, [DocumentType documentType = DocumentType.unknown]) async {
     // authProvider.updateImage(imageFile);
     context.read<AuthenticationProvider>()
       ..updateImage(imageFile)

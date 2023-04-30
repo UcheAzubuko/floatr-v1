@@ -1,6 +1,7 @@
 enum ImageType { selfie, document }
 
 enum DocumentType {
+  unknown,
   driverLicense,
   nationalIdentityCard,
   internationalPassport,
