@@ -14,6 +14,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
+import '../../../../core/misc/helper_functions.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/spacing.dart';
 import '../../../widgets/app_text.dart';
@@ -190,8 +191,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   controller: phoneNumberController,
                   textInputType: TextInputType.phone,
                   textInputAction: TextInputAction.unspecified,
-                  onSaved: (String? number) =>
-                      _registerParams.phoneNumber = number!,
+                  onSaved: (String? number) => _registerParams.phoneNumber =
+                      formatNigerianPhoneNumber(number!),
                   validator: _phoneValidator,
                 ),
 

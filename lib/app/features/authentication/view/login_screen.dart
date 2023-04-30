@@ -7,6 +7,7 @@ import 'package:floatr/app/features/authentication/data/model/params/login_param
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:floatr/app/widgets/app_text.dart';
 import 'package:floatr/app/widgets/general_button.dart';
+import 'package:floatr/core/misc/helper_functions.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/providers/biometric_provider.dart';
 import 'package:floatr/core/route/navigation_service.dart';
@@ -53,8 +54,8 @@ class _LoginScreenState extends State<LoginScreen> {
         biometricProvider.biometricType == BiometricType.fingerprint;
 
     if ((biometricProvider.biometricType == BiometricType.face ||
-        biometricProvider.biometricType == BiometricType.fingerprint) &&  authProvider.isBiometricLoginEnabled) {
-
+            biometricProvider.biometricType == BiometricType.fingerprint) &&
+        authProvider.isBiometricLoginEnabled) {
       biometricProvider.didAuthenticate(() => authProvider.biometricLogin(),
           'Login with ${isFingerPrint ? 'Fingerprint' : 'Face ID'}');
     }
@@ -133,7 +134,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: emailController,
                   textInputType: TextInputType.phone,
                   textInputAction: TextInputAction.unspecified,
-                  onSaved: (String? email) => _loginParams.email = email!,
+                  onSaved: (String? email) =>
+                    _loginParams.email = formatNigerianPhoneNumber(email!),
+                  
                   validator: _phoneValidator,
                 ),
 

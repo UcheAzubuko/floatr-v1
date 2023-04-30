@@ -22,7 +22,8 @@ String formatAmount(String amount) {
   return priceInText.trim();
 }
 
-int percent({required int percentage, required int amount}) => ((percentage / 100) * amount).toInt();
+int percent({required int percentage, required int amount}) =>
+    ((percentage / 100) * amount).toInt();
 
 String get periodOfDay {
   final dateTime = DateTime.now();
@@ -33,4 +34,25 @@ String get periodOfDay {
     return 'GOOD AFTERNOON';
   }
   return 'GOOD MORNING';
+}
+
+String formatNigerianPhoneNumber(String number) {
+  // Remove any non-digit characters from the number
+  number = number.replaceAll(RegExp(r'\D'), '');
+
+  // Add the country code prefix if it's not already present
+  if (!number.startsWith('234') && !number.startsWith('+234')) {
+    number = '+234${number.substring(number.startsWith('0') ? 1 : 0)}';
+  }
+
+  // Check if the number is a valid Nigerian phone number
+  if (!RegExp(r'^(\+?234)[7-9]\d{9}$').hasMatch(number)) {
+    return number;
+  }
+
+  // Remove any existing plus sign and spaces from the number
+  number = number.replaceAll(RegExp(r'[+\s]'), '');
+
+  // Format the number as +234XXXXXXXXXX
+  return '+234${number.substring(3)}';
 }
