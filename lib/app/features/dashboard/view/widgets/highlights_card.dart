@@ -261,13 +261,9 @@ class _HighlightsCardState extends State<HighlightsCard> {
                                 itemBuilder: (_, index) => HighlightsInfoCard(
                                       loan: loans[index],
                                     ).paddingOnly(
-                                        left: index == 0 ? 25 : 10,
-                                        right: index ==
-                                                loans.length -
-                                                    1
-                                            ? 25
-                                            : 0,
-                                        ), // this gives the first item more padding on the left and last item more padding on the right
+                                      left: index == 0 ? 25 : 10,
+                                      right: index == loans.length - 1 ? 25 : 0,
+                                    ), // this gives the first item more padding on the left and last item more padding on the right
                                 separatorBuilder: (_, __) => const SizedBox(
                                       width: 0,
                                     ),
