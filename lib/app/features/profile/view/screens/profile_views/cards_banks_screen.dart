@@ -57,7 +57,8 @@ class CardsBanksScreen extends StatelessWidget {
 }
 
 class CardsBanksArguments {
-  CardsBanksArguments({required this.togglePosition, required this.bottomScreenName});
+  CardsBanksArguments(
+      {required this.togglePosition, required this.bottomScreenName});
   final String bottomScreenName;
   final TogglePosition togglePosition;
 }
@@ -283,10 +284,10 @@ class _CardViewState extends State<CardView> {
       final response =
           await monnify?.initializePayment(transaction: transaction);
 
-      loan.updateAddCardParams(
-          AddCardParams(transactionRef: response!.transactionReference));
+      loan.updateVerifyMonnifyParams(
+          VerifyMonnifyParams(transactionRef: response!.transactionReference));
 
-      await loan.addCard().then((_) {
+      await loan.verifyMonnifyTransaction().then((_) {
         if (loan.loadingState == LoadingState.loaded) {
           loan.getMyCards();
         } else if (loan.loadingState == LoadingState.error) {

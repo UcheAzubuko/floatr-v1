@@ -46,11 +46,13 @@ class _EditProfileViewState extends State<EditProfileView> {
   @override
   void initState() {
     final user = context.read<AuthenticationProvider>().user;
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => context.read<UserResourcesProvider>()
-          ..getMaritalStatuses()
-          ..getGenders()
-          ..getStates('1275'));
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      WidgetsFlutterBinding.ensureInitialized();
+      context.read<UserResourcesProvider>()
+        ..getMaritalStatuses()
+        ..getGenders()
+        ..getStates('160');
+    });
 
     _userProfileParams = UserProfileParams(
         email: user!.email,
@@ -400,7 +402,8 @@ class _EditProfileViewState extends State<EditProfileView> {
       await provider.updateUserProfiile();
       if (provider.loadingState == LoadingState.loaded) {
         await authProvider.getUser(); // update user
-        if (UserHelper(user: authProvider.user!).isIdDataComplete != CriteriaState.notDone) {
+        if (UserHelper(user: authProvider.user!).isIdDataComplete !=
+            CriteriaState.notDone) {
           _navigationService.pop();
           AppDialog.showAppModal(
               context, const GovIDModalView(), Colors.transparent);

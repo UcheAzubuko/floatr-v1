@@ -1,4 +1,5 @@
 import 'package:floatr/app/extensions/padding.dart';
+import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/dashboard/data/model/response/activities_response.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -70,9 +71,13 @@ class ActivityItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    activity.message,
-                    style: TextStyles.smallTextDark,
+                  SizedBox(
+                    width: context.widthPx * 0.62,
+                    child: Text(
+                      activity.message,
+                      style: TextStyles.smallTextDark,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   Text(
                     dateFormat.format(activity.createdAt),

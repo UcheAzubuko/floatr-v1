@@ -268,7 +268,7 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
                 min: double.parse(doubleStringToIntString(loan.minAmount)!),
                 max: double.parse(
                     doubleStringToIntString(loan.maxAmount.toString())!),
-                divisions: 10,
+                divisions: 15,
                 label: amount.toString(),
                 activeColor: AppColors.primaryColor,
                 inactiveColor: AppColors.disabledBackgroundColor,

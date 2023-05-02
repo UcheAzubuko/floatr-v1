@@ -229,6 +229,7 @@ class _HighlightsCardState extends State<HighlightsCard> {
               Consumer<LoanProvider>(
                 builder: (context, provider, _) {
                   final loans = provider.loansResponse!.loans;
+                  
                   switch (provider.loadingState) {
                     // loading
                     case LoadingState.busy:

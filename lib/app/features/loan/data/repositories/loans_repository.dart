@@ -116,10 +116,11 @@ class LoansRepository {
     }
   }
 
-  Future<Either<Failure, String>> addCard(AddCardParams params) async {
+  Future<Either<Failure, String>> verifyMonnifyTransaction(
+      VerifyMonnifyParams params) async {
     final url = Uri.https(
       APIConfigs.baseUrl,
-      APIConfigs.verifyCard,
+      APIConfigs.verifyMonnify,
     );
 
     final body = params.toMap();
@@ -169,7 +170,7 @@ class LoansRepository {
       APIConfigs.userCards(cardUniqueId),
     );
 
-    final Map<String, dynamic> body = {'isDefault': true};
+    final Map<String, dynamic> body = {'isDefault': "true"};
 
     try {
       String? accessToken =
@@ -228,7 +229,7 @@ class LoansRepository {
         body: params,
         headers: _headers..addAll({"Authorization": "Bearer ${accessToken!}"}),
       );
-      return Right(jsonDecode(response.body));
+      return Right(jsonDecode(response.body).toString());
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }

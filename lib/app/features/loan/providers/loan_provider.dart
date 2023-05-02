@@ -57,9 +57,9 @@ class LoanProvider extends BaseProvider {
 
   AddBankParams? get addBankParams => _addBankParams;
 
-  AddCardParams? _addCardParams;
+  VerifyMonnifyParams? _verifyMonnifyParams;
 
-  AddCardParams? get addCardParams => _addCardParams;
+  VerifyMonnifyParams? get addCardParams => _verifyMonnifyParams;
 
   RequestLoanParams? _requestLoanParams;
 
@@ -118,8 +118,8 @@ class LoanProvider extends BaseProvider {
     notifyListeners();
   }
 
-  updateAddCardParams(AddCardParams addCardParams) {
-    _addCardParams = addCardParams;
+  updateVerifyMonnifyParams(VerifyMonnifyParams verifyMonnifyParams) {
+    _verifyMonnifyParams = verifyMonnifyParams;
     notifyListeners();
   }
 
@@ -221,10 +221,11 @@ class LoanProvider extends BaseProvider {
     });
   }
 
-  Future<void> addCard() async {
+  Future<void> verifyMonnifyTransaction() async {
     updateLoadingState(LoadingState.busy);
 
-    final repsonse = await _loansRepository.addCard(_addCardParams!);
+    final repsonse =
+        await _loansRepository.verifyMonnifyTransaction(_verifyMonnifyParams!);
 
     repsonse.fold((onError) {
       updateLoadingState(LoadingState.error);
@@ -271,7 +272,8 @@ class LoanProvider extends BaseProvider {
 
     repsonse.fold((onError) {
       updateLoadingState(LoadingState.error);
-      updateErrorMsgState(onError.message ?? ' Could not get your subscribed loan');
+      updateErrorMsgState(
+          onError.message ?? ' Could not get your subscribed loan');
       updateLoadingState(LoadingState.loaded);
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
@@ -286,8 +288,8 @@ class LoanProvider extends BaseProvider {
 
     repsonse.fold((onError) {
       updateLoadingState(LoadingState.error);
-      updateErrorMsgState(onError.message ?? ' Could not get your loan balance');
-      
+      updateErrorMsgState(
+          onError.message ?? ' Could not get your loan balance');
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
       _loanBalanceReponse = onSuccess;

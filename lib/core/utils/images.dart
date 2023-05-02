@@ -15,6 +15,7 @@ class AppImages {
 
 class SvgImages {
   static const String cardTypeVisa = 'assets/images/card-type-visa.svg';
+  static const String cardTypeMastercard = 'assets/images/card-type-mastercard.svg';
   static const String checkingDocument = 'assets/images/checking-document.svg';
   static const String chip = 'assets/images/chip.svg';
   static const String dashboardAuthBackground = 'assets/images/dashboard-auth-frame.svg';

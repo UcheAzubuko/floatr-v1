@@ -557,9 +557,9 @@ class _SelectCardScreenState extends State<SelectCardScreen> {
       final response =
           await monnify?.initializePayment(transaction: transaction);
 
-      loan.updateAddCardParams(
-          AddCardParams(transactionRef: response!.transactionReference));
-      loan.addCard().then((_) {
+      loan.updateVerifyMonnifyParams(
+          VerifyMonnifyParams(transactionRef: response!.transactionReference));
+      loan.verifyMonnifyTransaction().then((_) {
         if (loan.loadingState == LoadingState.loaded) {
           loan.getMyCards();
         } else {
@@ -588,6 +588,11 @@ class DebitCard extends StatelessWidget {
   final userCard.Card card;
   final bool showCardManagement;
   final Function onCardSelected;
+
+  String getCardSvg(String type) {
+    if (type == 'visa') return SvgImages.cardTypeVisa;
+    return SvgImages.cardTypeMastercard;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -633,8 +638,7 @@ class DebitCard extends StatelessWidget {
                       Container()
                     ],
                     SvgPicture.asset(
-                      SvgImages.cardTypeVisa,
-                    ),
+                        height: 25, width: 45, getCardSvg(card.type)),
                   ],
                 ),
                 const VerticalSpace(
@@ -757,7 +761,8 @@ class ManageCardOption extends StatelessWidget {
     );
   }
 
-  _handleMakeDefault(LoanProvider provider, userCard.Card card, BuildContext context) {
+  _handleMakeDefault(
+      LoanProvider provider, userCard.Card card, BuildContext context) {
     provider
         .makeCardDefault(
             cardUniqueId: card.uniqueId, isDefault: !card.isDefault)
@@ -767,6 +772,7 @@ class ManageCardOption extends StatelessWidget {
         di<NavigationService>().pop();
         AppSnackBar.showErrorSnackBar(context, provider.errorMsg);
       }
+      di<NavigationService>().pop();
     });
   }
 }
@@ -1369,27 +1375,27 @@ class _LoanSummaryScreenState extends State<LoanSummaryScreen> {
                   // principal
                   LoanSummaryRow(
                     itemTitle: 'Principal',
-                    itemData: '₦${formatAmount(loanAmount.toString())}',
+                    itemData: 'N${formatAmount(loanAmount.toString())}',
                   ),
 
                   //interest
                   LoanSummaryRow(
                     itemTitle: 'Interest',
                     itemData:
-                        '₦${formatAmount(interest.toString())} (${doubleStringToIntString(_requestLoanParams.loan!.interestCharge)}%)',
+                        'N${formatAmount(interest.toString())} (${doubleStringToIntString(_requestLoanParams.loan!.interestCharge)}%)',
                   ),
 
                   //platform
                   LoanSummaryRow(
                     itemTitle: 'Platform Fee',
                     itemData:
-                        '₦${formatAmount(platformFee.toString())} (${doubleStringToIntString(_requestLoanParams.loan!.platformCharge)}%)',
+                        'N${formatAmount(platformFee.toString())} (${doubleStringToIntString(_requestLoanParams.loan!.platformCharge)}%)',
                   ),
 
                   // payback amount
                   LoanSummaryRow(
                     itemTitle: 'Payback Amount',
-                    itemData: '₦${formatAmount(paybackAmount.toString())}',
+                    itemData: 'N${formatAmount(paybackAmount.toString())}',
                   ),
                 ],
               ),
@@ -1516,10 +1522,11 @@ class _LoanSummaryScreenState extends State<LoanSummaryScreen> {
               size: 30,
             ),
 
-            Consumer<LoanProvider>(builder: (context, loanProvider, _) {
+            Consumer2<LoanProvider, AuthenticationProvider>(
+                builder: (context, loanProvider, userProvider, _) {
               return GeneralButton(
                 height: 42,
-                onPressed: () => _showPinDialog(loanProvider),
+                onPressed: () => _showPinDialog(loanProvider, userProvider),
                 borderRadius: 8,
                 child: const AppText(
                   text: 'CONFIRM & APPLY',
@@ -1537,7 +1544,8 @@ class _LoanSummaryScreenState extends State<LoanSummaryScreen> {
     );
   }
 
-  _showPinDialog(LoanProvider loanProvider) {
+  _showPinDialog(LoanProvider loanProvider,
+      AuthenticationProvider authenticationProvider) {
     bool isLoading = false;
     AppDialog.showAppDialog(
         context,
@@ -1617,7 +1625,7 @@ class _LoanSummaryScreenState extends State<LoanSummaryScreen> {
                             // force loading
                             setState(() => isLoading = true);
 
-                            loanProvider.requestLoan().then((value) {
+                            loanProvider.requestLoan().then((_) async {
                               if (loanProvider.loadingState ==
                                   LoadingState.error) {
                                 AppSnackBar.showErrorSnackBar(
@@ -1627,6 +1635,7 @@ class _LoanSummaryScreenState extends State<LoanSummaryScreen> {
                                     LoadingState.loaded); // force update
                               } else if (loanProvider.loadingState ==
                                   LoadingState.loaded) {
+                                await authenticationProvider.getUser();
                                 di<NavigationService>()
                                   ..pushAndRemoveUntil(RouteName.navbar)
                                   ..navigateTo(RouteName

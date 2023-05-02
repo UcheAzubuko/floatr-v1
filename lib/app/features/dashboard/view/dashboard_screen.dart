@@ -4,6 +4,7 @@ import 'package:floatr/app/features/authentication/providers/authentication_prov
 import 'package:floatr/app/features/dashboard/providers/dashboard_provider.dart';
 import 'package:floatr/app/features/dashboard/view/widgets/activities_widgets.dart';
 import 'package:floatr/app/features/dashboard/view/widgets/debt_card.dart';
+import 'package:floatr/app/features/loan/providers/loan_provider.dart';
 import 'package:floatr/app/features/profile/data/model/user_helper.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/navigation_service.dart';
@@ -45,9 +46,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final NavigationService navigationService = di<NavigationService>();
 
     return Scaffold(
-      body: Consumer<AuthenticationProvider>(
-        builder: (context, provider, _) {
-          final user = provider.user;
+      body: Consumer2<AuthenticationProvider, LoanProvider>(
+        builder: (context, authprovider, loanProvider, _) {
+          final user = authprovider.user;
 
           return SingleChildScrollView(
             child: Column(
@@ -127,7 +128,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 // card with progress or card with offers
                 // const DebtCard(),
 
-                !UserHelper(user: provider.user!).isFullyOnboarded
+                !UserHelper(user: authprovider.user!).isFullyOnboarded
                     ? const DataCompletionWidget().paddingOnly(bottom: 30)
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

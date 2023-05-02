@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:floatr/app/features/loan/model/responses/user_subscribed_loan_response.dart';
 import 'package:floatr/app/features/loan/providers/loan_provider.dart';
 import 'package:floatr/core/providers/base_provider.dart';
+import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,7 +14,9 @@ import 'package:intl/intl.dart';
 import 'package:monnify_payment_sdk/monnify_payment_sdk.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
+import '../../../../core/misc/dependency_injectors.dart';
 import '../../../../core/misc/helper_functions.dart';
+import '../../../../core/route/navigation_service.dart';
 import '../../../../core/secrets.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_style.dart';
@@ -21,6 +26,7 @@ import '../../../widgets/app_text.dart';
 import '../../../widgets/custom_appbar.dart';
 import '../../../widgets/general_button.dart';
 import '../../../widgets/pageview_toggler.dart';
+import '../../loan/model/params/add_card_params.dart';
 import '../../loan/view/screens/loan_info_screen.dart';
 
 class DashoardLoanDetails extends StatelessWidget {
@@ -92,58 +98,58 @@ class _DashboardLoanDueTimeState extends State<DashboardLoanDueTime> {
     );
   }
 
-  void onInitializePayment({bool isFullPayment = true}) async {
-    final paymentReference = DateTime.now().millisecondsSinceEpoch.toString();
-    final user = context.read<AuthenticationProvider>().user;
-    final loan = context.read<LoanProvider>();
+  // void onInitializePayment({bool isFullPayment = true}) async {
+  //   final paymentReference = DateTime.now().millisecondsSinceEpoch.toString();
+  //   final user = context.read<AuthenticationProvider>().user;
+  //   final loan = context.read<LoanProvider>();
 
-    await loan
-        .getLoanBalance(user!.loan!.settlingLoanApplicationId!)
-        .catchError((_) => Exception('Could not get amount to be paid'));
+  //   await loan
+  //       .getLoanBalance(user!.loan!.settlingLoanApplicationId!)
+  //       .catchError((_) => Exception('Could not get amount to be paid'));
 
-    // Initia
-    final transaction = TransactionDetails().copyWith(
-      amount: double.parse(isFullPayment
-          ? loan.loanBalanceResponse!.amount.toString()
-          : loan.loanBalanceResponse!.pendingSchedules.first.amount),
-      currencyCode: 'NGN',
-      customerName: '${user.firstName} ${user.lastName}',
-      customerEmail: user.email,
-      paymentReference: paymentReference,
-      paymentMethods: [
-        PaymentMethod.CARD,
-        PaymentMethod.ACCOUNT_TRANSFER,
-        PaymentMethod.USSD,
-        PaymentMethod.PHONE_NUMBER
-      ],
-      metaData: isFullPayment
-          ? {
-              'loanApplicationUniqueId': loan.loanBalanceResponse!.uniqueId,
-              'floatrUserUniqueId': user.uniqueId!,
-              'floatrUserName': '${user.firstName} ${user.lastName}',
-              'date': DateTime.now().toIso8601String(),
-              'reason': 'full_loan_payment',
-            }
-          : {
-              'loanApplicationUniqueId': loan.loanBalanceResponse!.uniqueId,
-              'paymentScheduleUniqueId':
-                  loan.loanBalanceResponse!.pendingSchedules.first.uniqueId,
-              'floatrUserUniqueId': user.uniqueId!,
-              'floatrUserName': '${user.firstName} ${user.lastName}',
-              'date': DateTime.now().toIso8601String(),
-              'reason': 'part_loan_payment',
-            },
-    );
+  //   // Initia
+  //   final transaction = TransactionDetails().copyWith(
+  //     amount: double.parse(isFullPayment
+  //         ? loan.loanBalanceResponse!.amount.toString()
+  //         : loan.loanBalanceResponse!.pendingSchedules.first.amount),
+  //     currencyCode: 'NGN',
+  //     customerName: '${user.firstName} ${user.lastName}',
+  //     customerEmail: user.email,
+  //     paymentReference: paymentReference,
+  //     paymentMethods: [
+  //       PaymentMethod.CARD,
+  //       PaymentMethod.ACCOUNT_TRANSFER,
+  //       PaymentMethod.USSD,
+  //       PaymentMethod.PHONE_NUMBER
+  //     ],
+  //     metaData: isFullPayment
+  //         ? {
+  //             'loanApplicationUniqueId': loan.loanBalanceResponse!.uniqueId,
+  //             'floatrUserUniqueId': user.uniqueId!,
+  //             'floatrUserName': '${user.firstName} ${user.lastName}',
+  //             'date': DateTime.now().toIso8601String(),
+  //             'reason': 'full_loan_payment',
+  //           }
+  //         : {
+  //             'loanApplicationUniqueId': loan.loanBalanceResponse!.uniqueId,
+  //             'paymentScheduleUniqueId':
+  //                 loan.loanBalanceResponse!.pendingSchedules.first.uniqueId,
+  //             'floatrUserUniqueId': user.uniqueId!,
+  //             'floatrUserName': '${user.firstName} ${user.lastName}',
+  //             'date': DateTime.now().toIso8601String(),
+  //             'reason': 'part_loan_payment',
+  //           },
+  //   );
 
-    try {
-      final response =
-          await monnify?.initializePayment(transaction: transaction);
+  //   try {
+  //     final response =
+  //         await monnify?.initializePayment(transaction: transaction);
 
-      Fluttertoast.showToast(msg: response.toString());
-    } catch (e) {
-      Fluttertoast.showToast(msg: e.toString());
-    }
-  }
+  //     Fluttertoast.showToast(msg: response.toString());
+  //   } catch (e) {
+  //     Fluttertoast.showToast(msg: e.toString());
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -318,6 +324,7 @@ class LoanScheduleView extends StatefulWidget {
 class _LoanScheduleViewState extends State<LoanScheduleView> {
   late Monnify? monnify;
   DateFormat dateFormat = DateFormat('MMM/yyyy');
+  NavigationService navigationService = di<NavigationService>();
 
   @override
   void initState() {
@@ -338,11 +345,11 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
 
   void onInitializePayment({bool isFullPayment = true}) async {
     final paymentReference = DateTime.now().millisecondsSinceEpoch.toString();
-    final user = context.read<AuthenticationProvider>().user;
-    final loan = context.read<LoanProvider>();
+    final userProvider = context.read<AuthenticationProvider>();
+    final loan = context.watch<LoanProvider>();
 
     await loan
-        .getLoanBalance(user!.loan!.settlingLoanApplicationId!)
+        .getLoanBalance(userProvider.user!.loan!.settlingLoanApplicationId!)
         .catchError((_) => Exception('Could not get amount to be paid'));
 
     // Initia
@@ -351,8 +358,9 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
           ? loan.loanBalanceResponse!.amount.toString()
           : loan.loanBalanceResponse!.pendingSchedules.first.amount),
       currencyCode: 'NGN',
-      customerName: '${user.firstName} ${user.lastName}',
-      customerEmail: user.email,
+      customerName:
+          '${userProvider.user!.firstName} ${userProvider.user!.lastName}',
+      customerEmail: userProvider.user!.email,
       paymentReference: paymentReference,
       paymentMethods: [
         PaymentMethod.CARD,
@@ -363,8 +371,9 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
       metaData: isFullPayment
           ? {
               'loanApplicationUniqueId': loan.loanBalanceResponse!.uniqueId,
-              'floatrUserUniqueId': user.uniqueId!,
-              'floatrUserName': '${user.firstName} ${user.lastName}',
+              'floatrUserUniqueId': userProvider.user!.uniqueId!,
+              'floatrUserName':
+                  '${userProvider.user!.firstName} ${userProvider.user!.lastName}',
               'date': DateTime.now().toIso8601String(),
               'reason': 'full_loan_payment',
             }
@@ -372,8 +381,9 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
               'loanApplicationUniqueId': loan.loanBalanceResponse!.uniqueId,
               'paymentScheduleUniqueId':
                   loan.loanBalanceResponse!.pendingSchedules.first.uniqueId,
-              'floatrUserUniqueId': user.uniqueId!,
-              'floatrUserName': '${user.firstName} ${user.lastName}',
+              'floatrUserUniqueId': userProvider.user!.uniqueId!,
+              'floatrUserName':
+                  '${userProvider.user!.firstName} ${userProvider.user!.lastName}',
               'date': DateTime.now().toIso8601String(),
               'reason': 'part_loan_payment',
             },
@@ -382,8 +392,28 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
     try {
       final response =
           await monnify?.initializePayment(transaction: transaction);
+      loan.updateVerifyMonnifyParams(
+          VerifyMonnifyParams(transactionRef: response!.transactionReference));
+
+      // verify transaction
+      loan.verifyMonnifyTransaction().then(
+        (_) {
+          if (loan.loadingState == LoadingState.loaded) {
+            loan.getLoanBalance(
+                userProvider.user!.loan!.settlingLoanApplicationId!);
+            userProvider.getUser();
+            if (isFullPayment) {
+              navigationService.pushAndRemoveUntil(RouteName.navbar);
+            }
+          } else {
+            loan.updateLoadingState(LoadingState
+                .loaded); // force loading state to go back to loaded
+          }
+        },
+      );
 
       Fluttertoast.showToast(msg: response.toString());
+      log(response.toString());
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
     }
@@ -394,8 +424,6 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
     final userSubscribedLoan =
         context.read<LoanProvider>().userSubscribedLoanResponse;
     final user = context.read<AuthenticationProvider>().user;
-
-    DateFormat dateFormat = DateFormat('dd MMM yy');
 
     int weeks = (userSubscribedLoan!.maxTenureInDays / 7).floor();
     Duration difference = userSubscribedLoan.dueDate.difference(DateTime.now());
@@ -514,6 +542,43 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
                 )
               ],
             ),
+          ] else if (userSubscribedLoan.status ==
+              LoanAppLicationStatus.approved) ...[
+            Column(
+              children: [
+                RichText(
+                  text: const TextSpan(
+                      text: ' approved but pending disbursement!',
+                      style: TextStyle(
+                          color: AppColors.primaryColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600)),
+                ),
+                const VerticalSpace(
+                  size: 30,
+                ),
+                GeneralButton(
+                  onPressed: () {},
+                  width: 200,
+                  height: 28,
+                  borderRadius: 8,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'VIEW DETAILS',
+                        style: TextStyle(fontSize: 11.0),
+                      ).paddingOnly(right: 10),
+                      SvgPicture.asset(
+                        'assets/icons/fill/arrow.svg',
+                        height: 8,
+                        width: 8,
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
           ]
 
           // edge case
@@ -527,7 +592,11 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
                       fontWeight: FontWeight.w600)),
             ),
           ],
-        ] else ...[
+        ]
+
+        // is settling - loan has disbursed
+        else if (user.loan!.hasSettlingLoan! &&
+            userSubscribedLoan.status == LoanAppLicationStatus.settling) ...[
           CircularPercentIndicator(
             radius: 110.0,
             backgroundColor: Colors.white,
@@ -570,113 +639,66 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
             ),
           ),
 
-          Container(
-            width: context.widthPx,
-            height: 135,
-            padding: const EdgeInsets.all(25),
-            decoration: BoxDecoration(
-                color: AppColors.lightGrey1,
-                borderRadius: BorderRadius.circular(16)),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      dateFormat.format(userSubscribedLoan.dueDate),
-                      style: TextStyles.smallTextGrey14Px,
-                    ),
-                    Text(
-                      '₦${formatAmount(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!)}',
-                      style: TextStyles.normalTextDarkF800,
-                    ),
-                    Container(
-                      height: 21,
-                      width: 65,
-                      decoration: BoxDecoration(
-                          color: AppColors.lightGreen,
-                          borderRadius: BorderRadius.circular(30)),
-                      child: const Center(
-                        child: AppText(
-                          text: 'Pending',
-                          color: Colors.green,
-                          size: 10,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                GeneralButton(
-                  height: 40,
-                  onPressed: () {},
-                  backgroundColor: Colors.black,
-                  borderColor: Colors.black,
-                  borderRadius: 10,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const AppText(
-                        size: 12,
-                        text: 'REPAY NOW',
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ).paddingOnly(right: 8),
-                      SvgPicture.asset('assets/icons/fill/arrow.svg',
-                          height: 8, width: 8),
-                    ],
-                  ),
-                )
-              ],
+          SizedBox(
+            height: 275,
+            child: ListView.separated(
+              itemBuilder: (context, itemCount) => ScheduleListItem(
+                paymentSchedule: userSubscribedLoan.paymentSchedules[itemCount],
+                isFirstSchedule: itemCount == 0,
+                onInitPay: () => onInitializePayment(isFullPayment: false),
+              ),
+              separatorBuilder: (context, itemCount) => const VerticalSpace(
+                size: 20,
+              ),
+              itemCount: userSubscribedLoan.paymentSchedules.length,
             ),
           ),
 
-          const VerticalSpace(
-            size: 20,
-          ),
+          // const VerticalSpace(
+          //   size: 20,
+          // ),
 
-          Container(
-            width: context.widthPx,
-            height: 75,
-            padding: const EdgeInsets.all(25),
-            decoration: BoxDecoration(
-                color: AppColors.lightGrey1,
-                borderRadius: BorderRadius.circular(16)),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      dateFormat.format(userSubscribedLoan.dueDate),
-                      style: TextStyles.smallTextGrey14Px,
-                    ),
-                    Text(
-                      '₦${formatAmount(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!)}',
-                      style: TextStyles.normalTextDarkF800,
-                    ),
-                    Container(
-                      height: 21,
-                      width: 65,
-                      decoration: BoxDecoration(
-                          color: AppColors.lightGreen,
-                          borderRadius: BorderRadius.circular(30)),
-                      child: const Center(
-                        child: AppText(
-                          text: 'Pending',
-                          color: Colors.green,
-                          size: 10,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          // Container(
+          //   width: context.widthPx,
+          //   height: 75,
+          //   padding: const EdgeInsets.all(25),
+          //   decoration: BoxDecoration(
+          //       color: AppColors.lightGrey1,
+          //       borderRadius: BorderRadius.circular(16)),
+          //   child: Column(
+          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //     children: [
+          //       Row(
+          //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //         children: [
+          //           Text(
+          //             dateFormat.format(userSubscribedLoan.dueDate),
+          //             style: TextStyles.smallTextGrey14Px,
+          //           ),
+          //           Text(
+          //             '₦${formatAmount(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!)}',
+          //             style: TextStyles.normalTextDarkF800,
+          //           ),
+          //           Container(
+          //             height: 21,
+          //             width: 65,
+          //             decoration: BoxDecoration(
+          //                 color: AppColors.lightGreen,
+          //                 borderRadius: BorderRadius.circular(30)),
+          //             child: const Center(
+          //               child: AppText(
+          //                 text: 'Pending',
+          //                 color: Colors.green,
+          //                 size: 10,
+          //                 fontWeight: FontWeight.w600,
+          //               ),
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //     ],
+          //   ),
+          // ),
 
           const VerticalSpace(
             size: 90,
@@ -687,10 +709,11 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
             child: const Text(
               'REPAY ALL NOW',
               style: TextStyle(
-                  color: AppColors.primaryColor,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  decoration: TextDecoration.underline),
+                color: AppColors.primaryColor,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                decoration: TextDecoration.underline,
+              ),
             ),
           ),
 
@@ -820,6 +843,87 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
           // ),
         ],
       ],
+    );
+  }
+}
+
+class ScheduleListItem extends StatelessWidget {
+  const ScheduleListItem({
+    super.key,
+    required this.paymentSchedule,
+    required this.isFirstSchedule,
+    required this.onInitPay,
+  });
+
+  final PaymentSchedule paymentSchedule;
+  final bool isFirstSchedule;
+  final void Function() onInitPay;
+
+  @override
+  Widget build(BuildContext context) {
+    DateFormat dateFormat = DateFormat('dd MMM yy');
+
+    return Container(
+      width: context.widthPx,
+      height: isFirstSchedule ? 135 : 75,
+      padding: const EdgeInsets.all(25),
+      decoration: BoxDecoration(
+          color: AppColors.lightGrey1, borderRadius: BorderRadius.circular(16)),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                dateFormat.format(paymentSchedule.dueDate!),
+                style: TextStyles.smallTextGrey14Px,
+              ),
+              Text(
+                '₦${formatAmount(doubleStringToIntString(paymentSchedule.amount)!)}',
+                style: TextStyles.normalTextDarkF800,
+              ),
+              Container(
+                height: 21,
+                width: 65,
+                decoration: BoxDecoration(
+                    color: AppColors.lightGreen,
+                    borderRadius: BorderRadius.circular(30)),
+                child: const Center(
+                  child: AppText(
+                    text: 'Pending',
+                    color: Colors.green,
+                    size: 10,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          isFirstSchedule
+              ? GeneralButton(
+                  height: 40,
+                  onPressed: onInitPay,
+                  backgroundColor: Colors.black,
+                  borderColor: Colors.black,
+                  borderRadius: 10,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const AppText(
+                        size: 12,
+                        text: 'REPAY NOW',
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ).paddingOnly(right: 8),
+                      SvgPicture.asset('assets/icons/fill/arrow.svg',
+                          height: 8, width: 8),
+                    ],
+                  ),
+                )
+              : Container(),
+        ],
+      ),
     );
   }
 }

@@ -60,7 +60,7 @@ class _DebtCardState extends State<DebtCard> {
 
           case LoadingState.error:
             return SizedBox(
-               height: 416,
+              height: 416,
               child: Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -142,24 +142,42 @@ class _DebtCardState extends State<DebtCard> {
                                       // fit: BoxFit.cover,
                                     ),
                                     const VerticalSpace(size: 10),
-                                    Text(
-                                      'Your next payment is due',
-                                      style: TextStyles.smallTextDark,
-                                    ),
-                                    const VerticalSpace(size: 7),
-                                    RichText(
-                                      text: TextSpan(
-                                        text: 'in',
-                                        style: TextStyles.largeTextDark,
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                              text: ' $differenceInDays days',
-                                              style:
-                                                  TextStyles.largeTextPrimary),
-                                          // TextSpan(text: ' world!'),
-                                        ],
+
+                                    // overdue loan
+                                    if (differenceInDays <= 0) ...[
+                                      Text(
+                                        'Your current loan is',
+                                        style: TextStyles.smallTextDark,
                                       ),
-                                    ),
+                                      const VerticalSpace(size: 7),
+                                      RichText(
+                                        text: TextSpan(
+                                            text: 'Overdue!',
+                                            style: TextStyles.largeTextPrimary),
+                                      ),
+                                    ]
+
+                                    // pending payment
+                                    else ...[
+                                      Text(
+                                        'Your next payment is due',
+                                        style: TextStyles.smallTextDark,
+                                      ),
+                                      const VerticalSpace(size: 7),
+                                      RichText(
+                                        text: TextSpan(
+                                          text: 'in',
+                                          style: TextStyles.largeTextDark,
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                                text: ' $differenceInDays days',
+                                                style: TextStyles
+                                                    .largeTextPrimary),
+                                            // TextSpan(text: ' world!'),
+                                          ],
+                                        ),
+                                      ),
+                                    ]
                                   ],
                                 ),
                               ),

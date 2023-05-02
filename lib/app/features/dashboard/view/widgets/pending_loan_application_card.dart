@@ -113,7 +113,23 @@ class _PendingLoanApplicationCardState
                               LoanAppLicationStatus.pendingDisbursment) ...[
                             RichText(
                               text: TextSpan(
-                                text: 'pending disbursement',
+                                text: 'pending disbursement.',
+                                style: TextStyles.largeTextPrimary22,
+                              ),
+                            ),
+                          ] else if (userloan?.status ==
+                              LoanAppLicationStatus.approved) ...[
+                            RichText(
+                              text: TextSpan(
+                                text:
+                                    '           approved but \n pending disbursement.',
+                                style: TextStyles.largeTextPrimary22,
+                              ),
+                            ),
+                          ] else ...[
+                            RichText(
+                              text: TextSpan(
+                                text: 'pending',
                                 style: TextStyles.largeTextPrimary22,
                               ),
                             ),
@@ -130,12 +146,19 @@ class _PendingLoanApplicationCardState
                                 arguments: DashboardLoanDetailsArguments(
                                     dashboardLoanView:
                                         DashboardLoanView.loanDetailSchedule)),
-                            width: 180,
+                            width: 200,
                             height: 35,
                             borderRadius: 10,
-                            child: const Text(
-                              'VIEW DETAILS',
-                              style: TextStyle(fontSize: 11.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'VIEW DETAILS',
+                                  style: TextStyle(fontSize: 11.0),
+                                ).paddingOnly(right: 10),
+                                SvgPicture.asset('assets/icons/fill/arrow.svg',
+                                    height: 8, width: 8),
+                              ],
                             ),
                           ))
                         ],

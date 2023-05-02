@@ -21,24 +21,25 @@ class AppTextField extends StatelessWidget {
   final bool readOnly;
   final List<TextInputFormatter>? inputFormatters;
 
-  const AppTextField(
-      {Key? key,
-      this.hintText,
-      this.prefixIcon,
-      this.obscureText = false,
-      this.validator,
-      required this.controller,
-      this.textInputType,
-      this.textInputAction,
-      this.maxLines,
-      this.onSaved,
-      this.onTap,
-      this.labelText,
-      this.onChanged,
-      this.readOnly = false,
-      this.inputFormatters,
-      this.suffixIcon, this.onEditingComplete})
-      : super(key: key);
+  const AppTextField({
+    Key? key,
+    this.hintText,
+    this.prefixIcon,
+    this.obscureText = false,
+    this.validator,
+    required this.controller,
+    this.textInputType,
+    this.textInputAction,
+    this.maxLines,
+    this.onSaved,
+    this.onTap,
+    this.labelText,
+    this.onChanged,
+    this.readOnly = false,
+    this.inputFormatters,
+    this.suffixIcon,
+    this.onEditingComplete,
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return TextFormField(
