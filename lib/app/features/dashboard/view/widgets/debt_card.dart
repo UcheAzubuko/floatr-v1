@@ -32,6 +32,7 @@ class _DebtCardState extends State<DebtCard> {
         loan?.pendingLoanApplicationId ?? loan?.settlingLoanApplicationId;
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      WidgetsFlutterBinding.ensureInitialized();
       context.read<LoanProvider>().getUserSubscribedLoan(loanId!);
     });
 
@@ -88,11 +89,18 @@ class _DebtCardState extends State<DebtCard> {
           case LoadingState.loaded:
             final userSubscribedLoan = loanProvider.userSubscribedLoanResponse;
 
-            Duration difference =
-                userSubscribedLoan!.dueDate.difference(DateTime.now());
+            DateTime dateNowMinusOneDay =
+                DateTime.now().subtract(const Duration(days: 0));
+
+            Duration difference = userSubscribedLoan!
+                .paymentSchedules[0].dueDate!
+                .difference(dateNowMinusOneDay);
 
             int differenceInDays =
-                difference.inDays < 0 ? 0 : difference.inDays;
+                (difference.inMilliseconds / 86400000).round() < 0
+                    ? 0
+                    : (difference.inMilliseconds / 86400000).round();
+
             return Container(
               height: 416,
               // color: AppColors.primaryColor,
@@ -122,9 +130,9 @@ class _DebtCardState extends State<DebtCard> {
                               CircularPercentIndicator(
                                 radius: 110.0,
                                 backgroundColor: Colors.white,
-                                percent: (userSubscribedLoan.minTenureInDays -
+                                percent: (userSubscribedLoan.maxTenureInDays -
                                         differenceInDays) /
-                                    userSubscribedLoan.minTenureInDays,
+                                    userSubscribedLoan.maxTenureInDays,
                                 lineWidth: 10,
                                 backgroundWidth: 15,
                                 progressColor: AppColors.primaryColor,

@@ -36,7 +36,7 @@ class Loan {
   final String uniqueId;
   final String name;
   final String minAmount;
-  final int maxAmount;
+  final String maxAmount;
   final String interestChargeType;
   final String interestCharge;
   final String platformChargeType;
@@ -59,7 +59,7 @@ class Loan {
         uniqueId: json["uniqueId"],
         name: json["name"],
         minAmount: json["minAmount"],
-        maxAmount: json["maxAmount"],
+        maxAmount: json["maxAmount"].toString(),
         interestChargeType: json["interestChargeType"],
         interestCharge: json["interestCharge"],
         platformChargeType: json["platformChargeType"],

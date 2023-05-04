@@ -10,6 +10,7 @@ import 'package:floatr/app/features/loan/model/responses/verify_bank_response.da
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/misc/helper_functions.dart';
 import '../model/params/add_card_params.dart';
 import '../model/responses/banks_response.dart' as bank;
 import '../model/responses/my_banks_response.dart';
@@ -128,6 +129,11 @@ class LoanProvider extends BaseProvider {
     notifyListeners();
   }
 
+  updateLoanBalance(LoanBalanceResponse loanBalanceResponse) {
+    _loanBalanceReponse = loanBalanceResponse;
+    notifyListeners();
+  }
+
   // updateAccount(VerifyBankResponse verifyBankResponse) {
   //   _verifyBankResponse = verifyBankResponse;
   //   notifyListeners();
@@ -232,8 +238,9 @@ class LoanProvider extends BaseProvider {
       updateErrorMsgState(onError.message ?? ' Could not add card');
     }, (onSuccess) {
       getMyCards();
-
-      log("Added Card successfully");
+      getFeaturedLoans();
+      updateLoadingState(LoadingState.loaded);
+      log("Loan Paid");
     });
   }
 
@@ -277,7 +284,10 @@ class LoanProvider extends BaseProvider {
       updateLoadingState(LoadingState.loaded);
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
+      
       _userSubscribedLoanResponse = onSuccess;
+      getLoanBalance(loanId);
+      // print((doubleStringToIntString(onSuccess.paymentSchedules[0].amount)!));
     });
   }
 
@@ -292,7 +302,7 @@ class LoanProvider extends BaseProvider {
           onError.message ?? ' Could not get your loan balance');
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
-      _loanBalanceReponse = onSuccess;
+      updateLoanBalance(onSuccess);
     });
   }
 }

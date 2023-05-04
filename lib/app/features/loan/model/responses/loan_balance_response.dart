@@ -12,7 +12,7 @@ class LoanBalanceResponse {
   factory LoanBalanceResponse.fromJson(Map<String, dynamic> json) =>
       LoanBalanceResponse(
         uniqueId: json["uniqueId"],
-        amount: json["amount"],
+        amount: json["amount"] is double ? json["amount"].toInt() : json["amount"],
         pendingSchedules: List<PendingSchedule>.from(
             json["pendingSchedules"].map((x) => PendingSchedule.fromJson(x))),
       );

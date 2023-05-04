@@ -113,7 +113,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         size: 8,
                       ),
                       const Text(
-                        'Update your profile to unlock all features!.',
+                        'Update your profile to unlock all features!',
                         style: TextStyle(
                           fontSize: 12,
                           color: AppColors.primaryColor,

@@ -78,8 +78,8 @@ class HighlightsInfoCard extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   SvgPicture.asset(SvgAppIcons.icSignalArrowUp),
-                                  const AppText(
-                                    text: '15%',
+                                   AppText(
+                                    text: '${formatAmount(doubleStringToIntString(loan.interestCharge)!)}%',
                                     size: 8,
                                     color: Colors.white,
                                     fontWeight: FontWeight.w700,
@@ -147,8 +147,10 @@ class HighlightsInfoCard extends StatelessWidget {
               GeneralButton(
                 width: 245,
                 height: 30,
-                onPressed: () => navigationService
-                    .navigateToRoute(LoanApplicationScreen(loan: loan,)),
+                onPressed: () =>
+                    navigationService.navigateToRoute(LoanApplicationScreen(
+                  loan: loan,
+                )),
                 borderRadius: 8,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

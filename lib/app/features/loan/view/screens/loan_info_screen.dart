@@ -1426,7 +1426,7 @@ class _LoanSummaryScreenState extends State<LoanSummaryScreen> {
                   LoanSummaryRow(
                     itemTitle: 'No of Payments',
                     itemData:
-                        '${_requestLoanParams.tenureInWeeks} * ₦${formatAmount(repaymentAmount.toString())} (Weekly)',
+                        '${_requestLoanParams.tenureInWeeks} * N${formatAmount(repaymentAmount.toString())} (Weekly)',
                   ),
 
                   //next payment

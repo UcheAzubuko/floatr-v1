@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import '../../../../../core/misc/dependency_injectors.dart';
 import '../../../../../core/misc/helper_functions.dart';
 import '../../../../../core/utils/app_colors.dart';
+import '../../../../../core/utils/app_icons.dart';
 import '../../../../../core/utils/app_style.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../../widgets/app_text.dart';
@@ -24,16 +25,15 @@ class DueDebtInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final userSubscribedLoan =
         context.read<LoanProvider>().userSubscribedLoanResponse;
-        
+
     NavigationService navigationService = di<NavigationService>();
 
     DateFormat dateFormat = DateFormat('dd MMM yyyy');
     return Container(
       height: 144,
-      width: 288,
+      width: 290,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -47,7 +47,7 @@ class DueDebtInfoCard extends StatelessWidget {
               // amount
               SizedBox(
                 height: 54,
-                width: 109.19,
+                width: 110.19,
                 child: Column(
                   children: [
                     Row(
@@ -67,15 +67,28 @@ class DueDebtInfoCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          '₦${formatAmount(doubleStringToIntString(userSubscribedLoan!.totalPayBackAmount)!)}',
+                          '₦${formatAmount(doubleStringToIntString(userSubscribedLoan!.paymentSchedules.first.amount)!)}',
                           style: TextStyles.normalTextDarkF600,
-                        ).paddingOnly(right: 6),
+                        ).paddingOnly(right: 5),
                         Container(
                           width: 33,
                           height: 14,
                           decoration: BoxDecoration(
                             color: AppColors.primaryColor,
                             borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(SvgAppIcons.icSignalArrowUp),
+                              AppText(
+                                text:
+                                    '${formatAmount(doubleStringToIntString(userSubscribedLoan.interestCharge)!)}%',
+                                size: 8,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                              )
+                            ],
                           ),
                         ),
                       ],
@@ -119,7 +132,7 @@ class DueDebtInfoCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          dateFormat.format(userSubscribedLoan.dueDate),
+                          dateFormat.format(userSubscribedLoan.paymentSchedules.first.dueDate!),
                           style: TextStyles.normalTextDarkF600,
                         ),
                       ],
@@ -132,7 +145,10 @@ class DueDebtInfoCard extends StatelessWidget {
           GeneralButton(
             width: 245,
             height: 30,
-            onPressed: () => navigationService.navigateTo(RouteName.dashboardLoanDueTime, arguments: DashboardLoanDetailsArguments(dashboardLoanView: DashboardLoanView.loanDetailSchedule)),
+            onPressed: () => navigationService.navigateTo(
+                RouteName.dashboardLoanDueTime,
+                arguments: DashboardLoanDetailsArguments(
+                    dashboardLoanView: DashboardLoanView.loanDetailSchedule)),
             borderRadius: 8,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

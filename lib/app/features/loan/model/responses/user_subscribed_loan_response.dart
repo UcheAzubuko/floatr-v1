@@ -116,8 +116,8 @@ class UserSubscribedLoanResponse {
         bank: UserSubscribedLoanResponseBank.fromJson(json["bank"]),
         approvedBy: ApprovedBy.fromJson(json["approvedBy"] ?? {}),
         loan: UserSubscribedLoanResponseLoan.fromJson(json["loan"]),
-        paymentSchedules:
-            List<PaymentSchedule>.from(json["paymentSchedules"].map((x) => PaymentSchedule.fromJson(x))),
+        paymentSchedules: List<PaymentSchedule>.from(
+            json["paymentSchedules"].map((x) => PaymentSchedule.fromJson(x))),
         user: User.fromJson(json["user"]),
         additions: List<dynamic>.from(json["additions"].map((x) => x)),
       );
@@ -842,7 +842,7 @@ LoanAppLicationStatus getLoanApplicationStatus(String status) {
     case 'pending-approval':
       return LoanAppLicationStatus.pendingApproval;
 
-    case 'pending-disbursement':
+    case 'pending-disbursment':
       return LoanAppLicationStatus.pendingDisbursment;
     case 'fully-settled':
       return LoanAppLicationStatus.fullySettled;

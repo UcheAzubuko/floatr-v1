@@ -10,6 +10,7 @@ import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/route/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../core/misc/dependency_injectors.dart';
@@ -93,7 +94,11 @@ class _PendingLoanApplicationCardState
 
                           Text(
                             '''Your application is currently''',
-                            style: TextStyles.largeTextDarkPoppins22,
+                            style: GoogleFonts.poppins(
+                              fontSize: context.widthPx * 0.053,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.black,
+                            ),
                           ),
                           const VerticalSpace(size: 7),
 
