@@ -121,7 +121,7 @@ class DueDebtInfoCard extends StatelessWidget {
                                 height: 24, width: 21)
                             .paddingOnly(right: 5),
                         Text(
-                          'Due Date:',
+                          'Next Due Date:',
                           style: TextStyles.smallerTextDark,
                         ),
                       ],

@@ -285,7 +285,7 @@ class LoanProvider extends BaseProvider {
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
       
-      _userSubscribedLoanResponse = onSuccess;
+      _userSubscribedLoanResponse = onSuccess..paymentSchedules.removeWhere((schedule) => schedule.status=='success');
       getLoanBalance(loanId);
       // print((doubleStringToIntString(onSuccess.paymentSchedules[0].amount)!));
     });

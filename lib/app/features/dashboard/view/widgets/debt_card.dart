@@ -92,14 +92,25 @@ class _DebtCardState extends State<DebtCard> {
             DateTime dateNowMinusOneDay =
                 DateTime.now().subtract(const Duration(days: 0));
 
-            Duration difference = userSubscribedLoan!
-                .paymentSchedules[0].dueDate!
+            Duration difference = userSubscribedLoan!.paymentSchedules.first.dueDate!
                 .difference(dateNowMinusOneDay);
 
             int differenceInDays =
                 (difference.inMilliseconds / 86400000).round() < 0
                     ? 0
                     : (difference.inMilliseconds / 86400000).round();
+
+            // DateTime dueDate = userSubscribedLoan.dueDate;
+
+            // int totalDays = userSubscribedLoan.minTenureInDays;
+            // print('Total days: $totalDays');
+
+            // int remainingDays = dueDate.difference(DateTime.now()).inDays;
+            // print('Remaining days: $remainingDays');
+
+            // double percentageRemaining = 1 - (differenceInDays / totalDays);
+
+            // print('Percentage remaining: $percentageRemaining');
 
             return Container(
               height: 416,
@@ -168,7 +179,7 @@ class _DebtCardState extends State<DebtCard> {
                                     // pending payment
                                     else ...[
                                       Text(
-                                        'Your next payment is due',
+                                        'Your current loan is due',
                                         style: TextStyles.smallTextDark,
                                       ),
                                       const VerticalSpace(size: 7),
