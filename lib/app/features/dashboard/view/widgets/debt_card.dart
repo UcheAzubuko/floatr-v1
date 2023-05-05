@@ -33,7 +33,7 @@ class _DebtCardState extends State<DebtCard> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       WidgetsFlutterBinding.ensureInitialized();
-      context.read<LoanProvider>().getUserSubscribedLoan(loanId!);
+      await context.read<LoanProvider>().getUserSubscribedLoan(loanId!);
     });
 
     super.initState();
@@ -88,11 +88,20 @@ class _DebtCardState extends State<DebtCard> {
 
           case LoadingState.loaded:
             final userSubscribedLoan = loanProvider.userSubscribedLoanResponse;
+            if (userSubscribedLoan == null) {
+              return const SizedBox(
+                height: 416,
+                child: Center(
+                  child: CircularProgressIndicator.adaptive(),
+                ),
+              );
+            }
 
             DateTime dateNowMinusOneDay =
                 DateTime.now().subtract(const Duration(days: 0));
 
-            Duration difference = userSubscribedLoan!.paymentSchedules.first.dueDate!
+            Duration difference = userSubscribedLoan
+                .paymentSchedules.first.dueDate!
                 .difference(dateNowMinusOneDay);
 
             int differenceInDays =

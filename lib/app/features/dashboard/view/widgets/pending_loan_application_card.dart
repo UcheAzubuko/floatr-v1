@@ -39,7 +39,7 @@ class _PendingLoanApplicationCardState
         loan.pendingLoanApplicationId ?? loan.settlingLoanApplicationId;
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      context.read<LoanProvider>().getUserSubscribedLoan(loanId!);
+      await context.read<LoanProvider>().getUserSubscribedLoan(loanId!);
     });
     super.initState();
   }
