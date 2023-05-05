@@ -363,8 +363,8 @@ class AuthenticationRepository {
       APIConfigs.forgotPassword,
     );
 
-    final body = {"phoneNumber": format(params.phoneNumber!)};
-    // print(format(params.phoneNumber!));
+    final body = {"phoneNumber": params.phoneNumber!};
+    print(params.phoneNumber!);
 
 
     try {

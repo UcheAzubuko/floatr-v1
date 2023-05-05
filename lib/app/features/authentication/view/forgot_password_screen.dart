@@ -10,6 +10,7 @@ import 'package:form_validator/form_validator.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/misc/dependency_injectors.dart';
+import '../../../../core/misc/helper_functions.dart';
 import '../../../../core/route/navigation_service.dart';
 import '../../../../core/route/route_names.dart';
 import '../../../../core/utils/app_colors.dart';
@@ -113,25 +114,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                     textInputType: TextInputType.phone,
                     validator: _phoneValidator,
                     onSaved: (String? phone) =>
-                        _resetPasswordParams.phoneNumber = phone,
+                        _resetPasswordParams.phoneNumber = formatNigerianPhoneNumber(phone!),
                     textInputAction: TextInputAction.unspecified,
-                    onEditingComplete: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      setState(() {
-                        isDone = true;
-                      });
-                    }),
+                    // onEditingComplete: () {
+                    //   FocusScope.of(context).requestFocus(FocusNode());
+                    //   setState(() {
+                    //     isDone = true;
+                    //   });
+                    // }
+                    ),
                 const Spacer(),
                 GeneralButton(
                   isLoading: provider.loadingState == LoadingState.busy,
                   onPressed: () => _handleForgotPassword(provider),
                   buttonTextColor: Colors.white,
-                  backgroundColor: isDone
-                      ? AppColors.primaryColor
-                      : AppColors.primaryColorLight,
-                  borderColor: isDone
-                      ? AppColors.primaryColor
-                      : AppColors.primaryColorLight,
+                  backgroundColor:  AppColors.primaryColor,
+                    
+                  borderColor:  AppColors.primaryColor,
+                      
                   child: const Text(
                     'VERIFY PHONE NUMBER',
                     style: TextStyle(color: Colors.white),
