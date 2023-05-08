@@ -7,6 +7,7 @@ import 'package:floatr/app/widgets/dialogs.dart';
 import 'package:floatr/app/widgets/general_button.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/navigation_service.dart';
+import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   void initState() {
-    _resetPasswordParams = ResetPasswordParams(password: null);
+    final providedParams =
+        context.read<AuthenticationProvider>().resetPasswordParams;
+    _resetPasswordParams = ResetPasswordParams(token: providedParams!.token, phoneNumber: providedParams.phoneNumber, password: providedParams.password);
     super.initState();
   }
 
@@ -82,9 +85,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
               AppTextField(
                 hintText: 'Password',
-                controller: TextEditingController(),
+                controller: passwordController,
                 textInputType: TextInputType.visiblePassword,
                 textInputAction: TextInputAction.unspecified,
+                obscureText: true,
                 onSaved: (String? password) =>
                     _resetPasswordParams.password = password,
                 validator: _passwordValidator,
@@ -107,6 +111,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 controller: confirmPasswordController,
                 textInputType: TextInputType.visiblePassword,
                 textInputAction: TextInputAction.unspecified,
+                obscureText: true,
                 validator: (password) {
                   if (passwordController.text != password) {
                     return 'Both Passwords are not the same.';
@@ -153,14 +158,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               context,
               OnSuccessDialogContent(
                 subtext: 'You can now log in with your new password!',
-                onDoneCallback: () {},
+                onDoneCallback: () => navigationService.pushAndRemoveUntil(RouteName.login),
               ));
         } else if (provider.loadingState == LoadingState.error) {
           AppDialog.showAppDialog(
               context,
               OnFailDialogContent(
                 subtext: 'Password Change failed!',
-                onDoneCallback: () {},
+                onDoneCallback: () => navigationService.pushAndRemoveUntil(RouteName.login),
               ));
         }
       });

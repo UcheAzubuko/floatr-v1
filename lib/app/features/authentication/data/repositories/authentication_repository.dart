@@ -364,24 +364,17 @@ class AuthenticationRepository {
     );
 
     final body = {"phoneNumber": params.phoneNumber!};
-    print(params.phoneNumber!);
-
 
     try {
-      // final accessToken = _prefs.getString(StorageKeys.accessTokenKey);
       await _apiService.post(
         url: forgotPasswordUrl,
         body: body,
+        headers: _authHeaders,
       );
       return const Right(true);
     } on ServerException catch (_) {
       return Left(ServerFailure(code: _.code.toString(), message: _.message));
     }
-  }
-
-  String format(String num) {
-   num = num.substring(0, 4) + " " + num.substring(4, 7) + " " + num.substring(7, 10) + " " + num.substring(10, num.length);
-    return num;
   }
 
   Future<Either<Failure, bool>> verifyForgotPasswordToken(

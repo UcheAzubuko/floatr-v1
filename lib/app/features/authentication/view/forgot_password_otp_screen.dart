@@ -45,7 +45,9 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
 
   @override
   void initState() {
-    _resetPasswordParams = ResetPasswordParams(token: null);
+    final providedParams =
+        context.read<AuthenticationProvider>().resetPasswordParams;
+    _resetPasswordParams = ResetPasswordParams(token: null, phoneNumber: providedParams!.phoneNumber);
     controller = CountdownTimerController(
       endTime: endTime,
     );
@@ -149,7 +151,7 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
                           }
                         },
                         onCompleted: (token) =>
-                            _resetPasswordParams.token = token,
+                            _resetPasswordParams..token = token,
                         outlineBorderRadius: 15,
                         inputFormatter: [
                           FilteringTextInputFormatter.digitsOnly,
@@ -240,6 +242,7 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
                               return GeneralButton(
                                 onPressed: () =>
                                     _handleVerifyForgotPasswordToken(provider),
+                                    isLoading: provider.loadingState == LoadingState.busy,
                                 buttonTextColor: Colors.white,
                                 child: const Text(
                                   'Verify',
