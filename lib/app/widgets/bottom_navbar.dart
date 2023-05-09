@@ -29,6 +29,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   Widget build(BuildContext context) {
     final loan = context.read<LoanProvider>();
     final user = context.read<AuthenticationProvider>().user;
+    final loanResponse = loan.loansResponse;
     final isUserEligible =
         !(user!.loan!.hasPendingApplication! || user.loan!.hasSettlingLoan!);
     Widget getViewForIndex(int index) {
@@ -42,7 +43,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   const EdgeInsets.symmetric(horizontal: 15.0, vertical: 60),
               child: isUserEligible
                   ? EligibleLenderView(
-                      loan: loan.loansResponse!.loans[0],
+                      loan: loanResponse!.loans[loanResponse.loans.length - 1],
                     )
                   : const IneligibleLenderView(),
             ),
