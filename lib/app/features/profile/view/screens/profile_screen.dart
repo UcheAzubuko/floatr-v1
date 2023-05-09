@@ -18,6 +18,7 @@ import 'package:floatr/core/route/route_names.dart';
 import 'package:floatr/core/utils/app_icons.dart';
 import 'package:floatr/core/utils/app_style.dart';
 import 'package:floatr/core/utils/enums.dart';
+import 'package:floatr/core/utils/extensions.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -349,7 +350,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 // username
                 Text(
-                  '${user.firstName} ${user.lastName}',
+                  '${user.firstName!.capitalizeFirstChar()} ${user.lastName!.capitalizeFirstChar()}',
                   style: TextStyles.largeTextDark,
                 ),
 

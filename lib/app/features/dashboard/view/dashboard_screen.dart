@@ -11,6 +11,7 @@ import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:floatr/core/utils/app_icons.dart';
 import 'package:floatr/core/utils/app_style.dart';
+import 'package:floatr/core/utils/extensions.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -83,7 +84,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                           // name
                           Text(
-                            '${user!.firstName}',
+                            user!.firstName!.capitalizeFirstChar(),
                             style: TextStyles.largeTextDark,
                           ),
                         ],
