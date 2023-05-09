@@ -81,6 +81,13 @@ class _CardsBanksScreenHolderState extends State<CardsBanksScreenHolder> {
   @override
   void initState() {
     togglePosition = widget.togglePosition;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      WidgetsFlutterBinding.ensureInitialized();
+      context.read<LoanProvider>()
+        ..getMyBanks()
+        ..getMyCards();
+    });
+
     super.initState();
   }
 

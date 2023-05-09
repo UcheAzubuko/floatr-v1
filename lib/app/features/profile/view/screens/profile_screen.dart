@@ -3,6 +3,7 @@ import 'package:clipboard/clipboard.dart';
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/data/model/response/user_repsonse.dart';
+import 'package:floatr/app/features/loan/providers/loan_provider.dart';
 import 'package:floatr/app/features/profile/data/model/params/change_password_params.dart';
 import 'package:floatr/app/features/profile/data/model/user_helper.dart';
 import 'package:floatr/app/features/profile/providers/user_profile_provider.dart';
@@ -418,8 +419,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ).paddingOnly(right: 5),
                               InkWell(
                                   onTap: () {
-                                    FlutterClipboard.copy(user.uniqueId!)
-                                        .then((_) => Fluttertoast.showToast(
+                                    FlutterClipboard.copy(user.uniqueId!).then(
+                                        (_) => Fluttertoast.showToast(
                                             msg:
                                                 'Customer ID copied to clipboard'));
                                   },
@@ -651,7 +652,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onTap: () => navigationService.navigateTo(
                             RouteName.cardsBanks,
                             arguments: CardsBanksArguments(
-                              bottomScreenName: 'Profile',
+                                bottomScreenName: 'Profile',
                                 togglePosition: TogglePosition.left)),
                       ),
 
@@ -674,7 +675,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onTap: () => navigationService.navigateTo(
                             RouteName.cardsBanks,
                             arguments: CardsBanksArguments(
-                              bottomScreenName: 'Profile',
+                                bottomScreenName: 'Profile',
                                 togglePosition: TogglePosition.right)),
                       ),
                     ],
@@ -772,7 +773,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   height: 52,
                   backgroundColor: Colors.white,
                   borderColor: AppColors.red,
-                  onPressed: () => provider.logout(),
+                  onPressed: () {
+                    Provider.of<LoanProvider>(context, listen: false)
+                      ..myCardsResponse!.cards.clear()
+                      ..myBanksResponse!.mybanks.clear();
+
+                    return provider.logout();
+                  },
                   // onPressed: () => showDialog(
                   //     context: context,
                   //     barrierDismissible: true,
