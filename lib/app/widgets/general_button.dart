@@ -37,8 +37,8 @@ class GeneralButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ButtonStyle style = ElevatedButton.styleFrom(
-      foregroundColor: foregroundColor,
+    final ButtonStyle style = TextButton.styleFrom(
+      foregroundColor: buttonTextColor,
       backgroundColor: backgroundColor,
       textStyle: GoogleFonts.plusJakartaSans(
         color: buttonTextColor,
@@ -47,7 +47,7 @@ class GeneralButton extends StatelessWidget {
         textStyle: Theme.of(context).textTheme.bodyLarge,
       ),
       shape: RoundedRectangleBorder(
-        // side: BorderSide(color: borderColor),
+        side: BorderSide(color: borderColor),
         borderRadius: BorderRadius.circular(borderRadius),
       ),
     );

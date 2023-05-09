@@ -168,7 +168,7 @@ class Meta {
   String toRawJson() => json.encode(toJson());
 
   factory Meta.fromJson(Map<String, dynamic> json) => Meta(
-        token: json["token"],
+        token: json["token"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
