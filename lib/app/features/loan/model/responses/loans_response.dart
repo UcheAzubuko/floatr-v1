@@ -31,6 +31,7 @@ class Loan {
     required this.updatedAt,
     required this.deletedAt,
     required this.orderingMarker,
+     this.displayedAmountOnCard,
   });
 
   final String uniqueId;
@@ -50,6 +51,7 @@ class Loan {
   final DateTime updatedAt;
   final dynamic deletedAt;
   final int orderingMarker;
+  final String? displayedAmountOnCard;
 
   factory Loan.fromRawJson(String str) => Loan.fromJson(json.decode(str));
 

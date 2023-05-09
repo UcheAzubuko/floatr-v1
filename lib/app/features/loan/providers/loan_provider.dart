@@ -10,7 +10,6 @@ import 'package:floatr/app/features/loan/model/responses/verify_bank_response.da
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/misc/helper_functions.dart';
 import '../model/params/add_card_params.dart';
 import '../model/responses/banks_response.dart' as bank;
 import '../model/responses/my_banks_response.dart';
@@ -148,7 +147,7 @@ class LoanProvider extends BaseProvider {
       updateLoadingState(LoadingState.error);
       updateErrorMsgState(onError.message ?? ' Could not get loans');
     }, (onSuccess) {
-      _loansResponse.value = onSuccess;
+      _loansResponse.value = LoansResponse(loans: modifyLoans(onSuccess));
       updateLoadingState(LoadingState.loaded);
     });
   }
@@ -284,8 +283,10 @@ class LoanProvider extends BaseProvider {
       updateLoadingState(LoadingState.loaded);
     }, (onSuccess) {
       updateLoadingState(LoadingState.loaded);
-      
-      _userSubscribedLoanResponse = onSuccess..paymentSchedules.removeWhere((schedule) => schedule.status=='success');
+
+      _userSubscribedLoanResponse = onSuccess
+        ..paymentSchedules
+            .removeWhere((schedule) => schedule.status == 'success');
       getLoanBalance(loanId);
       // print((doubleStringToIntString(onSuccess.paymentSchedules[0].amount)!));
     });
@@ -305,4 +306,37 @@ class LoanProvider extends BaseProvider {
       updateLoanBalance(onSuccess);
     });
   }
+}
+
+List<Loan> modifyLoans(LoansResponse onSuccess) {
+  final List<Loan> modifiedLoansArray = onSuccess.loans.map((loan) {
+    final maxAmounts = onSuccess.loans.map((l) => l.maxAmount).toList();
+    // maxAmounts.sort();
+    final minOfAllMaxAmounts = maxAmounts[0];
+
+    final displayedAmountOnCard =
+        loan.maxAmount == minOfAllMaxAmounts ? loan.minAmount : loan.maxAmount;
+
+    return Loan(
+        uniqueId: loan.uniqueId,
+        name: loan.name,
+        minAmount: loan.minAmount,
+        maxAmount: loan.maxAmount,
+        interestChargeType: loan.interestChargeType,
+        interestCharge: loan.interestCharge,
+        platformChargeType: loan.platformChargeType,
+        platformCharge: loan.platformCharge,
+        defaultDailyCharge: loan.defaultDailyCharge,
+        minTenureInDays: loan.minTenureInDays,
+        maxTenureInDays: loan.maxTenureInDays,
+        isActive: loan.isActive,
+        adminUserId: loan.adminUserId,
+        createdAt: loan.createdAt,
+        updatedAt: loan.updatedAt,
+        deletedAt: loan.deletedAt,
+        orderingMarker: loan.orderingMarker,
+        displayedAmountOnCard: displayedAmountOnCard);
+  }).toList();
+
+  return modifiedLoansArray;
 }
