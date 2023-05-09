@@ -47,7 +47,7 @@ class GeneralButton extends StatelessWidget {
         textStyle: Theme.of(context).textTheme.bodyLarge,
       ),
       shape: RoundedRectangleBorder(
-        side: BorderSide(color: borderColor),
+        // side: BorderSide(color: borderColor),
         borderRadius: BorderRadius.circular(borderRadius),
       ),
     );
@@ -55,7 +55,7 @@ class GeneralButton extends StatelessWidget {
     return SizedBox(
       height: height ?? context.heightPx * 0.07,
       width: width,
-      child: ElevatedButton(
+      child: TextButton(
           style: style,
           onPressed: () {
             onPressed();
