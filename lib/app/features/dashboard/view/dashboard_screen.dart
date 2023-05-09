@@ -23,7 +23,9 @@ import '../../../../core/misc/helper_functions.dart';
 import '../../../../core/route/route_names.dart';
 import '../../../widgets/pageview_toggler.dart';
 import '../../../widgets/prompt_widget.dart';
+import '../../loan/view/screens/loan_application_screen.dart';
 import '../../profile/view/screens/profile_views/cards_banks_screen.dart';
+import 'dashboard_loan_details.dart';
 import 'widgets/data_completion_widget.dart';
 import 'widgets/highlights_card.dart';
 import 'widgets/options_card.dart';
@@ -176,8 +178,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   itemName: 'Schedule',
                                   assetPath:
                                       'assets/icons/fill/time-schedule.svg',
-                                  onPressed: () => Fluttertoast.showToast(
-                                      msg: "Coming soon!"),
+                                  onPressed: () {
+                                    // if user has settlin loan
+                                    if (user.loan!.hasSettlingLoan! &&
+                                        user.loan!.hasActiveApplication!) {
+                                      return navigationService.navigateTo(
+                                        RouteName.dashboardLoanDueTime,
+                                        arguments:
+                                            DashboardLoanDetailsArguments(
+                                                dashboardLoanView:
+                                                    DashboardLoanView
+                                                        .loanDetailSchedule),
+                                      );
+
+                                      // user has pending loan
+                                    } else if (user
+                                            .loan!.hasPendingApplication! &&
+                                        user.loan!.hasActiveApplication!) {
+                                      //
+                                      navigationService.navigateTo(
+                                        RouteName.dashboardLoanDueTime,
+                                        arguments:
+                                            DashboardLoanDetailsArguments(
+                                                dashboardLoanView:
+                                                    DashboardLoanView
+                                                        .loanDetailSchedule),
+                                      );
+                                    }
+                                    return navigationService
+                                        .navigateToRoute(LoanApplicationScreen(
+                                      loan: loanProvider.loansResponse!.loans[
+                                          loanProvider
+                                                  .loansResponse!.loans.length -
+                                              1],
+                                    ));
+                                  },
                                 ),
                                 OptionsCard(
                                   itemName: 'More',
