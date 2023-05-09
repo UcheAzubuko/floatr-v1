@@ -41,6 +41,10 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      WidgetsFlutterBinding.ensureInitialized();
+      context.read<LoanProvider>().getFeaturedLoans();
+    });
     super.initState();
   }
 
