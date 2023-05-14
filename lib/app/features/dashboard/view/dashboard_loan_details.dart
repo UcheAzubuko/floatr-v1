@@ -991,7 +991,7 @@ class LoanDetailsView extends StatelessWidget {
         children: [
           // loan info box A
           Container(
-            height: 300,
+            height: 260,
             width: context.widthPx,
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
