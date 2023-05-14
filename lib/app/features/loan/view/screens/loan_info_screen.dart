@@ -1677,9 +1677,14 @@ class LoanSummaryRow extends StatelessWidget {
     Key? key,
     required this.itemData,
     required this.itemTitle,
+    this.titleTextStyle,
+    this.dataTextStyle,
   }) : super(key: key);
+
   final String itemTitle;
   final String itemData;
+  final TextStyle? titleTextStyle;
+  final TextStyle? dataTextStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -1688,11 +1693,11 @@ class LoanSummaryRow extends StatelessWidget {
       children: [
         Text(
           itemTitle,
-          style: TextStyles.smallTextGrey14Px,
+          style: titleTextStyle ?? TextStyles.smallTextGrey14Px,
         ),
         Text(
           itemData,
-          style: TextStyles.normalTextDarkPoppins,
+          style: dataTextStyle ?? TextStyles.normalTextDarkPoppins,
         ),
       ],
     );

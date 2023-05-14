@@ -56,3 +56,6 @@ String formatNigerianPhoneNumber(String number) {
   // Format the number as +234XXXXXXXXXX
   return '+234${number.substring(3)}';
 }
+
+int daysToWeeks(int days) => days ~/ 7;
+

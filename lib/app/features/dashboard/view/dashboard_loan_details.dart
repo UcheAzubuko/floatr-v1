@@ -399,7 +399,6 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
       loan.verifyMonnifyTransaction().then(
         (_) {
           if (loan.loadingState == LoadingState.loaded) {
-            
             loan.getLoanBalance(
                 userProvider.user!.loan!.settlingLoanApplicationId!);
             userProvider.getUser();
@@ -430,8 +429,14 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
     DateTime dateNowMinusOneDay =
         DateTime.now().subtract(const Duration(days: 0));
 
-    Duration difference = userSubscribedLoan!.paymentSchedules.first.dueDate!
-        .difference(dateNowMinusOneDay);
+    log(userSubscribedLoan!.toJson().toString());
+
+    final loanHasSchedules = userSubscribedLoan.paymentSchedules.isNotEmpty;
+
+    Duration difference = loanHasSchedules
+        ? userSubscribedLoan.paymentSchedules.first.dueDate!
+            .difference(dateNowMinusOneDay)
+        : userSubscribedLoan.dueDate.difference(dateNowMinusOneDay);
 
     int differenceInDays = (difference.inMilliseconds / 86400000).round() < 0
         ? 0
@@ -975,129 +980,185 @@ class LoanDetailsView extends StatelessWidget {
     final userSubscribedLoan =
         context.read<LoanProvider>().userSubscribedLoanResponse;
 
-    return Column(
-      children: [
-        // loan info box A
-        Container(
-          height: 184,
-          width: context.widthPx,
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: AppColors.lightGrey1),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // principal
-              LoanSummaryRow(
-                itemTitle: 'Principal',
-                itemData:
-                    'N${formatAmount(doubleStringToIntString(userSubscribedLoan!.amount)!)}',
-              ),
+    final weeks = daysToWeeks(userSubscribedLoan!.tenureInDays);
 
-              //interest
-              LoanSummaryRow(
-                itemTitle: 'Interest',
-                itemData:
-                    'N${formatAmount(percent(amount: int.parse(doubleStringToIntString(userSubscribedLoan.interestCharge)!), percentage: int.parse(doubleStringToIntString(userSubscribedLoan.amount)!)).toString())} (${formatAmount(doubleStringToIntString(userSubscribedLoan.interestCharge)!)}%) ',
-              ),
+    final amountSpilt = int.parse(
+            doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!) ~/
+        weeks;
 
-              //platform
-              LoanSummaryRow(
-                itemTitle: 'Platform Fee',
-                itemData:
-                    'N${formatAmount(percent(amount: int.parse(doubleStringToIntString(userSubscribedLoan.platformCharge)!), percentage: int.parse(doubleStringToIntString(userSubscribedLoan.amount)!)).toString())} (${formatAmount(doubleStringToIntString(userSubscribedLoan.platformCharge)!)}%) ',
-              ),
-
-              // payback amount
-              LoanSummaryRow(
-                itemTitle: 'Payback Amount',
-                itemData:
-                    'N${formatAmount(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!)}',
-              ),
-            ],
-          ),
-        ),
-
-        const VerticalSpace(
-          size: 24,
-        ),
-
-        Container(
-          height: 184,
-          width: context.widthPx,
-          padding: const EdgeInsets.all(13),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: AppColors.lightGrey1),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SelectBank(
-                  onCardSelected: () {},
-                  color: AppColors.primaryColorLight.withOpacity(0.25),
-                  bankName: userSubscribedLoan.bank.bank.name,
-                  bankNumber: userSubscribedLoan.bank.accountNo),
-              Container(
-                height: 72,
-                width: context.widthPx,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryColorLight.withOpacity(0.25),
-                  borderRadius: BorderRadius.circular(12),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          // loan info box A
+          Container(
+            height: 300,
+            width: context.widthPx,
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: AppColors.lightGrey1),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // principal
+                LoanSummaryRow(
+                  itemTitle: 'Principal',
+                  itemData:
+                      'N${formatAmount(doubleStringToIntString(userSubscribedLoan.amount)!)}',
                 ),
-                child: Row(
-                  children: [
-                    // image and container
-                    Container(
-                      height: 109,
-                      width: 64,
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Image.asset(
-                        AppImages.card,
-                        fit: BoxFit.fitHeight,
-                      ),
-                    ),
-
-                    const HorizontalSpace(
-                      size: 8,
-                    ),
-
-                    // bank name and number column
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // name
-                          Text(
-                            userSubscribedLoan.card.name,
-                            style: TextStyles.smallTextDark14Px,
-                          ),
-
-                          const VerticalSpace(
-                            size: 5,
-                          ),
-
-                          // bank num
-                          Text(
-                            '• • • •     • • • •    • • • •    ${userSubscribedLoan.card.panLast4}',
-                            // style: TextStyles.smallTextGrey,
-                            style: const TextStyle(
-                                wordSpacing: 0,
-                                color: AppColors.grey500,
-                                fontWeight: FontWeight.w600),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
+    
+                // tenurw
+                LoanSummaryRow(
+                  itemTitle: 'Tenure',
+                  itemData: '$weeks Week(s)',
                 ),
-              ),
-            ],
+    
+                //interest
+                LoanSummaryRow(
+                  itemTitle: 'Interest',
+                  itemData:
+                      'N${formatAmount(percent(amount: int.parse(doubleStringToIntString(userSubscribedLoan.interestCharge)!), percentage: int.parse(doubleStringToIntString(userSubscribedLoan.amount)!)).toString())} (${formatAmount(doubleStringToIntString(userSubscribedLoan.interestCharge)!)}%) ',
+                ),
+    
+                //platform
+                LoanSummaryRow(
+                  itemTitle: 'Platform Fee',
+                  itemData:
+                      'N${formatAmount(percent(amount: int.parse(doubleStringToIntString(userSubscribedLoan.platformCharge)!), percentage: int.parse(doubleStringToIntString(userSubscribedLoan.amount)!)).toString())} (${formatAmount(doubleStringToIntString(userSubscribedLoan.platformCharge)!)}%) ',
+                ),
+    
+                // payback amount
+                LoanSummaryRow(
+                  itemTitle: 'Payback Amount',
+                  itemData:
+                      'N${formatAmount(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!)}',
+                ),
+    
+                // repayment cycle
+                LoanSummaryRow(
+                  itemTitle: 'Repayment Cycle(s)',
+                  itemData: '$weeks * ${formatAmount(amountSpilt.toString())}',
+                  titleTextStyle: const TextStyle(
+                    fontSize: 14,
+                    color: AppColors.primaryColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  dataTextStyle: const TextStyle(
+                    fontSize: 14,
+                    color: AppColors.primaryColor,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+    
+          const VerticalSpace(
+            size: 24,
+          ),
+    
+          Container(
+            height: 184,
+            width: context.widthPx,
+            padding: const EdgeInsets.all(13),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: AppColors.lightGrey1),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SelectBank(
+                    onCardSelected: () {},
+                    color: AppColors.primaryColorLight.withOpacity(0.25),
+                    bankName: userSubscribedLoan.bank.bank.name,
+                    bankNumber: userSubscribedLoan.bank.accountNo),
+                Container(
+                  height: 72,
+                  width: context.widthPx,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColorLight.withOpacity(0.25),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      // image and container
+                      Container(
+                        height: 109,
+                        width: 64,
+                        padding: const EdgeInsets.only(top: 20),
+                        child: Image.asset(
+                          AppImages.card,
+                          fit: BoxFit.fitHeight,
+                        ),
+                      ),
+    
+                      const HorizontalSpace(
+                        size: 8,
+                      ),
+    
+                      // bank name and number column
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // name
+                            Text(
+                              userSubscribedLoan.card.name,
+                              style: TextStyles.smallTextDark14Px,
+                            ),
+    
+                            const VerticalSpace(
+                              size: 5,
+                            ),
+    
+                            // bank num
+                            Text(
+                              '• • • •     • • • •    • • • •    ${userSubscribedLoan.card.panLast4}',
+                              // style: TextStyles.smallTextGrey,
+                              style: const TextStyle(
+                                  wordSpacing: 0,
+                                  color: AppColors.grey500,
+                                  fontWeight: FontWeight.w600),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+    
+          const VerticalSpace(
+            size: 40,
+          ),
+    
+          GeneralButton(
+            height: 40,
+            width: 299,
+            onPressed: () {},
+            backgroundColor: Colors.black,
+            borderColor: Colors.black,
+            borderRadius: 10,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const AppText(
+                  size: 12,
+                  text: 'VIEW SCHEDULE',
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ).paddingOnly(right: 8),
+                SvgPicture.asset('assets/icons/fill/arrow.svg',
+                    height: 8, width: 8),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }
