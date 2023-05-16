@@ -330,6 +330,10 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
   DateFormat dateFormat = DateFormat('MMM/yyyy');
   NavigationService navigationService = di<NavigationService>();
 
+  TextEditingController customAmountControlller = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  String loanAmount = '';
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -337,6 +341,12 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
     });
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    customAmountControlller.dispose();
+    super.dispose();
   }
 
   _initMonnify() async {
@@ -347,7 +357,10 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
     );
   }
 
-  void onInitializePayment({bool isFullPayment = true}) async {
+  void onInitializePayment(
+      {bool isFullPayment = true,
+      Map<String, String>? customMetaData,
+      TransactionDetails? customTransactionDetails}) async {
     final paymentReference = DateTime.now().millisecondsSinceEpoch.toString();
     final userProvider = context.read<AuthenticationProvider>();
     final loan = context.read<LoanProvider>();
@@ -357,41 +370,45 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
         .catchError((_) => Exception('Could not get amount to be paid'));
 
     // Initia
-    final transaction = TransactionDetails().copyWith(
-      amount: double.parse(isFullPayment
-          ? loan.loanBalanceResponse!.amount.toString()
-          : loan.loanBalanceResponse!.pendingSchedules.first.amount),
-      currencyCode: 'NGN',
-      customerName:
-          '${userProvider.user!.firstName} ${userProvider.user!.lastName}',
-      customerEmail: userProvider.user!.email,
-      paymentReference: paymentReference,
-      paymentMethods: [
-        PaymentMethod.CARD,
-        PaymentMethod.ACCOUNT_TRANSFER,
-        PaymentMethod.USSD,
-        PaymentMethod.PHONE_NUMBER
-      ],
-      metaData: isFullPayment
-          ? {
-              'loanApplicationUniqueId': loan.loanBalanceResponse!.uniqueId,
-              'floatrUserUniqueId': userProvider.user!.uniqueId!,
-              'floatrUserName':
-                  '${userProvider.user!.firstName} ${userProvider.user!.lastName}',
-              'date': DateTime.now().toIso8601String(),
-              'reason': 'full_loan_payment',
-            }
-          : {
-              'loanApplicationUniqueId': loan.loanBalanceResponse!.uniqueId,
-              'paymentScheduleUniqueId':
-                  loan.loanBalanceResponse!.pendingSchedules.first.uniqueId,
-              'floatrUserUniqueId': userProvider.user!.uniqueId!,
-              'floatrUserName':
-                  '${userProvider.user!.firstName} ${userProvider.user!.lastName}',
-              'date': DateTime.now().toIso8601String(),
-              'reason': 'part_loan_payment',
-            },
-    );
+    final transaction = customTransactionDetails ??
+        TransactionDetails().copyWith(
+          amount: double.parse(isFullPayment
+              ? loan.loanBalanceResponse!.amount.toString()
+              : loan.loanBalanceResponse!.pendingSchedules.first.amount),
+          currencyCode: 'NGN',
+          customerName:
+              '${userProvider.user!.firstName} ${userProvider.user!.lastName}',
+          customerEmail: userProvider.user!.email,
+          paymentReference: paymentReference,
+          paymentMethods: [
+            PaymentMethod.CARD,
+            PaymentMethod.ACCOUNT_TRANSFER,
+            PaymentMethod.USSD,
+            PaymentMethod.PHONE_NUMBER
+          ],
+          metaData: customMetaData ??
+              (isFullPayment
+                  ? {
+                      'loanApplicationUniqueId':
+                          loan.loanBalanceResponse!.uniqueId,
+                      'floatrUserUniqueId': userProvider.user!.uniqueId!,
+                      'floatrUserName':
+                          '${userProvider.user!.firstName} ${userProvider.user!.lastName}',
+                      'date': DateTime.now().toIso8601String(),
+                      'reason': 'full_loan_payment',
+                    }
+                  : {
+                      'loanApplicationUniqueId':
+                          loan.loanBalanceResponse!.uniqueId,
+                      'paymentScheduleUniqueId': loan
+                          .loanBalanceResponse!.pendingSchedules.first.uniqueId,
+                      'floatrUserUniqueId': userProvider.user!.uniqueId!,
+                      'floatrUserName':
+                          '${userProvider.user!.firstName} ${userProvider.user!.lastName}',
+                      'date': DateTime.now().toIso8601String(),
+                      'reason': 'part_loan_payment',
+                    }),
+        );
 
     try {
       final response =
@@ -429,6 +446,12 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
         context.read<LoanProvider>().userSubscribedLoanResponse;
     final user = context.read<AuthenticationProvider>().user;
 
+    final loan = context.read<LoanProvider>();
+
+    loan
+        .getLoanBalance(user!.loan!.settlingLoanApplicationId!)
+        .catchError((_) => Exception('Could not get amount to be paid'));
+
     // int weeks = (userSubscribedLoan!.maxTenureInDays / 7).floor();
     DateTime dateNowMinusOneDay =
         DateTime.now().subtract(const Duration(days: 0));
@@ -445,6 +468,7 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
     int differenceInDays = (difference.inMilliseconds / 86400000).round() < 0
         ? 0
         : (difference.inMilliseconds / 86400000).round();
+
     // int differenceInDays = difference.inDays < 0 ? 0 : difference.inDays;
     // print(difference.inMilliseconds);
     return WillPopScope(
@@ -455,7 +479,7 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
       },
       child: Column(
         children: [
-          if (user!.loan!.hasPendingApplication!) ...[
+          if (user.loan!.hasPendingApplication!) ...[
             Column(
               // child: Text(
               //   '''Your application is currently \npending approval!''',
@@ -793,15 +817,77 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
                                   style: TextStyles.normalTextDarkF600,
                                 ),
                                 const VerticalSpace(size: 15),
-                                AppTextField(
-                                  controller: TextEditingController(),
-                                  hintText: 'Enter Amount',
+                                Form(
+                                  key: formKey,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  child: AppTextField(
+                                    controller: customAmountControlller,
+                                    hintText: 'Enter Amount',
+                                    textInputType: TextInputType.number,
+                                    validator: ((amount) {
+                                      if (amount!.isEmpty) {
+                                        return 'Amount field should not be empty';
+                                      } else if (double.parse(amount) >
+                                          loan.loanBalanceResponse!.amount) {
+                                        return 'Amount exceeds loan balance';
+                                      }
+                                      return null;
+                                    }),
+                                    onSaved: (String? amount) =>
+                                        loanAmount = amount!,
+                                  ),
                                 ),
-
                                 const VerticalSpace(size: 40),
-
                                 GeneralButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      final bool isValid =
+                                          formKey.currentState!.validate();
+
+                                      if (isValid) {
+                                        formKey.currentState!.save();
+                                        onInitializePayment(
+                                          customTransactionDetails:
+                                              TransactionDetails().copyWith(
+                                            amount: double.parse(loanAmount),
+                                            currencyCode: 'NGN',
+                                            customerName:
+                                                '${user.firstName} ${user.lastName}',
+                                            customerEmail: user.email,
+                                            paymentReference: DateTime.now()
+                                                .millisecondsSinceEpoch
+                                                .toString(),
+                                            paymentMethods: [
+                                              PaymentMethod.CARD,
+                                              PaymentMethod.ACCOUNT_TRANSFER,
+                                              PaymentMethod.USSD,
+                                              PaymentMethod.PHONE_NUMBER
+                                            ],
+                                          ),
+                                          customMetaData: {
+                                            'loanApplicationUniqueId': loan
+                                                .loanBalanceResponse!.uniqueId,
+                                            'floatrUserUniqueId':
+                                                user.uniqueId!,
+                                            'floatrUserName':
+                                                '${user.firstName} ${user.lastName}',
+                                            'date': DateTime.now()
+                                                .toIso8601String(),
+                                            'reason': 'part_loan_payment',
+                                          },
+                                        );
+
+                                        navigationService.pop(); // pop modal
+                                        navigationService.pop(); // pop loan details
+                                        navigationService.navigateTo(
+                                            RouteName.dashboardLoanDueTime,
+                                            arguments:
+                                                DashboardLoanDetailsArguments(
+                                                    dashboardLoanView:
+                                                        DashboardLoanView
+                                                            .loanDetailSchedule)); // navigate back to loan details
+                                      }
+                                    },
                                     child: const Text('MAKE PAYMENT'))
                               ],
                             ),
@@ -993,7 +1079,6 @@ class PaybackOption extends StatelessWidget {
           ),
           Text(
             optionPrompt,
-            
             style: TextStyles.normalTextDarkF800,
           ),
           Container(
