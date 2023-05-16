@@ -5,8 +5,11 @@ import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
 import 'package:floatr/app/features/loan/model/responses/user_subscribed_loan_response.dart';
 import 'package:floatr/app/features/loan/providers/loan_provider.dart';
+import 'package:floatr/app/widgets/dialogs.dart';
+import 'package:floatr/app/widgets/text_field.dart';
 import 'package:floatr/core/providers/base_provider.dart';
 import 'package:floatr/core/route/route_names.dart';
+import 'package:floatr/core/utils/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -25,6 +28,7 @@ import '../../../../core/utils/spacing.dart';
 import '../../../widgets/app_text.dart';
 import '../../../widgets/custom_appbar.dart';
 import '../../../widgets/general_button.dart';
+import '../../../widgets/modal_pill.dart';
 import '../../../widgets/pageview_toggler.dart';
 import '../../loan/model/params/add_card_params.dart';
 import '../../loan/view/screens/loan_info_screen.dart';
@@ -677,7 +681,8 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
             ),
 
             SizedBox(
-              height: 275,
+              height:
+                  userSubscribedLoan.paymentSchedules.length > 1 ? 275 : 155,
               child: ListView.separated(
                 itemBuilder: (context, itemCount) => ScheduleListItem(
                   paymentSchedule:
@@ -741,22 +746,90 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
             //   ),
             // ),
 
-            const VerticalSpace(
-              size: 90,
-            ),
+            Container(
+              height: 264,
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 30),
+              width: context.widthPx,
+              decoration: BoxDecoration(
+                color: AppColors.primaryColorLight,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    "OTHER PAYBACK OPTIONS",
+                    style: TextStyles.smallTextDark,
+                  ),
+                  const Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      InkWell(
+                        onTap: () => onInitializePayment(),
+                        child: PaybackOption(
+                          iconPath: SvgAppIcons.icClosePay,
+                          optionPrompt: 'Close This Loan',
+                          payOption:
+                              'PAY ${formatAmount(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!)}',
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () => AppDialog.showAppModal(
+                          context,
+                          Container(
+                            height: 330,
+                            padding: const EdgeInsets.symmetric(horizontal: 18),
+                            child: Column(
+                              children: [
+                                const VerticalSpace(
+                                  size: 15,
+                                ),
+                                const ModalPill(),
+                                const VerticalSpace(
+                                  size: 62,
+                                ),
+                                Text(
+                                  'How much would you like to pay now?',
+                                  style: TextStyles.normalTextDarkF600,
+                                ),
+                                const VerticalSpace(size: 15),
+                                AppTextField(
+                                  controller: TextEditingController(),
+                                  hintText: 'Enter Amount',
+                                ),
 
-            InkWell(
-              onTap: () => onInitializePayment(),
-              child: const Text(
-                'REPAY ALL NOW',
-                style: TextStyle(
-                  color: AppColors.primaryColor,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  decoration: TextDecoration.underline,
-                ),
+                                const VerticalSpace(size: 40),
+
+                                GeneralButton(
+                                    onPressed: () {},
+                                    child: const Text('MAKE PAYMENT'))
+                              ],
+                            ),
+                          ),
+                        ),
+                        child: const PaybackOption(
+                            iconPath: SvgAppIcons.icPartPay,
+                            optionPrompt: 'Part Payment',
+                            payOption: 'PAY ANY AMOUNT'),
+                      ),
+                    ],
+                  )
+                ],
               ),
             ),
+
+            // InkWell(
+            //   onTap: () => onInitializePayment(),
+            //   child: const Text(
+            //     'REPAY ALL NOW',
+            //     style: TextStyle(
+            //       color: AppColors.primaryColor,
+            //       fontSize: 14,
+            //       fontWeight: FontWeight.w600,
+            //       decoration: TextDecoration.underline,
+            //     ),
+            //   ),
+            // ),
 
             const VerticalSpace(
               size: 50,
@@ -889,6 +962,63 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
   }
 }
 
+class PaybackOption extends StatelessWidget {
+  const PaybackOption({
+    super.key,
+    required this.iconPath,
+    required this.optionPrompt,
+    required this.payOption,
+  });
+
+  final String iconPath;
+  final String optionPrompt;
+  final String payOption;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 158,
+      width: 152,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          SvgPicture.asset(
+            iconPath,
+            // width: 46,
+            // height: 46,
+          ),
+          Text(
+            optionPrompt,
+            
+            style: TextStyles.normalTextDarkF800,
+          ),
+          Container(
+            height: 26,
+            width: 102,
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Text(
+                payOption,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
 class ScheduleListItem extends StatelessWidget {
   const ScheduleListItem({
     super.key,
@@ -1006,34 +1136,34 @@ class LoanDetailsView extends StatelessWidget {
                   itemData:
                       'N${formatAmount(doubleStringToIntString(userSubscribedLoan.amount)!)}',
                 ),
-    
+
                 // tenurw
                 LoanSummaryRow(
                   itemTitle: 'Tenure',
                   itemData: '$weeks Week(s)',
                 ),
-    
+
                 //interest
                 LoanSummaryRow(
                   itemTitle: 'Interest',
                   itemData:
                       'N${formatAmount(percent(amount: int.parse(doubleStringToIntString(userSubscribedLoan.interestCharge)!), percentage: int.parse(doubleStringToIntString(userSubscribedLoan.amount)!)).toString())} (${formatAmount(doubleStringToIntString(userSubscribedLoan.interestCharge)!)}%) ',
                 ),
-    
+
                 //platform
                 LoanSummaryRow(
                   itemTitle: 'Platform Fee',
                   itemData:
                       'N${formatAmount(percent(amount: int.parse(doubleStringToIntString(userSubscribedLoan.platformCharge)!), percentage: int.parse(doubleStringToIntString(userSubscribedLoan.amount)!)).toString())} (${formatAmount(doubleStringToIntString(userSubscribedLoan.platformCharge)!)}%) ',
                 ),
-    
+
                 // payback amount
                 LoanSummaryRow(
                   itemTitle: 'Payback Amount',
                   itemData:
                       'N${formatAmount(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!)}',
                 ),
-    
+
                 // repayment cycle
                 LoanSummaryRow(
                   itemTitle: 'Repayment Cycle(s)',
@@ -1052,11 +1182,11 @@ class LoanDetailsView extends StatelessWidget {
               ],
             ),
           ),
-    
+
           const VerticalSpace(
             size: 24,
           ),
-    
+
           Container(
             height: 184,
             width: context.widthPx,
@@ -1092,11 +1222,11 @@ class LoanDetailsView extends StatelessWidget {
                           fit: BoxFit.fitHeight,
                         ),
                       ),
-    
+
                       const HorizontalSpace(
                         size: 8,
                       ),
-    
+
                       // bank name and number column
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
@@ -1108,11 +1238,11 @@ class LoanDetailsView extends StatelessWidget {
                               userSubscribedLoan.card.name,
                               style: TextStyles.smallTextDark14Px,
                             ),
-    
+
                             const VerticalSpace(
                               size: 5,
                             ),
-    
+
                             // bank num
                             Text(
                               '• • • •     • • • •    • • • •    ${userSubscribedLoan.card.panLast4}',
@@ -1131,11 +1261,11 @@ class LoanDetailsView extends StatelessWidget {
               ],
             ),
           ),
-    
+
           const VerticalSpace(
             size: 40,
           ),
-    
+
           GeneralButton(
             height: 40,
             width: 299,

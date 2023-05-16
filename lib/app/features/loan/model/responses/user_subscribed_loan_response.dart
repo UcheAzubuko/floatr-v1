@@ -307,7 +307,7 @@ class BankBank {
         nipBankCode: json["nipBankCode"],
         monnifyBankCode: json["monnifyBankCode"],
         baseUssdCode: json["baseUssdCode"],
-        ussdTransferTemplate: json["ussdTransferTemplate"],
+        ussdTransferTemplate: json["ussdTransferTemplate"] ?? '',
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
         deletedAt: json["deletedAt"],

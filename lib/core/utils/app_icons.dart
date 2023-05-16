@@ -22,5 +22,7 @@ class SvgAppIcons {
   static const String icSecurityCard = 'assets/icons/outline/security-card.svg';
   static const String icSecurityUser = 'assets/icons/outline/security-user.svg';
   static const String icTickCircleFill = 'assets/icons/fill/tick-circle.svg';
+  static const String icPartPay = 'assets/icons/outline/part-pay-this-loan-card.svg';
+  static const String icClosePay = 'assets/icons/outline/close-this-loan-card.svg';
   
 }
