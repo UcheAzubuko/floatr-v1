@@ -43,7 +43,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   const EdgeInsets.symmetric(horizontal: 15.0, vertical: 60),
               child: isUserEligible
                   ? EligibleLenderView(
-                      loan: loanResponse!.loans[loanResponse.loans.length - 1],
+                      loan: loanResponse!.loans[0],
+                      isFromNav: true,
                     )
                   : const IneligibleLenderView(),
             ),

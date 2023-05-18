@@ -66,9 +66,11 @@ class EligibleLenderView extends StatefulWidget {
   const EligibleLenderView({
     super.key,
     required this.loan,
+    this.isFromNav = false,
   });
 
   final Loan loan;
+  final bool isFromNav;
 
   @override
   State<EligibleLenderView> createState() => _EligibleLenderViewState();
@@ -78,11 +80,13 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
   late Loan loan;
   late double amount;
   late RequestLoanParams _requestLoanParams;
+  late bool isFromNav;
 
   @override
   void initState() {
     loan = widget.loan;
     amount = double.parse(loan.minAmount);
+    isFromNav = widget.isFromNav;
     _requestLoanParams = RequestLoanParams();
     super.initState();
   }
@@ -106,11 +110,11 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
   //  = int.parse(loan.minAmount) as double;
 
   int get platformFee {
-    return (double.parse(widget.loan.platformCharge) / 100 * amount) ~/ 1;
+    return (double.parse(loan.platformCharge) / 100 * amount) ~/ 1;
   }
 
   int get interest {
-    return (double.parse(widget.loan.interestCharge) / 100 * amount) ~/ 1;
+    return (double.parse(loan.interestCharge) / 100 * amount) ~/ 1;
   }
 
   int get paybackAmount {
@@ -144,6 +148,31 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
       } else {
         weeksMap['$i'] = "$i Weeks";
       }
+    }
+
+    final featuredLoans = context.read<LoanProvider>().loansResponse!.loans;
+
+    List<Loan> getLoanByAmount(List<Loan> loanList, double amount) {
+      List<Loan> result = [];
+      int maxTenure = 0;
+
+      for (var loan in loanList) {
+        double loanMinAmount = double.parse(loan.minAmount);
+        double loanMaxAmount = double.parse(loan.maxAmount);
+        int loanMaxTenure = loan.maxTenureInDays;
+
+        if (amount >= loanMinAmount && amount <= loanMaxAmount) {
+          if (loanMaxTenure > maxTenure) {
+            result.clear();
+            maxTenure = loanMaxTenure;
+            result.add(loan);
+          } else if (loanMaxTenure == maxTenure) {
+            result.add(loan);
+          }
+        }
+      }
+
+      return result;
     }
 
     return Column(
@@ -213,11 +242,11 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'from ₦${formatAmount(doubleStringToIntString(loan.minAmount)!)}',
+                  'from ₦${isFromNav ? formatAmount(doubleStringToIntString(featuredLoans[0].minAmount)!) : formatAmount(doubleStringToIntString(loan.minAmount)!)}',
                   style: TextStyles.smallerTextDark10px,
                 ),
                 Text(
-                  'to ₦${formatAmount(doubleStringToIntString(loan.maxAmount.toString())!)}',
+                  'to ₦${isFromNav ? formatAmount(doubleStringToIntString(featuredLoans[featuredLoans.length - 1].maxAmount)!) : formatAmount(doubleStringToIntString(loan.maxAmount)!)}',
                   style: TextStyles.smallerTextDark10px,
                 ),
               ],
@@ -265,20 +294,36 @@ class _EligibleLenderViewState extends State<EligibleLenderView> {
               // ),
               child: Slider(
                 value: amount,
-                min: double.parse(doubleStringToIntString(loan.minAmount)!),
-                max: double.parse(
-                    doubleStringToIntString(loan.maxAmount.toString())!),
+                min: isFromNav
+                    ? double.parse(
+                        doubleStringToIntString(featuredLoans[0].minAmount)!)
+                    : double.parse(doubleStringToIntString(loan.minAmount)!),
+                max: isFromNav
+                    ? double.parse(doubleStringToIntString(
+                        featuredLoans[featuredLoans.length - 1].maxAmount)!)
+                    : double.parse(
+                        doubleStringToIntString(loan.maxAmount.toString())!),
                 divisions: 10,
                 label: amount.toString(),
                 activeColor: AppColors.primaryColor,
                 inactiveColor: AppColors.disabledBackgroundColor,
-                onChanged: (double value) {
-                  setState(() {
-                    amount = value;
-                    // ignore: avoid_print
-                    print(amount);
-                  });
-                },
+                onChanged: isFromNav
+                    ? (double value) {
+                        // use the value here to reset loan
+
+                        setState(() {
+                          loan = getLoanByAmount(featuredLoans, value)[0];
+                          amount = value;
+                          print(amount);
+                        });
+                      }
+                    : (double value) {
+                        setState(() {
+                          amount = value;
+                          // ignore: avoid_print
+                          print(amount);
+                        });
+                      },
               ),
             ),
             const VerticalSpace(
