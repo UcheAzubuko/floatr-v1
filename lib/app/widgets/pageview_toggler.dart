@@ -33,15 +33,13 @@ class PageViewToggler extends StatelessWidget {
                   viewName[0],
                   style: const TextStyle(
                       color: AppColors.primaryColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500),
+                      fontSize: 11, fontWeight: FontWeight.bold),
                 ),
                 Text(
                   viewName[1],
                   style: const TextStyle(
                       color: AppColors.primaryColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500),
+                      fontSize: 11, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -63,7 +61,7 @@ class PageViewToggler extends StatelessWidget {
                   togglePosition == TogglePosition.left
                       ? viewName[0]
                       : viewName[1],
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
                 ))),
           ),
         ],

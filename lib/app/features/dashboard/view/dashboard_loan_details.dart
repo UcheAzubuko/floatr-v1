@@ -293,7 +293,7 @@ class _DashboardLoanDetailScheduleState
                         }),
                     child: PageViewToggler(
                       togglePosition: togglePosition,
-                      viewName: const ['Details', 'Schedule'],
+                      viewName:  ['Details', loan.hasSettlingLoan! ? 'Payback Options' : 'Schedule'],
                     )),
                 const VerticalSpace(
                   size: 24,
@@ -1167,9 +1167,9 @@ class ScheduleListItem extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const AppText(
+                       AppText(
                         size: 12,
-                        text: 'REPAY NOW',
+                        text: 'PAY ${formatAmount(doubleStringToIntString(paymentSchedule.amount)!)} NOW',
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
                       ).paddingOnly(right: 8),
