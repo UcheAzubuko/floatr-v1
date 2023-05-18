@@ -1,4 +1,3 @@
-
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:flutter/material.dart';
 
@@ -25,21 +24,40 @@ class PageViewToggler extends StatelessWidget {
         alignment: Alignment.centerLeft,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 65.0),
+            padding: EdgeInsets.only(
+                right: viewName[1] == 'Payback Options' &&
+                        togglePosition == TogglePosition.left
+                    ? 28
+                    : 28,
+                left: 65),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   viewName[0],
                   style: const TextStyle(
                       color: AppColors.primaryColor,
-                      fontSize: 11, fontWeight: FontWeight.bold),
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold),
                 ),
+                if (viewName[1] == 'Payback Options') ...[
+                  const SizedBox(
+                    width: 135,
+                  ),
+                ] else ...[
+                  const SizedBox(
+                    width: 145,
+                  ),
+                ],
+                // else if(viewName[1] == 'Schedule')...[
+                //   SizedBox(width: 140,)
+                // ],
                 Text(
                   viewName[1],
                   style: const TextStyle(
                       color: AppColors.primaryColor,
-                      fontSize: 11, fontWeight: FontWeight.bold),
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -61,7 +79,10 @@ class PageViewToggler extends StatelessWidget {
                   togglePosition == TogglePosition.left
                       ? viewName[0]
                       : viewName[1],
-                  style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold),
                 ))),
           ),
         ],
