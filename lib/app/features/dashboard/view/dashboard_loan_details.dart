@@ -293,13 +293,18 @@ class _DashboardLoanDetailScheduleState
                         }),
                     child: PageViewToggler(
                       togglePosition: togglePosition,
-                      viewName:  ['Details', loan.hasSettlingLoan! ? 'Payback Options' : 'Schedule'],
+                      viewName: [
+                        'Details',
+                        loan.hasSettlingLoan! ? 'Payback Options' : 'Schedule'
+                      ],
                     )),
                 const VerticalSpace(
                   size: 24,
                 ),
                 togglePosition == TogglePosition.left
-                    ? const LoanDetailsView()
+                    ? LoanDetailsView(
+                        updateToggle: updateToggle,
+                      )
                     : const LoanScheduleView()
               ],
             );
@@ -309,6 +314,12 @@ class _DashboardLoanDetailScheduleState
         }
       },
     );
+  }
+
+  void updateToggle(TogglePosition togglePosition) {
+    setState(() {
+      this.togglePosition = togglePosition;
+    });
   }
 
   TogglePosition get toggle => togglePosition == TogglePosition.left
@@ -331,6 +342,7 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
   NavigationService navigationService = di<NavigationService>();
 
   TextEditingController customAmountControlller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
   final formKey = GlobalKey<FormState>();
   String loanAmount = '';
 
@@ -345,6 +357,7 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
 
   @override
   void dispose() {
+    _focusNode.dispose();
     customAmountControlller.dispose();
     super.dispose();
   }
@@ -645,6 +658,7 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
           // is settling - loan has disbursed
           else if (user.loan!.hasSettlingLoan! &&
               userSubscribedLoan.status == LoanAppLicationStatus.settling) ...[
+            const VerticalSpace(size: 20),
             CircularPercentIndicator(
               radius: 110.0,
               backgroundColor: Colors.white,
@@ -706,7 +720,7 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
 
             SizedBox(
               height:
-                  userSubscribedLoan.paymentSchedules.length > 1 ? 275 : 155,
+                  userSubscribedLoan.paymentSchedules.length > 1 ? 275 : 175,
               child: ListView.separated(
                 itemBuilder: (context, itemCount) => ScheduleListItem(
                   paymentSchedule:
@@ -823,6 +837,7 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
                                       AutovalidateMode.onUserInteraction,
                                   child: AppTextField(
                                     controller: customAmountControlller,
+                                    focusNode: _focusNode,
                                     hintText: 'Enter Amount',
                                     textInputType: TextInputType.number,
                                     validator: ((amount) {
@@ -841,6 +856,7 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
                                 const VerticalSpace(size: 40),
                                 GeneralButton(
                                     onPressed: () {
+                                      _focusNode.unfocus();
                                       final bool isValid =
                                           formKey.currentState!.validate();
 
@@ -878,14 +894,15 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
                                         );
 
                                         navigationService.pop(); // pop modal
-                                        navigationService.pop(); // pop loan details
-                                        navigationService.navigateTo(
-                                            RouteName.dashboardLoanDueTime,
-                                            arguments:
-                                                DashboardLoanDetailsArguments(
-                                                    dashboardLoanView:
-                                                        DashboardLoanView
-                                                            .loanDetailSchedule)); // navigate back to loan details
+                                        // navigationService
+                                        //     .pop(); // pop loan details
+                                        // navigationService.navigateTo(
+                                        //     RouteName.dashboardLoanDueTime,
+                                        //     arguments:
+                                        //         DashboardLoanDetailsArguments(
+                                        //             dashboardLoanView:
+                                        //                 DashboardLoanView
+                                        //                     .loanDetailSchedule)); // navigate back to loan details
                                       }
                                     },
                                     child: const Text('MAKE PAYMENT'))
@@ -1167,9 +1184,10 @@ class ScheduleListItem extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                       AppText(
+                      AppText(
                         size: 12,
-                        text: 'PAY ${formatAmount(doubleStringToIntString(paymentSchedule.amount)!)} NOW',
+                        text:
+                            'PAY ${formatAmount(doubleStringToIntString(paymentSchedule.amount)!)} NOW',
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
                       ).paddingOnly(right: 8),
@@ -1188,7 +1206,10 @@ class ScheduleListItem extends StatelessWidget {
 class LoanDetailsView extends StatelessWidget {
   const LoanDetailsView({
     Key? key,
+    required this.updateToggle,
   }) : super(key: key);
+
+  final Function(TogglePosition) updateToggle;
 
   @override
   Widget build(BuildContext context) {
@@ -1354,7 +1375,7 @@ class LoanDetailsView extends StatelessWidget {
           GeneralButton(
             height: 40,
             width: 299,
-            onPressed: () {},
+            onPressed: () => updateToggle(TogglePosition.right),
             backgroundColor: Colors.black,
             borderColor: Colors.black,
             borderRadius: 10,

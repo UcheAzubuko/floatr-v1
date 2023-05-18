@@ -40,7 +40,7 @@ class CardsBanksScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'Profile',
+        title: bottomScreenName,
         useInAppArrow: true,
       ),
       body: SingleChildScrollView(

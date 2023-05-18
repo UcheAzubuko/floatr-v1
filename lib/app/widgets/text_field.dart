@@ -20,6 +20,7 @@ class AppTextField extends StatelessWidget {
   final VoidCallback? onTap;
   final bool readOnly;
   final List<TextInputFormatter>? inputFormatters;
+  final FocusNode? focusNode;
 
   const AppTextField({
     Key? key,
@@ -39,6 +40,7 @@ class AppTextField extends StatelessWidget {
     this.inputFormatters,
     this.suffixIcon,
     this.onEditingComplete,
+    this.focusNode,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -92,6 +94,7 @@ class AppTextField extends StatelessWidget {
       controller: controller,
       onTap: onTap,
       readOnly: readOnly,
+      focusNode: focusNode ?? FocusNode(),
     );
   }
 }

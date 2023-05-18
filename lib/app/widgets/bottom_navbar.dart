@@ -1,5 +1,6 @@
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
+import 'package:floatr/app/features/dashboard/view/dashboard_loan_details.dart';
 import 'package:floatr/app/features/loan/providers/loan_provider.dart';
 import 'package:floatr/app/features/loan/view/screens/loan_application_screen.dart';
 // import 'package:floatr/app/features/loan/view/screens/nav_loan_application_screen.dart';
@@ -37,18 +38,22 @@ class _BottomNavigationState extends State<BottomNavigation> {
         case 0:
           return const DashboardScreen();
         case 1:
-          return SingleChildScrollView(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 60),
-              child: isUserEligible
-                  ? EligibleLenderView(
+          return isUserEligible
+              ? SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15.0, vertical: 60),
+                    child: EligibleLenderView(
                       loan: loanResponse!.loans[0],
                       isFromNav: true,
-                    )
-                  : const IneligibleLenderView(),
-            ),
-          );
+                    ),
+                  ),
+                )
+              : const SingleChildScrollView(
+                  child: Padding(
+                  padding: EdgeInsets.only(left: 10.0, right: 10,),
+                  child: SafeArea(child: DashboardLoanDetailSchedule()),
+                ));
         case 2:
           return const BottomNavCardView();
         case 3:
