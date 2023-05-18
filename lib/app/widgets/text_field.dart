@@ -94,7 +94,7 @@ class AppTextField extends StatelessWidget {
       controller: controller,
       onTap: onTap,
       readOnly: readOnly,
-      focusNode: focusNode ?? FocusNode(),
+      focusNode: focusNode,
     );
   }
 }
