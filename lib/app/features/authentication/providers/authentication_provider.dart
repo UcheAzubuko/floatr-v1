@@ -168,7 +168,7 @@ class AuthenticationProvider extends BaseProvider {
       } else if (!user!.isPhotoVerified!) {
         _navigationService.navigateTo(RouteName.takeSelfie);
       } else {
-        _navigationService.navigateReplacementTo(RouteName.navbar);
+        _navigationService.pushAndRemoveUntil(RouteName.navbar);
       }
     });
   }
