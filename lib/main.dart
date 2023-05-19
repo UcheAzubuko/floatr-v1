@@ -3,6 +3,7 @@ import 'package:floatr/core/misc/provider_registry.dart';
 import 'package:floatr/core/route/navigation_service.dart';
 import 'package:floatr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart' hide Router;
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'core/misc/dependency_injectors.dart';
@@ -15,9 +16,12 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   cameras = await availableCameras();
-  
+
   await setupLocator();
-  runApp(const MyApp());
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {

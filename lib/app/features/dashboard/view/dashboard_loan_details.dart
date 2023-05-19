@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:floatr/app/extensions/padding.dart';
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/features/authentication/providers/authentication_provider.dart';
@@ -346,6 +344,8 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
   final formKey = GlobalKey<FormState>();
   String loanAmount = '';
 
+  double sheetHeight = 330;
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -426,28 +426,37 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
     try {
       final response =
           await monnify?.initializePayment(transaction: transaction);
-      loan.updateVerifyMonnifyParams(
-          VerifyMonnifyParams(transactionRef: response!.transactionReference));
 
-      // verify transaction
-      loan.verifyMonnifyTransaction().then(
-        (_) {
-          if (loan.loadingState == LoadingState.loaded) {
+      print('The transaction: ${transaction.toString()}');
+
+      response.toString();
+
+      if (response!.transactionReference.isNotEmpty) {
+        loan.updateVerifyMonnifyParams(
+            VerifyMonnifyParams(transactionRef: response.transactionReference));
+
+        print('The transaction ref used: ${response.transactionReference}');
+
+        // verify transaction
+        loan.verifyMonnifyTransaction().whenComplete(
+          () {
+            // if (loan.loadingState == LoadingState.loaded) {
             loan.getLoanBalance(
                 userProvider.user!.loan!.settlingLoanApplicationId!);
             userProvider.getUser();
             if (isFullPayment) {
               navigationService.pushAndRemoveUntil(RouteName.navbar);
             }
-          } else {
-            loan.updateLoadingState(LoadingState
-                .loaded); // force loading state to go back to loaded
-          }
-        },
-      );
+            // } else {
+            //   loan.updateLoadingState(LoadingState
+            //       .loaded); // force loading state to go back to loaded
+            // }
+          },
+        );
+      }
 
       Fluttertoast.showToast(msg: response.toString());
-      log(response.toString());
+      // log(response.toString());
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
     }
@@ -461,17 +470,17 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
 
     final loan = context.read<LoanProvider>();
 
-    loan
-        .getLoanBalance(user!.loan!.settlingLoanApplicationId!)
-        .catchError((_) => Exception('Could not get amount to be paid'));
+    // loan
+    //     .getLoanBalance(user!.loan!.settlingLoanApplicationId!)
+    //     .catchError((_) => Exception('Could not get amount to be paid'));
 
     // int weeks = (userSubscribedLoan!.maxTenureInDays / 7).floor();
     DateTime dateNowMinusOneDay =
         DateTime.now().subtract(const Duration(days: 0));
 
-    log(userSubscribedLoan!.toJson().toString());
+    // log(userSubscribedLoan!.toJson().toString());
 
-    final loanHasSchedules = userSubscribedLoan.paymentSchedules.isNotEmpty;
+    final loanHasSchedules = userSubscribedLoan!.paymentSchedules.isNotEmpty;
 
     Duration difference = loanHasSchedules
         ? userSubscribedLoan.paymentSchedules.first.dueDate!
@@ -492,7 +501,7 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
       },
       child: Column(
         children: [
-          if (user.loan!.hasPendingApplication!) ...[
+          if (user!.loan!.hasPendingApplication!) ...[
             Column(
               // child: Text(
               //   '''Your application is currently \npending approval!''',
@@ -814,101 +823,126 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
                       InkWell(
                         onTap: () => AppDialog.showAppModal(
                           context,
-                          Container(
-                            height: 330,
-                            padding: const EdgeInsets.symmetric(horizontal: 18),
-                            child: Column(
-                              children: [
-                                const VerticalSpace(
-                                  size: 15,
-                                ),
-                                const ModalPill(),
-                                const VerticalSpace(
-                                  size: 62,
-                                ),
-                                Text(
-                                  'How much would you like to pay now?',
-                                  style: TextStyles.normalTextDarkF600,
-                                ),
-                                const VerticalSpace(size: 15),
-                                Form(
-                                  key: formKey,
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  child: AppTextField(
-                                    controller: customAmountControlller,
-                                    focusNode: _focusNode,
-                                    hintText: 'Enter Amount',
-                                    textInputType: TextInputType.number,
-                                    validator: ((amount) {
-                                      if (amount!.isEmpty) {
-                                        return 'Amount field should not be empty';
-                                      } else if (double.parse(amount) >
-                                          loan.loanBalanceResponse!.amount) {
-                                        return 'Amount exceeds loan balance';
-                                      }
-                                      return null;
-                                    }),
-                                    onSaved: (String? amount) =>
-                                        loanAmount = amount!,
+                          StatefulBuilder(builder: (context, setState) {
+                            void toggleSheetHeight() {
+                              setState(() {
+                                _focusNode.unfocus();
+                              });
+                            }
+
+                            _focusNode.addListener(() {
+                              setState(() {
+                                sheetHeight =
+                                    _focusNode.hasFocus ? 800.0 : 330.0;
+                              });
+                            });
+
+                            return AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              height: sheetHeight,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 18),
+                              child: Column(
+                                children: [
+                                  const VerticalSpace(
+                                    size: 15,
                                   ),
-                                ),
-                                const VerticalSpace(size: 40),
-                                GeneralButton(
-                                    onPressed: () {
-                                      _focusNode.unfocus();
-                                      final bool isValid =
-                                          formKey.currentState!.validate();
+                                  const ModalPill(),
+                                  const VerticalSpace(
+                                    size: 62,
+                                  ),
+                                  Text(
+                                    'How much would you like to pay now?',
+                                    style: TextStyles.normalTextDarkF600,
+                                  ),
+                                  const VerticalSpace(size: 15),
+                                  Form(
+                                    key: formKey,
+                                    autovalidateMode:
+                                        AutovalidateMode.onUserInteraction,
+                                    child: AppTextField(
+                                        controller: customAmountControlller,
+                                        focusNode: _focusNode,
+                                        hintText: 'Enter Amount',
+                                        textInputType: TextInputType.number,
+                                        validator: ((amount) {
+                                          if (amount!.isEmpty) {
+                                            return 'Amount field should not be empty';
+                                          } else if (double.parse(amount) >
+                                              loan.loanBalanceResponse!
+                                                  .amount) {
+                                            return 'Amount exceeds loan balance';
+                                          }
+                                          return null;
+                                        }),
+                                        onSaved: (String? amount) =>
+                                            loanAmount = amount!,
+                                        onEditingComplete: () {
+                                          toggleSheetHeight();
+                                        }),
+                                  ),
+                                  const VerticalSpace(size: 40),
+                                  GeneralButton(
+                                      onPressed: () {
+                                        _focusNode.unfocus();
+                                        final bool isValid =
+                                            formKey.currentState!.validate();
 
-                                      if (isValid) {
-                                        formKey.currentState!.save();
-                                        onInitializePayment(
-                                          customTransactionDetails:
-                                              TransactionDetails().copyWith(
-                                            amount: double.parse(loanAmount),
-                                            currencyCode: 'NGN',
-                                            customerName:
-                                                '${user.firstName} ${user.lastName}',
-                                            customerEmail: user.email,
-                                            paymentReference: DateTime.now()
-                                                .millisecondsSinceEpoch
-                                                .toString(),
-                                            paymentMethods: [
-                                              PaymentMethod.CARD,
-                                              PaymentMethod.ACCOUNT_TRANSFER,
-                                              PaymentMethod.USSD,
-                                              PaymentMethod.PHONE_NUMBER
-                                            ],
-                                          ),
-                                          customMetaData: {
-                                            'loanApplicationUniqueId': loan
-                                                .loanBalanceResponse!.uniqueId,
-                                            'floatrUserUniqueId':
-                                                user.uniqueId!,
-                                            'floatrUserName':
-                                                '${user.firstName} ${user.lastName}',
-                                            'date': DateTime.now()
-                                                .toIso8601String(),
-                                            'reason': 'part_loan_payment',
-                                          },
-                                        );
+                                        if (isValid) {
+                                          formKey.currentState!.save();
+                                          onInitializePayment(
+                                            isFullPayment: false,
+                                            customTransactionDetails:
+                                                TransactionDetails().copyWith(
+                                              amount: double.parse(loanAmount),
+                                              currencyCode: 'NGN',
+                                              customerName:
+                                                  '${user.firstName} ${user.lastName}',
+                                              customerEmail: user.email,
+                                              paymentReference: DateTime.now()
+                                                  .millisecondsSinceEpoch
+                                                  .toString(),
+                                              paymentMethods: [
+                                                PaymentMethod.CARD,
+                                                PaymentMethod.ACCOUNT_TRANSFER,
+                                                PaymentMethod.USSD,
+                                                PaymentMethod.PHONE_NUMBER
+                                              ],
+                                            ),
+                                            customMetaData: {
+                                              'loanApplicationUniqueId': loan
+                                                  .loanBalanceResponse!
+                                                  .uniqueId,
+                                              'floatrUserUniqueId':
+                                                  user.uniqueId!,
+                                              'floatrUserName':
+                                                  '${user.firstName} ${user.lastName}',
+                                              'date': DateTime.now()
+                                                  .toIso8601String(),
+                                              'reason': 'part_loan_payment',
+                                            },
+                                          );
 
-                                        navigationService.pop(); // pop modal
-                                        // navigationService
-                                        //     .pop(); // pop loan details
-                                        // navigationService.navigateTo(
-                                        //     RouteName.dashboardLoanDueTime,
-                                        //     arguments:
-                                        //         DashboardLoanDetailsArguments(
-                                        //             dashboardLoanView:
-                                        //                 DashboardLoanView
-                                        //                     .loanDetailSchedule)); // navigate back to loan details
-                                      }
-                                    },
-                                    child: const Text('MAKE PAYMENT'))
-                              ],
-                            ),
-                          ),
+                                          navigationService.pop(); // pop modal
+                                          //   // navigationService
+                                          //   //     .pop(); // pop loan details
+                                          //   // navigationService.navigateTo(
+                                          //   //     RouteName.dashboardLoanDueTime,
+                                          //   //     arguments:
+                                          //   //         DashboardLoanDetailsArguments(
+                                          //   //             dashboardLoanView:
+                                          //   //                 DashboardLoanView
+                                          //   //                     .loanDetailSchedule)); // navigate back to loan details
+                                        }
+
+                                        setState(() => toggleSheetHeight());
+                                        // toggleSheetHeight();
+                                      },
+                                      child: const Text('MAKE PAYMENT'))
+                                ],
+                              ),
+                            );
+                          }),
                         ),
                         child: const PaybackOption(
                             iconPath: SvgAppIcons.icPartPay,
