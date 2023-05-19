@@ -491,6 +491,8 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
         ? 0
         : (difference.inMilliseconds / 86400000).round();
 
+    final amountLeftToPay = (double.parse(userSubscribedLoan.totalPayBackAmount) - double.parse(userSubscribedLoan.totalPaidBackAmount)).toInt().toString();
+
     // int differenceInDays = difference.inDays < 0 ? 0 : difference.inDays;
     // print(difference.inMilliseconds);
     return WillPopScope(
@@ -817,7 +819,7 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
                           iconPath: SvgAppIcons.icClosePay,
                           optionPrompt: 'Close This Loan',
                           payOption:
-                              'PAY ${formatAmount(doubleStringToIntString(userSubscribedLoan.totalPayBackAmount)!)}',
+                              'PAY ${formatAmount(amountLeftToPay)}',
                         ),
                       ),
                       InkWell(
