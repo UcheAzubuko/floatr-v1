@@ -372,7 +372,7 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
 
   void onInitializePayment(
       {bool isFullPayment = true,
-      Map<String, String>? customMetaData,
+      // Map<String, String>? customMetaData,
       TransactionDetails? customTransactionDetails}) async {
     final paymentReference = DateTime.now().millisecondsSinceEpoch.toString();
     final userProvider = context.read<AuthenticationProvider>();
@@ -399,28 +399,25 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
             PaymentMethod.USSD,
             PaymentMethod.PHONE_NUMBER
           ],
-          metaData: customMetaData ??
-              (isFullPayment
-                  ? {
-                      'loanApplicationUniqueId':
-                          loan.loanBalanceResponse!.uniqueId,
-                      'floatrUserUniqueId': userProvider.user!.uniqueId!,
-                      'floatrUserName':
-                          '${userProvider.user!.firstName} ${userProvider.user!.lastName}',
-                      'date': DateTime.now().toIso8601String(),
-                      'reason': 'full_loan_payment',
-                    }
-                  : {
-                      'loanApplicationUniqueId':
-                          loan.loanBalanceResponse!.uniqueId,
-                      'paymentScheduleUniqueId': loan
-                          .loanBalanceResponse!.pendingSchedules.first.uniqueId,
-                      'floatrUserUniqueId': userProvider.user!.uniqueId!,
-                      'floatrUserName':
-                          '${userProvider.user!.firstName} ${userProvider.user!.lastName}',
-                      'date': DateTime.now().toIso8601String(),
-                      'reason': 'part_loan_payment',
-                    }),
+          metaData: isFullPayment
+              ? {
+                  'loanApplicationUniqueId': loan.loanBalanceResponse!.uniqueId,
+                  'floatrUserUniqueId': userProvider.user!.uniqueId!,
+                  'floatrUserName':
+                      '${userProvider.user!.firstName} ${userProvider.user!.lastName}',
+                  'date': DateTime.now().toIso8601String(),
+                  'reason': 'full_loan_payment',
+                }
+              : {
+                  'loanApplicationUniqueId': loan.loanBalanceResponse!.uniqueId,
+                  'paymentScheduleUniqueId':
+                      loan.loanBalanceResponse!.pendingSchedules.first.uniqueId,
+                  'floatrUserUniqueId': userProvider.user!.uniqueId!,
+                  'floatrUserName':
+                      '${userProvider.user!.firstName} ${userProvider.user!.lastName}',
+                  'date': DateTime.now().toIso8601String(),
+                  'reason': 'part_loan_payment',
+                },
         );
 
     try {
@@ -439,11 +436,14 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
 
         // verify transaction
         loan.verifyMonnifyTransaction().whenComplete(
-          () {
+          () async {
             // if (loan.loadingState == LoadingState.loaded) {
-            loan.getLoanBalance(
+            await userProvider.getUser();
+            await loan.getUserSubscribedLoan(
                 userProvider.user!.loan!.settlingLoanApplicationId!);
-            userProvider.getUser();
+            await loan.getLoanBalance(
+                userProvider.user!.loan!.settlingLoanApplicationId!);
+
             if (isFullPayment) {
               navigationService.pushAndRemoveUntil(RouteName.navbar);
             }
@@ -491,7 +491,11 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
         ? 0
         : (difference.inMilliseconds / 86400000).round();
 
-    final amountLeftToPay = (double.parse(userSubscribedLoan.totalPayBackAmount) - double.parse(userSubscribedLoan.totalPaidBackAmount)).toInt().toString();
+    final amountLeftToPay =
+        (double.parse(userSubscribedLoan.totalPayBackAmount) -
+                double.parse(userSubscribedLoan.totalPaidBackAmount))
+            .toInt()
+            .toString();
 
     // int differenceInDays = difference.inDays < 0 ? 0 : difference.inDays;
     // print(difference.inMilliseconds);
@@ -818,8 +822,7 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
                         child: PaybackOption(
                           iconPath: SvgAppIcons.icClosePay,
                           optionPrompt: 'Close This Loan',
-                          payOption:
-                              'PAY ${formatAmount(amountLeftToPay)}',
+                          payOption: 'PAY ${formatAmount(amountLeftToPay)}',
                         ),
                       ),
                       InkWell(
@@ -910,19 +913,19 @@ class _LoanScheduleViewState extends State<LoanScheduleView> {
                                                 PaymentMethod.USSD,
                                                 PaymentMethod.PHONE_NUMBER
                                               ],
+                                              metaData: {
+                                                'loanApplicationUniqueId': loan
+                                                    .loanBalanceResponse!
+                                                    .uniqueId,
+                                                'floatrUserUniqueId':
+                                                    user.uniqueId!,
+                                                'floatrUserName':
+                                                    '${user.firstName} ${user.lastName}',
+                                                'date': DateTime.now()
+                                                    .toIso8601String(),
+                                                'reason': 'part_loan_payment',
+                                              },
                                             ),
-                                            customMetaData: {
-                                              'loanApplicationUniqueId': loan
-                                                  .loanBalanceResponse!
-                                                  .uniqueId,
-                                              'floatrUserUniqueId':
-                                                  user.uniqueId!,
-                                              'floatrUserName':
-                                                  '${user.firstName} ${user.lastName}',
-                                              'date': DateTime.now()
-                                                  .toIso8601String(),
-                                              'reason': 'part_loan_payment',
-                                            },
                                           );
 
                                           navigationService.pop(); // pop modal

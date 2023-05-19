@@ -238,6 +238,7 @@ class LoanProvider extends BaseProvider {
     }, (onSuccess) {
       getMyCards();
       getFeaturedLoans();
+      getLoanBalance(_loanBalanceReponse!.uniqueId);
       updateLoadingState(LoadingState.loaded);
       log("Loan Paid");
     });
