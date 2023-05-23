@@ -18,7 +18,7 @@ class BiometricRepository {
       await _localAuthentication.isDeviceSupported();
 
   Future<Either<Failure, bool>> didAuthenticate(
-      [Function? onSuccessCallback, String? message]) async {
+      [String? message]) async {
     try {
       final bool didAuthenticate = await _localAuthentication.authenticate(
           localizedReason: message ?? 'Please authenticate to proceed.',
@@ -27,7 +27,7 @@ class BiometricRepository {
             biometricOnly: true,
             stickyAuth: true,
           ));
-      onSuccessCallback!();
+      // onSuccessCallback!();
       return Right(didAuthenticate);
     } on PlatformException catch (e) {
       return Left(LocalAuthFailure(code: e.code, message: e.message));
@@ -38,9 +38,9 @@ class BiometricRepository {
     try {
       final List<BiometricType> availableBiometrics =
           await _localAuthentication.getAvailableBiometrics();
-      bool canAuthenticate = await this.canAuthenticate();
+      // bool canAuthenticate = await this.canAuthenticate();
 
-      if (availableBiometrics.isNotEmpty && canAuthenticate) {
+      if (availableBiometrics.isNotEmpty) {
         if (availableBiometrics.contains(BiometricType.face)) {
           return const Right(BiometricType.face);
         } else if (availableBiometrics.contains(BiometricType.fingerprint)) {

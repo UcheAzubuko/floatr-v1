@@ -13,7 +13,7 @@ import 'dependency_injectors.dart';
 
 final globalProviders = <SingleChildWidget>[
   ChangeNotifierProvider(create: (_) => BaseProvider()),
-  ChangeNotifierProvider(create: (_) => BiometricProvider(biometricRepository: di())..getBiometricType()),
+  ChangeNotifierProvider(create: (_) => BiometricProvider(biometricRepository: di())),
   ChangeNotifierProvider(create: (_) => CameraProvider()),
   
   ChangeNotifierProvider(create: (_) => AuthenticationProvider(authenticationRepository: di(), biometricRepository: di())),

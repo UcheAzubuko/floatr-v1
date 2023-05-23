@@ -99,10 +99,8 @@ class BiometricsScreen extends StatelessWidget {
 
   _handleBiometricAuthentication(BiometricProvider biometricProvider) {
     biometricProvider.didAuthenticate(() {
-      di<NavigationService>().pushAndRemoveUntil(RouteName.navbar);
       di<SharedPreferences>().setBool(StorageKeys.biometricStatusKey, true);
-    }, 'Enable biometric').then((_) {
-
-    });
+      di<NavigationService>().pushAndRemoveUntil(RouteName.navbar);
+    }, 'Enable biometric').then((_) {});
   }
 }

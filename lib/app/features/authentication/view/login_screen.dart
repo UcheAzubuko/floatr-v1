@@ -47,23 +47,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void initState() {
-    _loginParams = LoginParams(email: null, password: null);
     final authProvider = context.read<AuthenticationProvider>();
     final biometricProvider = context.read<BiometricProvider>();
-    final isFingerPrint =
-        biometricProvider.biometricType == BiometricType.fingerprint;
 
-    if ((biometricProvider.biometricType == BiometricType.face ||
-            biometricProvider.biometricType == BiometricType.fingerprint) &&
-        authProvider.isBiometricLoginEnabled) {
+    biometricProvider.getBiometricType();
+
+    _loginParams = LoginParams(email: null, password: null);
+
+    // final isFingerPrint =
+    //     biometricProvider.biometricType == BiometricType.fingerprint;
+
+    if (authProvider.isBiometricLoginEnabled) {
       biometricProvider.didAuthenticate(() => authProvider.biometricLogin(),
-          'Login with ${isFingerPrint ? 'Fingerprint' : 'Face ID'}');
+          'Login with Biometric');
     }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.read<AuthenticationProvider>();
+    final biometricProvider = context.read<BiometricProvider>();
+
+    // final isFingerPrint =
+    //     biometricProvider.biometricType == BiometricType.fingerprint;
+
     return Scaffold(
       appBar: CustomAppBar(),
       body: SafeArea(
@@ -135,8 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   textInputType: TextInputType.phone,
                   textInputAction: TextInputAction.unspecified,
                   onSaved: (String? email) =>
-                    _loginParams.email = formatNigerianPhoneNumber(email!),
-                  
+                      _loginParams.email = formatNigerianPhoneNumber(email!),
                   validator: _phoneValidator,
                 ),
 
@@ -214,6 +221,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
+
+                const VerticalSpace(
+                  size: 80,
+                ),
+
+                if (authProvider.isBiometricLoginEnabled) ...[
+                  InkWell(
+                    onTap: () => biometricProvider.didAuthenticate(
+                        () => authProvider.biometricLogin(),
+                        'Login with Biometric'),
+                    child: Center(
+                        child: SvgPicture.asset(
+                      'assets/images/fingerprint.svg',
+                      height: 100,
+                      width: 60,
+                    )),
+                  )
+                ],
               ],
             ),
           ),

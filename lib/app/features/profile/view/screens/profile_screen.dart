@@ -98,6 +98,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     final biometricProvider = context.read<BiometricProvider>();
 
+    biometricProvider.getBiometricType();
+
     isBiometricAvailable =
         (biometricProvider.biometricType == BiometricType.face ||
             biometricProvider.biometricType == BiometricType.fingerprint);
