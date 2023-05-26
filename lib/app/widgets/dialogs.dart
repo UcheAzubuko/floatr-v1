@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:floatr/app/extensions/sized_context.dart';
 import 'package:floatr/app/widgets/app_text.dart';
@@ -7,7 +8,6 @@ import 'package:floatr/core/utils/app_colors.dart';
 import 'package:floatr/core/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-
 
 class AppDialog {
   // modal
@@ -22,27 +22,37 @@ class AppDialog {
             topRight: Radius.circular(10),
           ),
         ),
-        builder: ((context) => widget));
+        builder: ((context) => BackdropFilter(filter: ImageFilter.blur(
+            sigmaX: 2.0, sigmaY: 2.0),child: widget)));
   }
 
   // pop dialog
-  static showAppDialog(BuildContext context, Widget widget,
-      {double height = 387, double width = 335}) {
+  static showAppDialog(
+    BuildContext context,
+    Widget widget, {
+    double height = 387,
+    double width = 335,
+  }) {
     showDialog(
-      barrierColor: AppColors.black.withOpacity(0.8),
+      barrierColor: Colors.transparent,
       context: context,
       barrierDismissible: false,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        insetPadding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(16)),
-          height: height,
-          width: width,
-          child: widget,
+      builder: (context) => BackdropFilter(
+        filter: ImageFilter.blur(
+            sigmaX: 2.0, sigmaY: 2.0), // blurs the area underneath the modal
+        child: Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(16)),
+            height: height,
+            width: width,
+            child: widget,
+          ),
         ),
       ),
     );
@@ -61,7 +71,6 @@ class OnSuccessDialogContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return SizedBox(
       // height: (context.heightPx * 0.5),
       width: context.widthPx,
